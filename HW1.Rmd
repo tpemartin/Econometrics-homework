@@ -69,7 +69,7 @@ wage1 <- read_dta("http://fmwww.bc.edu/ec-p/data/wooldridge/wage1.dta")
 23. expersq                 推估工作經驗年資^2
 24. tenursq                 與現在雇主合作的年資^2
 
-該資料應該是採自美國各產業薪資水準
+該資料應該是採自於美國各產業薪資水準
 
 ```
 我們想要問："教育年限增加一年對勞動薪資的影響有多少？"
