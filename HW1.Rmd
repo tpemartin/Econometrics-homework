@@ -57,12 +57,12 @@ wage1 <- read_dta("http://fmwww.bc.edu/ec-p/data/wooldridge/wage1.dta")
 11. south                   =1 如果住在美國南部
 12. west                    =1 如果住在美國西部
 13. construc                =1 如果從事建築業
-14. ndurman                 =1 if in nondur. manuf. indus.
-15. trcommpu                =1 if in trans, commun, pub ut
-16. trade                   =1 if in wholesale or retail
-17. services                =1 如果從事服務業
-18. profserv                =1 if in prof. serv. indus.
-19. profocc                 =1 如果是教授
+14. ndurman                 =1 如果從事非耐久財製造
+15. trcommpu                =1 如果從事運輸產業,通訊產業與公用事業
+16. trade                   =1 如果從事零售批發業
+17. services                =1 如果從事服務業
+18. profserv                =1 如果從事專業服務產業，EX：Technology developers,lawyer,accountant
+19. profocc                 =1 如果是教授
 20. clerocc                 =1 如果是牧師
 21. servocc                 =1 如果是服務生
 22. lwage                   log(平均時薪)
