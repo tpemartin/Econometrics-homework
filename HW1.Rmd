@@ -41,9 +41,7 @@ wage1 <- read_dta("http://fmwww.bc.edu/ec-p/data/wooldridge/wage1.dta")
 ```
 
 1. 請依據此[連結](http://fmwww.bc.edu/ec-p/data/wooldridge/wage1.des)說明wage1資料的來源及變數代表意義。[其中potential experience指得是推估工作經驗年資]
-
 ```
-
 1. wage                     平均時薪
 2. educ                     受教育的年資
 3. exper                    推估工作經驗年資
@@ -68,14 +66,12 @@ wage1 <- read_dta("http://fmwww.bc.edu/ec-p/data/wooldridge/wage1.dta")
 22. lwage                   log(平均時薪)
 23. expersq                 推估工作經驗年資^2
 24. tenursq                 與現在雇主合作的年資^2
-
 該資料應該是採自於美國各產業薪資水準
-
 ```
 我們想要問："教育年限增加一年對勞動薪資的影響有多少？"
-
 ```{r}
-lm(formula = wage ~ educ)
+wage1 %>%
+	lm(formula = wage ~ educ)
 ```
 ```
 Call:
@@ -85,50 +81,123 @@ Coefficients:
 (Intercept)         educ  
     -0.9049       0.5414
     
-以上得知，當教育年資每增加1年時，薪資多增加0.54%
+以上得知，一般條件不變下，當教育年資每增加1年時，薪資多增加54%
 ```
-
 2. 請使用`psych::pairs.panels()`來描述教育年限(educ)與勞動薪資(wage)間的特質。在兩者的相關度上，有沒有那個變數取對數(log)會比較好？為什麼？
-
 ```{r}
 wage1 %>% 
   select(educ,wage) %>%
   pairs.panels
 ```
 教育年資越久的人，薪水也越高。
-
 ```{r}
 wage1 %>% 
   select(educ,lwage) %>%
   pairs.panels
 ```
-對wage這個變數取log，可以使得薪資水準不會產生較大的方差。
-
+```
+由於教育年資分配較集中，所以針對離群值較多的薪水取log，使其接近鐘型分佈。
+另外，如果對教育年資取log的話，可以發現反而更左偏。
+```
+```{r}
+wage1 %>% 
+  mutate(lleduc=log(educ)) -> wage1
+wage1 %>%
+  select(lleduc,lwage) %>%
+  pairs.panels
+```
 3. 請使用OLS估計以下的迴歸模型：
 $$log(wage)=\beta_0+\beta_1 educ+\epsilon$$
-
 ```{r}
 wage1 %>%
 	lm(formula = lwage~educ) %>%
   summary
 ```
+```
+Call:
+lm(formula = lwage ~ educ, data = .)
 
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-2.21158 -0.36393 -0.07263  0.29712  1.52339 
+
+Coefficients:
+            Estimate Std. Error t value Pr(>|t|)    
+(Intercept) 0.583773   0.097336   5.998 3.74e-09 ***
+educ        0.082744   0.007567  10.935  < 2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 0.4801 on 524 degrees of freedom
+Multiple R-squared:  0.1858,	Adjusted R-squared:  0.1843 
+F-statistic: 119.6 on 1 and 524 DF,  p-value: < 2.2e-16
+
+由上得知，教育年數的p-value***代表該變數顯著影響薪水。
+```
 4. 從資料裡選出兩個可能造成$\beta_1$OLS估計值帶有選擇性偏誤的變數，請說明理由並加以適當敍述統計量佐證。
-
-
-
+```
+(1)smsa:住在大城市的人所受的教育會較完整全面，進而促使受驗者會繼續往上讀，進而影響教育年資。
+(2)nonwhite:非白人在美國受的教育較不平等，故所得到的教學資源可能也較少，也會減少繼續升學的意願。
+```
 5. 延續上題，請完成對應複迴歸模型的估計。
+```{r}
+wage1 %>%
+  lm(formula = educ~ smsa+numdep) %>%
+  summary
+```
+```
+Call:
+lm(formula = educ ~ smsa + numdep, data = .)
 
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-12.0935  -1.3628  -0.0935   1.6372   6.7645 
+
+Coefficients:
+            Estimate Std. Error t value Pr(>|t|)    
+(Intercept) 12.09345    0.24717  48.928  < 2e-16 ***
+smsa         1.26934    0.25916   4.898 1.29e-06 ***
+numdep      -0.42897    0.09205  -4.660 4.02e-06 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 2.649 on 523 degrees of freedom
+Multiple R-squared:  0.08818,	Adjusted R-squared:  0.08469 
+F-statistic: 25.29 on 2 and 523 DF,  p-value: 3.286e-11
+smsa和numdep的p-value有三顆星，表示拒絕虛無假說，顯著影響到教育年資。  
+```
 6. 大致說來，教育年限12年表示高中畢業，大學畢業會有16年的教育，請問介於12年以上-16年以下的教育年限代表什麼？
-
+```
+有高中學歷，但大學沒畢業。
+```
 7. 取出教育年限介於12-16年（含上下限）的資料，分別計算以下三群教育年限勞動者的平均薪資：12年，13-15年，16年。
 [hint: dplyr::filter(), dplyr::group_by(), dplyr::summarise(), cut()]
-
+```{r}
+filter(wage1,educ==12)%>%
+  group_by(educ=)%>%
+  summarise(wage=mean(wage))
+```
+```{r}
+filter(wage1,educ>12,educ<16)%>%
+  group_by(educ=)%>%
+  summarise(wage=mean(wage))
+```
+```{r}
+filter(wage1,educ==16)%>%
+  group_by(educ=)%>%
+  summarise(wage=mean(wage))
+```
+```
+由上得知，
+(1)教育12年限勞動者的平均薪資:5.37
+(2)教育13-15年限勞動者的平均薪資:6.03
+(3)教育16年限勞動者的平均薪資:8.04
+```
 8. 在下一部份的文章閱讀練習裡，文章提到: 
 
 > In a comparison of the earnings of people with degrees and people without them, those who start university but do not finish are lumped in with those who never started, even though they, too, will have paid fees and missed out on earnings. Their numbers are considerable. 
 
-在問題7中我們計算了三群人的平均薪資。請問若要避免文章所描述的問題，你會如何計算一位高中生若選擇上大學他會得到的預期薪資好處。[只使用問題7的數字及三群人人數]
+在問題k7中我們計算了三群人的平均薪資。請問若要避免文章所描述的問題，你會如何計算一位高中生若選擇上大學他會得到的預期薪資好處。[只使用問題7的數字及三群人人數]
 
 # 文章閱讀
 [Going to university is more important than ever for young people.
@@ -136,7 +205,7 @@ But the financial returns are falling.](https://www.economist.com/news/internati
 
 文章中有不少效應評估問句，及造成其無法直接進行簡單迴歸估計的選擇性偏誤原因，請將所有這樣的段落貼過來、寫下它的效應評估問句及造成選擇性偏誤的原因。例如：
 
-```
+```mp
 1. Policymakers regard it as obvious that sending more young people to university will boost economic growth and social mobility. ... But comparisons between countries provide little evidence of these links. Richer countries have more graduates, but that could be because there is more money to spare, and less urgency to start earning.
 
 效應評估問句：越多人上大學該國經濟表現越好？
