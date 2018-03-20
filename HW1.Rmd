@@ -14,7 +14,7 @@ params:
 組號：`r params$g=roup`  
 
 ***
-	
+  
 請直接在本檔案作答，存檔時也無需另存新檔名。交作業時，只由「組長」送出pull request給我。
 
 作業除了讓同學檢視課堂所學程式外，有些題目只會給你未教過的函數建議（純為建議，你也可以不使用），你必需使用Help或網路查尋去了解函數的正確使用；搜詢正確程式函數使用的能力，也是程式設計的基本功。
@@ -71,7 +71,7 @@ wage1 <- read_dta("http://fmwww.bc.edu/ec-p/data/wooldridge/wage1.dta")
 我們想要問："教育年限增加一年對勞動薪資的影響有多少？"
 ```{r}
 wage1 %>%
-	lm(formula = wage ~ educ)
+  lm(formula = wage ~ educ)
 ```
 ```
 Call:
@@ -110,7 +110,7 @@ wage1 %>%
 $$log(wage)=\beta_0+\beta_1 educ+\epsilon$$
 ```{r}
 wage1 %>%
-	lm(formula = lwage~educ) %>%
+  lm(formula = lwage~educ) %>%
   summary
 ```
 ```
@@ -129,7 +129,7 @@ educ        0.082744   0.007567  10.935  < 2e-16 ***
 Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
 
 Residual standard error: 0.4801 on 524 degrees of freedom
-Multiple R-squared:  0.1858,	Adjusted R-squared:  0.1843 
+Multiple R-squared:  0.1858,  Adjusted R-squared:  0.1843 
 F-statistic: 119.6 on 1 and 524 DF,  p-value: < 2.2e-16
 
 由上得知，教育年數的p-value***代表該變數顯著影響薪水。
@@ -162,13 +162,13 @@ numdep      -0.42897    0.09205  -4.660 4.02e-06 ***
 Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
 
 Residual standard error: 2.649 on 523 degrees of freedom
-Multiple R-squared:  0.08818,	Adjusted R-squared:  0.08469 
+Multiple R-squared:  0.08818, Adjusted R-squared:  0.08469 
 F-statistic: 25.29 on 2 and 523 DF,  p-value: 3.286e-11
 smsa和numdep的p-value有三顆星，表示拒絕虛無假說，顯著影響到教育年資。  
 ```
 6. 大致說來，教育年限12年表示高中畢業，大學畢業會有16年的教育，請問介於12年以上-16年以下的教育年限代表什麼？
 ```
-有高中學歷，但大學沒畢業。
+有高中學歷，並且選擇讀大學，但沒有畢業，為輟學生。
 ```
 7. 取出教育年限介於12-16年（含上下限）的資料，分別計算以下三群教育年限勞動者的平均薪資：12年，13-15年，16年。
 [hint: dplyr::filter(), dplyr::group_by(), dplyr::summarise(), cut()]
@@ -198,6 +198,26 @@ filter(wage1,educ==16)%>%
 > In a comparison of the earnings of people with degrees and people without them, those who start university but do not finish are lumped in with those who never started, even though they, too, will have paid fees and missed out on earnings. Their numbers are considerable. 
 
 在問題k7中我們計算了三群人的平均薪資。請問若要避免文章所描述的問題，你會如何計算一位高中生若選擇上大學他會得到的預期薪資好處。[只使用問題7的數字及三群人人數]
+```
+先計算人數
+```
+```{r}
+filter(wage1,educ>12,educ<16)
+```
+```{r}
+filter(wage1,educ>=16)
+```
+```
+得大學輟學者人數為113人
+得大學畢業人數為99人
+再計算選擇讀大學的期望薪資
+```
+```{r}
+(99/(99+113)*8.04)+(113/(99+113)*6.03)
+```
+```
+6.97>5.37，高中畢業生選擇上大學較好。
+```
 
 # 文章閱讀
 [Going to university is more important than ever for young people.
@@ -212,38 +232,43 @@ But the financial returns are falling.](https://www.economist.com/news/internati
 
 造成選擇性偏誤原因：「時間多錢多多」造成「越多人上大學」，「時間多錢多多」是「富有國家」常見現象，所以單純比較上大學比例高和低的國家，有可能只是在比誰的「時間多、錢多」。（這類的選擇性偏誤也稱為內生性偏誤。）
 ```
+```
 (1)Between 1995 and 2014 government spending on higher education in the OECD rose from 0.9% of GDP to 1.1%, while private spending rose from 1.2% to 1.5%. As government subsidies for tuition fees flow through to institutions they have helped inflate costs. Since 1990 fees for American students who do not get scholarships or bursaries have risen twice as fast as overall inflation.
-學費的上升與政府補助的關係:G=1代表政府有補助,G=0代表無補助，E(Y|G=1)-E(Y|G=0)真的是δ嗎?{EX:學費=立足點+G*δ}
-一般來說立足點較高(學費較貴)的國家，政府會因為認為現在學費太高而補助，這會導至我們看到被政府補助的國家都是學費較高的現象。
+
+效應評估問句：學費的上升與政府補助的關係:G=1代表政府有補助,G=0代表無補助，E(Y|G=1)-E(Y|G=0)真的是δ嗎?{EX:學費=立足點+G*δ}
+造成選擇性偏誤原因：一般來說立足點較高(學費較貴)的國家，政府會因為認為現在學費太高而補助，這會導至我們看到被政府補助的國家都是學費較高的現象。
 
 (2)The Economist has produced a measure of over-education by defining a graduate job as one which was staffed mostly by degree-holders in 1970. We find that just 35% of graduates work in such occupations today, down from 51% 45 years ago.
 
 效應評估問句：碩士生所佔的的工作比例來表示是否有over-education?
 造成選擇性偏誤原因：可能只是因為碩士級的職缺有些除了學力以外的限制，例如：工作經驗、第二外語、專業技術……等，所以沒辦法找到相對應的人來勝任這份工作。
 
+(3)Including dropouts when calculating the returns to going to university makes a big difference. In a new book, “The Case Against Education”, Bryan Caplan of George Mason University argues that the low graduation rates of marginal students, and the fact that, for a given level of qualification, cleverer people tend to earn more, mean that the return on a four-year degree in America ranges from 6.5% for excellent students to just 1% for the weakest ones.
 
+效應評估問句：在討論讀大學的回報率時，聰明與否決定了回報率？
+造成選擇性偏誤原因：讀書較弱的學生會傾向讀較差的大學，而在這種差的讀書環境下將提高輟學率；但若較差的學生就讀較好的大學，回報率有可能變高。
 
-(3)Judging by job titles alone, 26.5m workers in America—two-thirds of those with degrees—are doing work that was mostly done by non-graduates a half-century ago.
+(4)The usual way to calculate the social returns of higher education is to sum up all the graduate premiums and subtract any public subsidies. 
+
+效應評估問句：獎學金減去補助金即等於高學歷者的社會回報？
+造成選擇性偏誤原因：有可能高學歷者在拚學歷時，並不是為了獎學金而努力讀書，有時反而是因為周遭同學競爭而促使努力，或是為了取得好的工作而努力讀書，應該包含機會成本（若不努力讀書會失去什麼）。
+
+(5)Judging by job titles alone, 26.5m workers in America—two-thirds of those with degrees—are doing work that was mostly done by non-graduates a half-century ago.
 
 效應評估問句：就業人口中，高學歷者低就於在以前為低學歷工作的比例越高，表示over-education越明顯?
-
 造成選擇性偏誤原因：可能只是因為時空背景的不同，而讓產業結構不同，使得低學歷工作機會增加，或是高學歷工作外移、減少，使許多高學歷分子因而從事低學歷工作
 
-(4)She would prefer school-leavers with experience, says Ms Kim, to inexperienced graduates whom she will have to train. She is not looking for swots, but people who are “engaging, good on the phone”.
+(6)She would prefer school-leavers with experience, says Ms Kim, to inexperienced graduates whom she will have to train. She is not looking for swots, but people who are “engaging, good on the phone”.
 
 效應評估問句：根據經驗高學歷，沒經驗的人，不適合從事客服?
+造成選擇性偏誤原因：有可能高學歷者具有適合當客服的人格特質，但因為喜歡讀書，所以選擇繼續升學；中輟者，不具有適合的特質，但只是因為不喜歡讀書，所以輟學出社會工作，所以如果用這個條件來比較，可能會得到”不喜歡讀書的人適合當客服，喜歡讀書的人不適合” 
 
-造成選擇性偏誤原因：有可能高學歷者具有適合當客服的人格特質，但因為喜歡讀書，所以選擇繼續升學；中輟者，不具有適合的特質，但只是因為不喜歡讀書，所已輟學出社會工作，所以如果用這個條件來比較，可能會得到”不喜歡讀書的人適合當客服，喜歡讀書的人不適合” 
-
-(5)It may not boost their earnings as much as they had hoped, but without one, they will probably fare even worse.
+(7)It may not boost their earnings as much as they had hoped, but without one, they will probably fare even worse.
 
 效應評估問句：學歷沒辦法達到想像中的價值，沒有學歷只會更糟糕嗎?
-造成選擇性偏誤原因：
-學歷沒辦法達到其應有的價值，可能與因為本身適不適合這個領域有關，不適任的人自然表現與待遇就會欠佳。更進一步說，一個不適任的人他沒有學歷、沒有專業背景，並堅持要從事該行業，其結果自然會更加更加悲慘，如此說來，人的待遇好壞不全然與學歷相關。最後的比較結果會變成”適不適合這個行業?”。
-
-
-
-
+造成選擇性偏誤原因：學歷沒辦法達到其應有的價值，可能與因為本身適不適合這個領域有關，不適任的人自然表現與待遇就會欠佳。更進一步說，一個不適任的人他沒有學歷、沒有專業背景，並堅持要從事該行業，其結果自然會更加更加悲慘，如此說來，人的待遇好壞不全然與學歷相關。最後的比較結果會變成”適不適合這個行業?”。
 ```
+
+
 
 
