@@ -11,7 +11,7 @@ params:
 ***
 姓名：`r params$name`  
 學號：`r params$id`  
-組號：`r params$g=roup`  
+組號：`r params$group`  
 
 ***
   
