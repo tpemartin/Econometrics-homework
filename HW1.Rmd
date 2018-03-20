@@ -212,3 +212,9 @@ But the financial returns are falling.](https://www.economist.com/news/internati
 
 造成選擇性偏誤原因：「時間多錢多多」造成「越多人上大學」，「時間多錢多多」是「富有國家」常見現象，所以單純比較上大學比例高和低的國家，有可能只是在比誰的「時間多、錢多」。（這類的選擇性偏誤也稱為內生性偏誤。）
 ```
+(1)Between 1995 and 2014 government spending on higher education in the OECD rose from 0.9% of GDP to 1.1%, while private spending rose from 1.2% to 1.5%. As government subsidies for tuition fees flow through to institutions they have helped inflate costs. Since 1990 fees for American students who do not get scholarships or bursaries have risen twice as fast as overall inflation.
+學費的上升與政府補助的關係:G=1代表政府有補助,G=0代表無補助，E(Y|G=1)-E(Y|G=0)真的是δ嗎?{EX:學費=立足點+G*δ}
+一般來說立足點較高(學費較貴)的國家，政府會因為認為現在學費太高而補助，這會導至我們看到被政府補助的國家都是學費較高的現象。
+```
+
+
