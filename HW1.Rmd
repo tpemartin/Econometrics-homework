@@ -215,6 +215,35 @@ But the financial returns are falling.](https://www.economist.com/news/internati
 (1)Between 1995 and 2014 government spending on higher education in the OECD rose from 0.9% of GDP to 1.1%, while private spending rose from 1.2% to 1.5%. As government subsidies for tuition fees flow through to institutions they have helped inflate costs. Since 1990 fees for American students who do not get scholarships or bursaries have risen twice as fast as overall inflation.
 學費的上升與政府補助的關係:G=1代表政府有補助,G=0代表無補助，E(Y|G=1)-E(Y|G=0)真的是δ嗎?{EX:學費=立足點+G*δ}
 一般來說立足點較高(學費較貴)的國家，政府會因為認為現在學費太高而補助，這會導至我們看到被政府補助的國家都是學費較高的現象。
+
+(2)The Economist has produced a measure of over-education by defining a graduate job as one which was staffed mostly by degree-holders in 1970. We find that just 35% of graduates work in such occupations today, down from 51% 45 years ago.
+
+效應評估問句：碩士生所佔的的工作比例來表示是否有over-education?
+造成選擇性偏誤原因：可能只是因為碩士級的職缺有些除了學力以外的限制，例如：工作經驗、第二外語、專業技術……等，所以沒辦法找到相對應的人來勝任這份工作。
+
+
+
+(3)Judging by job titles alone, 26.5m workers in America—two-thirds of those with degrees—are doing work that was mostly done by non-graduates a half-century ago.
+
+效應評估問句：就業人口中，高學歷者低就於在以前為低學歷工作的比例越高，表示over-education越明顯?
+
+造成選擇性偏誤原因：可能只是因為時空背景的不同，而讓產業結構不同，使得低學歷工作機會增加，或是高學歷工作外移、減少，使許多高學歷分子因而從事低學歷工作
+
+(4)She would prefer school-leavers with experience, says Ms Kim, to inexperienced graduates whom she will have to train. She is not looking for swots, but people who are “engaging, good on the phone”.
+
+效應評估問句：根據經驗高學歷，沒經驗的人，不適合從事客服?
+
+造成選擇性偏誤原因：有可能高學歷者具有適合當客服的人格特質，但因為喜歡讀書，所以選擇繼續升學；中輟者，不具有適合的特質，但只是因為不喜歡讀書，所已輟學出社會工作，所以如果用這個條件來比較，可能會得到”不喜歡讀書的人適合當客服，喜歡讀書的人不適合” 
+
+(5)It may not boost their earnings as much as they had hoped, but without one, they will probably fare even worse.
+
+效應評估問句：學歷沒辦法達到想像中的價值，沒有學歷只會更糟糕嗎?
+造成選擇性偏誤原因：
+學歷沒辦法達到其應有的價值，可能與因為本身適不適合這個領域有關，不適任的人自然表現與待遇就會欠佳。更進一步說，一個不適任的人他沒有學歷、沒有專業背景，並堅持要從事該行業，其結果自然會更加更加悲慘，如此說來，人的待遇好壞不全然與學歷相關。最後的比較結果會變成”適不適合這個行業?”。
+
+
+
+
 ```
 
 
