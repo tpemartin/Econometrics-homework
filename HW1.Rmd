@@ -2,8 +2,8 @@
 title: "作業1"
 output: html_notebook
 params:
-  name: ["王小明","陳二"]
-  id: [410677029,410677044]
+  name: ["蔡宗翰","陳二"]
+  id: [710661104,410677044]
   group: 8
 ---
 請依狀況更改上面的name,id及group（分別代表組員姓名，學號及組號），但請勿更改下面三行的設定。  
@@ -46,17 +46,67 @@ wage1 <- read_dta("http://fmwww.bc.edu/ec-p/data/wooldridge/wage1.dta")
 
 2. 請使用`psych::pairs.panels()`來描述教育年限(educ)與勞動薪資(wage)間的特質。在兩者的相關度上，有沒有那個變數取對數(log)會比較好？為什麼？
 
+```{r}
+wage1 %>% 
+  select(educ,wage) %>%
+  psych::pairs.panels()
+```
+```{r}
+wage1 %>% mutate(ledu=log(educ))-> wage1
+wage1 %>% 
+  select(ledu,lwage) %>%
+  pairs.panels()          
+```
+
+
 3. 請使用OLS估計以下的迴歸模型：
 $$log(wage)=\beta_0+\beta_1 educ+\epsilon$$
 
+```{r}
+
+wage1 %>% lm(lwage~educ,data=.)
+
+```
+
+
 4. 從資料裡選出兩個可能造成$\beta_1$OLS估計值帶有選擇性偏誤的變數，請說明理由並加以適當敍述統計量佐證。
 
+```{r}
+corr <- function(x) cor(x,wage1$educ)
+wage1 %>%  
+  summarise_all(corr)
+```
+
+
+
 5. 延續上題，請完成對應複迴歸模型的估計。
+
+```{r}
+wage1 %>%
+  lm(lwage~educ+exper+profocc,data=.)
+```
+
 
 6. 大致說來，教育年限12年表示高中畢業，大學畢業會有16年的教育，請問介於12年以上-16年以下的教育年限代表什麼？
 
 7. 取出教育年限介於12-16年（含上下限）的資料，分別計算以下三群教育年限勞動者的平均薪資：12年，13-15年，16年。
 [hint: dplyr::filter(), dplyr::group_by(), dplyr::summarise(), cut()]
+
+```{r}
+  dplyr::filter(wage1,educ==12) %>%
+  group_by() -> low
+  summarise(low,mean(wage))
+  dplyr::filter(wage1,between(educ,12,16)) %>%
+  group_by() -> med
+  summarise(med,mean(wage))
+  dplyr::filter(wage1,educ>16) %>%
+  group_by() -> high
+  summarise(high,mean(wage))
+
+```
+
+
+
 
 8. 在下一部份的文章閱讀練習裡，文章提到: 
 
