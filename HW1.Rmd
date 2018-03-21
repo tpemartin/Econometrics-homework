@@ -68,7 +68,7 @@ $$log(wage)=\beta_0+\beta_1 educ+\epsilon$$
 [Going to university is more important than ever for young people.
 But the financial returns are falling.](https://www.economist.com/news/international/21736151-financial-returns-are-falling-going-university-more-important-ever)
 
-文章中有不少效應評估問句，及造成其無法直接進行簡單迴歸估計的選擇性偏誤原因，請將所有這樣的段落貼過來、寫下它的效應評估問句及造成選擇性偏誤的原因。例如：
+文章中有不少效應評估問句，及造成其無法直接進行簡單迴歸估計的選擇性偏誤原因，請將所有這樣的段落貼過來、寫下它的效應評估問句及造成選擇性偏誤的原因（文章中所提的，非自我發揮）。例如：
 
 ```
 1. Policymakers regard it as obvious that sending more young people to university will boost economic growth and social mobility. ... But comparisons between countries provide little evidence of these links. Richer countries have more graduates, but that could be because there is more money to spare, and less urgency to start earning.
