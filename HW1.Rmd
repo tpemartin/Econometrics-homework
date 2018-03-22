@@ -53,19 +53,19 @@ wage1 <- read_dta("http://fmwww.bc.edu/ec-p/data/wooldridge/wage1.dta")
   6. female                   判斷是否為女性
   7. married                  判斷是否已婚
   8. numdep                   撫養人數
-  9. smsa                     =1 if live in SMSA
+  9. smsa                     是否住在標準大都會
  10. northcen                 是否住在北美中心
  11. south                    是否住在美國南部
  12. west                     是否住在美國西部
  13. construc                 是否從事建築業
- 14. ndurman                  =1 if in nondur. manuf. indus.
- 15. trcommpu                 從事公共交通運輸業
- 16. trade                    從事批發或零售業
- 17. services                 從事加工生產業
- 18. profserv                 =1 if in prof. serv. indus.
- 19. profocc                  教授
- 20. clerocc                  白領階級
- 21. servocc                  從事服務業
+ 14. ndurman                  是否從事非耐久財製造業
+ 15. trcommpu                 是否從事公共交通運輸業
+ 16. trade                    是否從事批發或零售業
+ 17. services                 是否從事加工製造業
+ 18. profserv                 是否從事專業加工製造
+ 19. profocc                  是否為教授
+ 20. clerocc                  是否為白領階級
+ 21. servocc                  是否從事服務業
 
 
 
@@ -154,18 +154,17 @@ wage1 %>%
 [hint: dplyr::filter(), dplyr::group_by(), dplyr::summarise(), cut()]
 
 ```{r}
-  dplyr::filter(wage1,educ==12) %>%
-  group_by() %>%
-  summarise(mean(wage)) ->low
-  dplyr::filter(wage1,between(educ,12,16)) %>%
-  group_by() %>%
-  summarise(mean(wage)) ->med
-  dplyr::filter(wage1,educ>16) %>%
-  group_by() %>%
-  summarise(mean(wage)) ->high
-
+wage1 %>%
+   mutate(type=cut(wage1$educ,breaks=c(0,13,16,100),labels=c("low","med","high"),right = FALSE))->wage1
+  group_by(wage1,type) %>%
+  summarise(mean(wage)
+```
+```
+```{r}
+cut(c0,cut time,right=16,include.lowest=12)
 ```
 
+```
 
 
 
@@ -217,6 +216,10 @@ But the financial returns are falling.](https://www.economist.com/news/internati
 偏誤原因：
 平均的概念，會掩蓋不同產業之間薪水的差異。
 
+Better-educated people should surely be more likely to come up with productivity-boosting innovations. As technological change makes new demands of workers, it seems plausible that more will need to be well-educated. And a degree is an obvious way for bright youngsters from poor families to prove their abilities.
+效應評估問句: 受過良好教育的人應該更有可能提出促進生產力的創新？隨著技術變革提出了對工人的新要求，似乎有理由認為更多人需要接受良好的教育?
+
+造成選擇性偏誤的原因: 但在國家之間的比較幾乎沒有提供這些聯繫的證據。更富有的國家有更多的畢業生，但這可能是因為有更多的錢可以騰出來，而且開始賺錢的迫切性不大。富裕經濟增長速度較慢，但這可能是因為他們提高生產力的簡單方法較少，並不是因為教育抑制了其增長。
 
 
 
