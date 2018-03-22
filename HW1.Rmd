@@ -171,11 +171,27 @@ wage1 %>%
 
 在問題7中我們計算了三群人的平均薪資。請問若要避免文章所描述的問題，你會如何計算一位高中生若選擇上大學他會得到的預期薪資好處。[只使用問題7的數字及三群人人數]
 
-```
+$$log(wage)=\beta_0+\beta_1 C+\beta_2 G+\epsilon$$
 
-```
+令<br /> 
+C =  $\lbrace$ 0 為未進入大學 
+     1 為進入大學$ \rbrace$
+     
+   G = 0 為大學沒有畢業
+     = 1 為大學有畢業 
 
+其中,<br />
 
+\ $\beta_1$為進入大學對薪資的效果 <br /> 
+    \ $\beta_2$為大學畢業對薪資的效果
+<br /> 
+$$E[lwage|C=0,G=0]=\beta_0 \ -(1) $$
+$$E[lwage|C=1,G=0]=\beta_0+\beta_1\ -(2) $$
+$$E[lwage|C=1,G=1]=\beta_0+\beta_1+\beta_2\ -(3) $$
+
+依 (3) - (2) ,可得\ $\beta2$\ =2.917989 <br />  
+依 (2) - (1) ,可得\ $\beta1$\ =1.144299
+<br /> 
 
 # 文章閱讀
 [Going to university is more important than ever for young people.
@@ -184,11 +200,13 @@ But the financial returns are falling.](https://www.economist.com/news/internati
 文章中有不少效應評估問句，及造成其無法直接進行簡單迴歸估計的選擇性偏誤原因，請將所有這樣的段落貼過來、寫下它的效應評估問句及造成選擇性偏誤的原因。例如：
 
 ```
-1. Policymakers regard it as obvious that sending more young people to university will boost economic growth and social mobility. ... But comparisons between countries provide little evidence of these links. Richer countries have more graduates, but that could be because there is more money to spare, and less urgency to start earning.
+Policymakers regard it as obvious that sending more young people to university will boost economic growth and social mobility. ... But comparisons between countries provide little evidence of these links. Richer countries have more graduates, but that could be because there is more money to spare, and less urgency to start earning.
 
 效應評估問句：越多人上大學該國經濟表現越好？
 
 造成選擇性偏誤原因：「時間多錢多多」造成「越多人上大學」，「時間多錢多多」是「富有國家」常見現象，所以單純比較上大學比例高和低的國家，有可能只是在比誰的「時間多、錢多」。（這類的選擇性偏誤也稱為內生性偏誤。）
+
+```
 
 ```
 "Policymakers regard it as obvious that sending more young people to university will boost economic growth and social mobility."
@@ -198,11 +216,11 @@ But the financial returns are falling.](https://www.economist.com/news/internati
 
 偏誤原因：
 有錢的國家，有更多人去念大學，單單可能只是因為有"多餘"的錢或較少經濟壓力。
+```
 
 
 
-
-
+```
 "The main piece of evidence cited by policymakers is the “graduate premium”—the difference between the average earnings of someone with a degree and someone with no more than a secondary-school education, after accounting for fees and the income forgone while studying.This gap is often expressed as the “return on investment” in higher education, or the annualised boost to lifetime earnings from gaining a degree."
 
 評估問句：
@@ -210,20 +228,15 @@ But the financial returns are falling.](https://www.economist.com/news/internati
 
 偏誤原因：
 平均的概念，會掩蓋不同產業之間薪水的差異。
+```
 
+
+```
 Better-educated people should surely be more likely to come up with productivity-boosting innovations. As technological change makes new demands of workers, it seems plausible that more will need to be well-educated. And a degree is an obvious way for bright youngsters from poor families to prove their abilities.
 效應評估問句: 受過良好教育的人應該更有可能提出促進生產力的創新？隨著技術變革提出了對工人的新要求，似乎有理由認為更多人需要接受良好的教育?
 
 造成選擇性偏誤的原因: 但在國家之間的比較幾乎沒有提供這些聯繫的證據。更富有的國家有更多的畢業生，但這可能是因為有更多的錢可以騰出來，而且開始賺錢的迫切性不大。富裕經濟增長速度較慢，但這可能是因為他們提高生產力的簡單方法較少，並不是因為教育抑制了其增長。
 
 
-
-
-
-
-
-
 ```
 
-
-```
