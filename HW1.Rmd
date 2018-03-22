@@ -2,9 +2,9 @@
 title: "作業1"
 output: html_notebook
 params:
-  name: ["蔡宗翰","陳二"]
-  id: [710661104,410677044]
-  group: 8
+  name: ["蔡宗翰","吳泓叡","苗瑋中","廖柏誠"]
+  id: [710661104,710661119,710661117,710661130]
+  group: 1
 ---
 請依狀況更改上面的name,id及group（分別代表組員姓名，學號及組號），但請勿更改下面三行的設定。  
 
@@ -42,6 +42,38 @@ wage1 <- read_dta("http://fmwww.bc.edu/ec-p/data/wooldridge/wage1.dta")
 
 1. 請依據此[連結](http://fmwww.bc.edu/ec-p/data/wooldridge/wage1.des)說明wage1資料的來源及變數代表意義。[其中potential experience指得是推估工作經驗年資]
 
+```
+資料來源為Jeffrey M. Wooldridge
+
+  1. wage                     平均時薪
+  2. educ                     受教育年數
+  3. exper                    推估工作經驗年資
+  4. tenure                   最近從事的該份工作年資
+  5. nonwhite                 判斷是否為白人
+  6. female                   判斷是否為女性
+  7. married                  判斷是否已婚
+  8. numdep                   撫養人數
+  9. smsa                     =1 if live in SMSA
+ 10. northcen                 是否住在北美中心
+ 11. south                    是否住在美國南部
+ 12. west                     是否住在美國西部
+ 13. construc                 是否從事建築業
+ 14. ndurman                  =1 if in nondur. manuf. indus.
+ 15. trcommpu                 從事公共交通運輸業
+ 16. trade                    從事批發或零售業
+ 17. services                 從事加工生產業
+ 18. profserv                 =1 if in prof. serv. indus.
+ 19. profocc                  教授
+ 20. clerocc                  白領階級
+ 21. servocc                  從事服務業
+
+
+
+```
+
+
+
+
 我們想要問："教育年限增加一年對勞動薪資的影響有多少？"
 
 2. 請使用`psych::pairs.panels()`來描述教育年限(educ)與勞動薪資(wage)間的特質。在兩者的相關度上，有沒有那個變數取對數(log)會比較好？為什麼？
@@ -54,8 +86,27 @@ wage1 %>%
 ```{r}
 wage1 %>% mutate(ledu=log(educ))-> wage1
 wage1 %>% 
-  select(ledu,lwage) %>%
+  select(ledu,wage) %>%
   pairs.panels()          
+```
+
+```{r}
+wage1 %>% mutate(ledu=log(educ))-> wage1
+wage1 %>% 
+  select(educ,lwage) %>%
+  pairs.panels()          
+```
+```{r}
+wage1 %>% mutate(ledu=log(educ))-> wage1
+wage1 %>% 
+  select(ledu,lwage) %>%
+  pairs.panels()   
+```
+
+
+```
+wage再取完對數後，相關係數變高(其他則會出現NaN)，故我們可以拿lwage來分析。
+
 ```
 
 
@@ -77,7 +128,12 @@ wage1 %>%
   summarise_all(corr)
 ```
 
+```
+從結果中，我們挑了兩個與教育相關係數較大者來探討。
+其中教授本身，本來就與受教育程度呈現相當正向的關係。
+另外我們發現，另外，若工作經驗年資較高表示，較為提早進入職場，故與教育程度有相當的負向關係。
 
+```
 
 5. 延續上題，請完成對應複迴歸模型的估計。
 
@@ -89,21 +145,28 @@ wage1 %>%
 
 6. 大致說來，教育年限12年表示高中畢業，大學畢業會有16年的教育，請問介於12年以上-16年以下的教育年限代表什麼？
 
+```
+表示就讀大學期間中突然休學，進入職場者。其可能主要原因可能為無法應付課業壓力。
+```
+
+
 7. 取出教育年限介於12-16年（含上下限）的資料，分別計算以下三群教育年限勞動者的平均薪資：12年，13-15年，16年。
 [hint: dplyr::filter(), dplyr::group_by(), dplyr::summarise(), cut()]
 
 ```{r}
   dplyr::filter(wage1,educ==12) %>%
-  group_by() -> low
-  summarise(low,mean(wage))
+  group_by() %>%
+  summarise(mean(wage)) ->low
   dplyr::filter(wage1,between(educ,12,16)) %>%
-  group_by() -> med
-  summarise(med,mean(wage))
+  group_by() %>%
+  summarise(mean(wage)) ->med
   dplyr::filter(wage1,educ>16) %>%
-  group_by() -> high
-  summarise(high,mean(wage))
+  group_by() %>%
+  summarise(mean(wage)) ->high
 
 ```
+
+
 
 
 
@@ -113,6 +176,12 @@ wage1 %>%
 > In a comparison of the earnings of people with degrees and people without them, those who start university but do not finish are lumped in with those who never started, even though they, too, will have paid fees and missed out on earnings. Their numbers are considerable. 
 
 在問題7中我們計算了三群人的平均薪資。請問若要避免文章所描述的問題，你會如何計算一位高中生若選擇上大學他會得到的預期薪資好處。[只使用問題7的數字及三群人人數]
+
+```
+
+```
+
+
 
 # 文章閱讀
 [Going to university is more important than ever for young people.
@@ -126,4 +195,37 @@ But the financial returns are falling.](https://www.economist.com/news/internati
 效應評估問句：越多人上大學該國經濟表現越好？
 
 造成選擇性偏誤原因：「時間多錢多多」造成「越多人上大學」，「時間多錢多多」是「富有國家」常見現象，所以單純比較上大學比例高和低的國家，有可能只是在比誰的「時間多、錢多」。（這類的選擇性偏誤也稱為內生性偏誤。）
+
+```
+"Policymakers regard it as obvious that sending more young people to university will boost economic growth and social mobility."
+
+評估問句：
+國民越多人去念大學，經濟越好？
+
+偏誤原因：
+有錢的國家，有更多人去念大學，單單可能只是因為有"多餘"的錢或較少經濟壓力。
+
+
+
+
+
+"The main piece of evidence cited by policymakers is the “graduate premium”—the difference between the average earnings of someone with a degree and someone with no more than a secondary-school education, after accounting for fees and the income forgone while studying.This gap is often expressed as the “return on investment” in higher education, or the annualised boost to lifetime earnings from gaining a degree."
+
+評估問句：
+學歷越高，終身平均薪水變高？
+
+偏誤原因：
+平均的概念，會掩蓋不同產業之間薪水的差異。
+
+
+
+
+
+
+
+
+
+```
+
+
 ```
