@@ -159,12 +159,7 @@ wage1 %>%
   group_by(wage1,type) %>%
   summarise(mean(wage)
 ```
-```
-```{r}
-cut(c0,cut time,right=16,include.lowest=12)
-```
 
-```
 
 
 
