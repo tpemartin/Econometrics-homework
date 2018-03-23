@@ -2,9 +2,9 @@
 title: "作業1"
 output: html_notebook
 params:
-  name: ["陳宜榛","陳二"]
-  id: [410677029,410677044]
-  group: 8
+  name: ["林云方","周緬緬"]
+  id: [710661123,710661124]
+  group: 9
 ---
 請依狀況更改上面的name,id及group（分別代表組員姓名，學號及組號），但請勿更改下面三行的設定。  
 
@@ -43,6 +43,36 @@ wage1 <- read_dta("http://fmwww.bc.edu/ec-p/data/wooldridge/wage1.dta")
 1. 請依據此[連結](http://fmwww.bc.edu/ec-p/data/wooldridge/wage1.des)說明wage1資料的來源及變數代表意義。[其中potential experience指得是推估工作經驗年資]
 
 我們想要問："教育年限增加一年對勞動薪資的影響有多少？"
+
+```
+ 資料來源為
+ 
+ 變數解釋
+ 1. wage                      平均每小時所得
+  2. educ                     受教育年數
+  3. exper                    推估工作經驗年資
+  4. tenure                   現任工作的工作年數
+  5. nonwhite                 =1，如果非白種人
+  6. female                   =1，如果為女性
+  7. married                  =1，如果已婚
+  8. numdep                   家庭人數
+  9. smsa                     =1 ，如果居住在SMSA
+ 10. northcen                 =1 ，如果居住在美國中北部
+ 11. south                    =1 ，如果居住在南部地區
+ 12. west                     =1 ，如果居住在西部地區
+ 13. construc                 =1 ，如果工作為建造業
+ 14. ndurman                  =1 ，如果工作為非耐用品的製造產業
+ 15. trcommpu                 =1 ，if in trans, commun, pub ut
+ 16. trade                    =1 ，如果工作為批發或零售產業
+ 17. services                 =1 ，如果工作為服務業
+ 18. profserv                 =1 ，如果工作為教職業
+ 19. profocc                  =1 ，如果為具有專業技能的工作職位
+ 20. clerocc                  =1 ，如果為文書類的工作職位
+ 21. servocc                  =1 ，如果為服務類的工作職位
+ 22. lwage                    平均每小時所得取log
+ 23. expersq                  推估工作經驗年資的平方
+ 24. tenursq                  現任工作其工作年數的平方
+```
 
 2. 請使用`psych::pairs.panels()`來描述教育年限(educ)與勞動薪資(wage)間的特質。在兩者的相關度上，有沒有那個變數取對數(log)會比較好？為什麼？
 
