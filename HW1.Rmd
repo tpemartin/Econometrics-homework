@@ -2,9 +2,9 @@
 title: "作業1"
 output: html_notebook
 params:
-  name: ["王小明","陳二"]
-  id: [410677029,410677044]
-  group: 8
+  name: ["徐敏軒","陳培鴻","丁冠文"]
+  id: [710561123,710561118,]
+  group: 10
 ---
 請依狀況更改上面的name,id及group（分別代表組員姓名，學號及組號），但請勿更改下面三行的設定。  
 
@@ -146,7 +146,7 @@ summarise(educ3,mean(wage))
 > In a comparison of the earnings of people with degrees and people without them, those who start university but do not finish are lumped in with those who never started, even though they, too, will have paid fees and missed out on earnings. Their numbers are considerable. 
 
 在問題7中我們計算了三群人的平均薪資。請問若要避免文章所描述的問題，你會如何計算一位高中生若選擇上大學他會得到的預期薪資好處。[只使用問題7的數字及三群人人數]
-
+算教育年限介於13-15的人數和教育年限>16的人數再算選擇讀大學的期望薪資
 
 # 文章閱讀
 [Going to university is more important than ever for young people.
@@ -161,3 +161,15 @@ But the financial returns are falling.](https://www.economist.com/news/internati
 
 造成選擇性偏誤原因：「時間多錢多多」造成「越多人上大學」，「時間多錢多多」是「富有國家」常見現象，所以單純比較上大學比例高和低的國家，有可能只是在比誰的「時間多、錢多」。（這類的選擇性偏誤也稱為內生性偏誤。）
 ```
+
+...
+Clever people tend to earn more.
+效應評估問句：越聰明的人賺越多？
+造成選擇性偏誤的原因:"家庭所得越高"(較有機會多元學習，得到更多資源)造成"人變聰明"，"家庭所得越高"造成"所得較高"，所以單純比較兩者會造成選擇性偏誤
+...
+
+...
+Companies routinely require applicants to have degrees, even though only a minority of those already working in the role have them. This increases the graduate premium - but by punishing non-graduates rather than boosting the absolute returns to degrees.
+效應評估問句：graduate premium 增加使absolute returns to degrees增加？
+造成選擇性偏誤的原因:"companies routinely require applicants to have degrees"造成"graduate premium增加"，"companies routinely require applicants to have degrees"造成"returns to degrees 增加"，所以單純比較兩者會造成選擇性偏誤
+...
