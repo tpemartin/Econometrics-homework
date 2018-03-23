@@ -1,9 +1,10 @@
+=======
 ---
 title: "作業1"
 output: html_notebook
 params:
-  name: ["王小明","陳二"]
-  id: [410677029,410677044]
+  name: ["陳建宇","陳彤","鄭向吾","彭楷雯"]
+  id: [710661120,710661106,710661103,710661111]
   group: 6
 ---
 請依狀況更改上面的name,id及group（分別代表組員姓名，學號及組號），但請勿更改下面三行的設定。  
@@ -21,17 +22,29 @@ params:
 
 如果是程式的答案，請設立如下的chunk區塊並在裡面作答
 ```{r}
+#你的程式答案
+```
+
+如果是文字答案，請設立沒有{r}的chunk區塊並在裡面作答。
+```
+你的文字答案。
+```
+
+# 教育與薪資 
+
+一開始請執行
+```{r}
+rm(list=ls())
 library(dplyr)
 library(psych)
 library(haven)
 wage1 <- read_dta("http://fmwww.bc.edu/ec-p/data/wooldridge/wage1.dta")
-#2
-wage1 %>%
-  dplyr::select(wage,educ) %>%
-  psych::pairs.panels()
 ```
 
-如果是文字答案，請設立沒有{r}的chunk區塊並在裡面作答。
+1. 請依據此[連結](http://fmwww.bc.edu/ec-p/data/wooldridge/wage1.des)說明wage1資料的來源及變數代表意義。[其中potential experience指得是推估工作經驗年資]
+
+我們想要問："教育年限增加一年對勞動薪資的影響有多少？"
+
 ```
 1. wage1的資料來自Faculty Microcomputer Resource Center，共包含了24個變數，以向量atomic的形式儲存。 
 　 其中wage代表每人平均每小時的所得
@@ -50,21 +63,6 @@ wage1 %>%
 　     expersq代表exper的平方項
 　     tenursq代表tenure的平方項
 ```
-
-# 教育與薪資 
-
-一開始請執行
-```{r}
-rm(list=ls())
-library(dplyr)
-library(psych)
-library(haven)
-wage1 <- read_dta("http://fmwww.bc.edu/ec-p/data/wooldridge/wage1.dta")
-```
-
-1. 請依據此[連結](http://fmwww.bc.edu/ec-p/data/wooldridge/wage1.des)說明wage1資料的來源及變數代表意義。[其中potential experience指得是推估工作經驗年資]
-
-我們想要問："教育年限增加一年對勞動薪資的影響有多少？"
 
 2. 請使用`psych::pairs.panels()`來描述教育年限(educ)與勞動薪資(wage)間的特質。在兩者的相關度上，有沒有那個變數取對數(log)會比較好？為什麼？
 
