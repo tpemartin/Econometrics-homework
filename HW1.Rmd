@@ -1,4 +1,3 @@
-=======
 ---
 title: "作業1"
 output: html_notebook
