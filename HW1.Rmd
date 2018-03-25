@@ -210,7 +210,7 @@ group_by(educ=cut(wage1$educ,c(12,15,16),labels = FALSE)) %>%
 [Going to university is more important than ever for young people.
 But the financial returns are falling.](https://www.economist.com/news/international/21736151-financial-returns-are-falling-going-university-more-important-ever)
 
-文章中有不少效應評估問句，及造成其無法直接進行簡單迴歸估計的選擇性偏誤原因，請將所有這樣的段落貼過來、寫下它的效應評估問句及造成選擇性偏誤的原因（文章中所提的，非自我發揮）。例如：
+文章中有不少效應評估問句，及造成其無法直接進行簡單迴歸估計的選擇性偏誤原因，請將所有這樣的段落貼過來、寫下它的效應評估問句及造成選擇性偏誤的原因。例如：
 
 ```mp
 1. Policymakers regard it as obvious that sending more young people to university will boost economic growth and social mobility. ... But comparisons between countries provide little evidence of these links. Richer countries have more graduates, but that could be because there is more money to spare, and less urgency to start earning.
@@ -219,7 +219,7 @@ But the financial returns are falling.](https://www.economist.com/news/internati
 
 造成選擇性偏誤原因：「時間多錢多多」造成「越多人上大學」，「時間多錢多多」是「富有國家」常見現象，所以單純比較上大學比例高和低的國家，有可能只是在比誰的「時間多、錢多」。（這類的選擇性偏誤也稱為內生性偏誤。）
 ```
-
+```
 (1) But comparisons between countries provide little evidence of these links. Richer countries have more graduates, but that could be because there is more money to spare, and less urgency to start earning. Rich economies grow more slowly, but that is probably because they have fewer easy ways to raise productivity, not because education depresses their growth.
 許多教育多的國家經濟成長反而緩慢，如果以經濟成長看教育的影響，會有選擇偏誤的問題，它會低估教育所帶來的好處，高開發與教育的國家能夠發展的方法較少，國家已開發非常完整，經濟成長較有限。
 
@@ -229,10 +229,7 @@ graduate premium是不超過中學教育的學生與受超過中學教育學生�
 
 
 
-(2)The Economist has produced a measure of over-education by defining a graduate job as one which was staffed mostly by degree-holders in 1970. We find that just 35% of graduates work in such occupations today, down from 51% 45 years ago.
 
-效應評估問句：碩士生所佔的的工作比例來表示是否有over-education?
-造成選擇性偏誤原因：可能只是因為碩士級的職缺有些除了學力以外的限制，例如：工作經驗、第二外語、專業技術……等，所以沒辦法找到相對應的人來勝任這份工作。
 
 (3)Including dropouts when calculating the returns to going to university makes a big difference. In a new book, “The Case Against Education”, Bryan Caplan of George Mason University argues that the low graduation rates of marginal students, and the fact that, for a given level of qualification, cleverer people tend to earn more, mean that the return on a four-year degree in America ranges from 6.5% for excellent students to just 1% for the weakest ones.
 
@@ -244,19 +241,11 @@ graduate premium是不超過中學教育的學生與受超過中學教育學生�
 效應評估問句：獎學金減去補助金即等於高學歷者的社會回報？
 造成選擇性偏誤原因：有可能高學歷者在拚學歷時，並不是為了獎學金而努力讀書，有時反而是因為周遭同學競爭而促使努力，或是為了取得好的工作而努力讀書，應該包含機會成本（若不努力讀書會失去什麼）。
 
-(5)Judging by job titles alone, 26.5m workers in America—two-thirds of those with degrees—are doing work that was mostly done by non-graduates a half-century ago.
 
-效應評估問句：就業人口中，高學歷者低就於在以前為低學歷工作的比例越高，表示over-education越明顯?
-造成選擇性偏誤原因：可能只是因為時空背景的不同，而讓產業結構不同，使得低學歷工作機會增加，或是高學歷工作外移、減少，使許多高學歷分子因而從事低學歷工作
 
-(6)She would prefer school-leavers with experience, says Ms Kim, to inexperienced graduates whom she will have to train. She is not looking for swots, but people who are “engaging, good on the phone”.
 
-效應評估問句：根據經驗高學歷，沒經驗的人，不適合從事客服?
-造成選擇性偏誤原因：有可能高學歷者具有適合當客服的人格特質，但因為喜歡讀書，所以選擇繼續升學；中輟者，不具有適合的特質，但只是因為不喜歡讀書，所以輟學出社會工作，所以如果用這個條件來比較，可能會得到”不喜歡讀書的人適合當客服，喜歡讀書的人不適合” 
-
-(7)It may not boost their earnings as much as they had hoped, but without one, they will probably fare even worse.
-
-效應評估問句：學歷沒辦法達到想像中的價值，沒有學歷只會更糟糕嗎?
-造成選擇性偏誤原因：學歷沒辦法達到其應有的價值，可能與因為本身適不適合這個領域有關，不適任的人自然表現與待遇就會欠佳。更進一步說，一個不適任的人他沒有學歷、沒有專業背景，並堅持要從事該行業，其結果自然會更加更加悲慘，如此說來，人的待遇好壞不全然與學歷相關。最後的比較結果會變成”適不適合這個行業?”。
 ```
+
+
+
 
