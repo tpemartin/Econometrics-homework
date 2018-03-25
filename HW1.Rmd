@@ -1,10 +1,9 @@
-=======
 ---
 title: "作業1"
 output: html_notebook
 params:
-  name: ["陳建宇","陳彤","鄭向吾","彭楷雯"]
-  id: [710661120,710661106,710661103,710661111]
+  name: ["王小明","陳二"]
+  id: [410677029,410677044]
   group: 6
 ---
 請依狀況更改上面的name,id及group（分別代表組員姓名，學號及組號），但請勿更改下面三行的設定。  
@@ -22,12 +21,37 @@ params:
 
 如果是程式的答案，請設立如下的chunk區塊並在裡面作答
 ```{r}
-#你的程式答案
+library(dplyr)
+library(psych)
+library(haven)
+wage1 <- read_dta("http://fmwww.bc.edu/ec-p/data/wooldridge/wage1.dta")
+#2
+wage1 %>%
+  dplyr::select(wage,educ) %>%
+  psych::pairs.panels()
+wage1 %>%
+  dplyr::select(lwage,educ) %>%
+  psych::pairs.panels()
 ```
 
 如果是文字答案，請設立沒有{r}的chunk區塊並在裡面作答。
 ```
-你的文字答案。
+1. wage1的資料來自Faculty Microcomputer Resource Center，共包含了24個變數，以向量atomic的形式儲存。 
+　 其中wage代表每人平均每小時的所得
+　  　 educ代表每人的教育程度，以受教育年限表示
+　     exper代表推估的工作經驗年資
+　     tenure代表確切的工作年資
+　     nonwhite代表膚色，0為白人，1為其他膚色人種
+　     female代表性別，0為男性，1為女性
+　     married代表已婚未婚，0為未婚，1為已婚
+　     numdep代表家庭人數
+　     smsa,northcen,south,west代表居住的地點，分別代表居住於SMSA(smsa=1)、居住於美國北部、中部(northcen=1)、居住於美國南部(south=1)，與居住於美國西部(west=1)
+　     construc,ndurman,trcommpu,trade,services,profserv,profocc,clerocc,servocc代表職業，分別代表建造業(construc=1)、非耐久財製造業(ndurman=1)、翻譯出版業(trcommpu=1)、
+　     貿易業(trade=1)、加工業(service=1)、精工業(profserv=1)、教授(profocc=1)、牧師(clerocc=1)與服務業(servocc=1)
+　     lwage代表wage取Log的數值
+　     expersq代表exper的平方項
+　     tenursq代表tenure的平方項
+2. educ與wage的相關度如程式結果所示。由圖可發現，wage的資料是左偏的。為了讓資料符合對稱(鐘形分配)，故改考慮wage的變化率，即log(wage)與educ的相關度。而結果顯示，log(wage)確實較符合鐘形分配。另外，因為educ是教育年限，取變化率沒有經濟意義，且原資料的偏度接近0，故不對educ做更動。
 ```
 
 # 教育與薪資 
@@ -44,25 +68,6 @@ wage1 <- read_dta("http://fmwww.bc.edu/ec-p/data/wooldridge/wage1.dta")
 1. 請依據此[連結](http://fmwww.bc.edu/ec-p/data/wooldridge/wage1.des)說明wage1資料的來源及變數代表意義。[其中potential experience指得是推估工作經驗年資]
 
 我們想要問："教育年限增加一年對勞動薪資的影響有多少？"
-
-```
-1. wage1的資料來自Faculty Microcomputer Resource Center，共包含了24個變數，以向量atomic的形式儲存。 
-　 其中wage代表每人平均每小時的所得
-　  　 educ代表每人的教育程度，以受教育年限表示
-　     exper代表推估的工作經驗年資
-　     tenure代表確切的工作年資
-　     nonwhite代表膚色，0為白人，1為其他膚色人種
-　     female代表性別，0為男性，1為女性
-　     married代表已婚未婚，0為未婚，1為已婚
-　     numdep代表家庭人數
-　     smsa,northcen,south,west代表居住的地點，分別代表居住於SMSA(smsa=1)、居住於美國北部、中部(northcen=1)、居住於美國南部(south=1)，與居住於美國西部(west=1)
-　     construc,ndurman,trcommpu,trade,services,profserv代表職業，分別代表建造業(construc=1)、非耐久財製造業(ndurman=1)、翻譯出版業(trcommpu=1)、貿易業(trade=1)、
-　     服務業(service=1)
-　     profocc,clerocc,servocc代表
-　     lwage代表wage取Log的數值
-　     expersq代表exper的平方項
-　     tenursq代表tenure的平方項
-```
 
 2. 請使用`psych::pairs.panels()`來描述教育年限(educ)與勞動薪資(wage)間的特質。在兩者的相關度上，有沒有那個變數取對數(log)會比較好？為什麼？
 
