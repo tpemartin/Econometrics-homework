@@ -2,8 +2,8 @@
 title: "作業1"
 output: html_notebook
 params:
-  name: ["王小明","陳二"]
-  id: [410677029,410677044]
+  name: ["陳建宇","陳彤","鄭向吾","彭楷雯"]
+  id: [710661120,710661106,710661103,710661111]
   group: 6
 ---
 請依狀況更改上面的name,id及group（分別代表組員姓名，學號及組號），但請勿更改下面三行的設定。  
@@ -20,25 +20,32 @@ params:
 作業除了讓同學檢視課堂所學程式外，有些題目只會給你未教過的函數建議（純為建議，你也可以不使用），你必需使用Help或網路查尋去了解函數的正確使用；搜詢正確程式函數使用的能力，也是程式設計的基本功。
 
 如果是程式的答案，請設立如下的chunk區塊並在裡面作答
-```{r}
-library(dplyr)
-library(psych)
-library(haven)
-wage1 <- read_dta("http://fmwww.bc.edu/ec-p/data/wooldridge/wage1.dta")
-#2
-wage1 %>%
-  dplyr::select(wage,educ) %>%
-  psych::pairs.panels()
-wage1 %>%
-  dplyr::select(lwage,educ) %>%
-  psych::pairs.panels()
-```
+ ```{r}
+ #你的程式答案
+ ```
+ 
+ 如果是文字答案，請設立沒有{r}的chunk區塊並在裡面作答。
+ ```
+ 你的文字答案。
+ ```
+ 
+# 教育與薪資
 
-如果是文字答案，請設立沒有{r}的chunk區塊並在裡面作答。
-```
+一開始請執行
+```{r}
+ rm(list=ls())
+ library(dplyr)
+ library(psych)
+ library(haven)
+ wage1 <- read_dta("http://fmwww.bc.edu/ec-p/data/wooldridge/wage1.dta")
+ ```
+ 
+ 1. 請依據此[連結](http://fmwww.bc.edu/ec-p/data/wooldridge/wage1.des)說明wage1資料的來源及變數代表意義。[其中potential experience指得是推估工作經驗年資]
+ 
+``` 
 1. wage1的資料來自Faculty Microcomputer Resource Center，共包含了24個變數，以向量atomic的形式儲存。 
 　 其中wage代表每人平均每小時的所得
-　  　 educ代表每人的教育程度，以受教育年限表示
+　  　 educ代表每人的教育程度，以受教育年數表示
 　     exper代表推估的工作經驗年資
 　     tenure代表確切的工作年資
 　     nonwhite代表膚色，0為白人，1為其他膚色人種
@@ -46,26 +53,12 @@ wage1 %>%
 　     married代表已婚未婚，0為未婚，1為已婚
 　     numdep代表家庭人數
 　     smsa,northcen,south,west代表居住的地點，分別代表居住於SMSA(smsa=1)、居住於美國北部、中部(northcen=1)、居住於美國南部(south=1)，與居住於美國西部(west=1)
-　     construc,ndurman,trcommpu,trade,services,profserv,profocc,clerocc,servocc代表職業，分別代表建造業(construc=1)、非耐久財製造業(ndurman=1)、翻譯出版業(trcommpu=1)、
-　     貿易業(trade=1)、加工業(service=1)、精工業(profserv=1)、教授(profocc=1)、牧師(clerocc=1)與服務業(servocc=1)
+　     construc,ndurman,trcommpu,trade,services,profserv,profocc,clerocc,servocc代表職業，分別代表建造業(construc=1)、非耐久財製造業(ndurman=1)、翻譯出版業(trcommpu=1)、貿易業(trade=1)、加工業(service=1)、精工業(profserv=1)、教授(profocc=1)、牧師(clerocc=1) 與
+　     服務業(servocc=1)
 　     lwage代表wage取Log的數值
 　     expersq代表exper的平方項
 　     tenursq代表tenure的平方項
-2. educ與wage的相關度如程式結果所示。由圖可發現，wage的資料是左偏的。為了讓資料符合對稱(鐘形分配)，故改考慮wage的變化率，即log(wage)與educ的相關度。而結果顯示，log(wage)確實較符合鐘形分配。另外，因為educ是教育年限，取變化率沒有經濟意義，且原資料的偏度接近0，故不對educ做更動。
 ```
-
-# 教育與薪資 
-
-一開始請執行
-```{r}
-rm(list=ls())
-library(dplyr)
-library(psych)
-library(haven)
-wage1 <- read_dta("http://fmwww.bc.edu/ec-p/data/wooldridge/wage1.dta")
-```
-
-1. 請依據此[連結](http://fmwww.bc.edu/ec-p/data/wooldridge/wage1.des)說明wage1資料的來源及變數代表意義。[其中potential experience指得是推估工作經驗年資]
 
 我們想要問："教育年限增加一年對勞動薪資的影響有多少？"
 
@@ -74,6 +67,9 @@ wage1 <- read_dta("http://fmwww.bc.edu/ec-p/data/wooldridge/wage1.dta")
 ```{r}
 wage1 %>% select(educ,wage) %>%
   pairs.panels()
+```
+```
+educ與wage的相關度如程式結果所示。由圖可發現，wage的資料是左偏的。為了讓資料符合對稱(鐘形分配)，故改考慮wage的變化率，即log(wage)與educ的相關度。而結果顯示，log(wage)確實較符合鐘形分配。另外，因為educ是教育年限，取變化率沒有經濟意義，且原資料的偏度接近0，故不對educ做更動。
 ```
 
 3. 請使用OLS估計以下的迴歸模型：
@@ -95,9 +91,8 @@ wage1 %>%
 ```
 
 ```
-我們認為會造成選擇性偏誤的兩個變數，分別為exper和smsa。exper是因為，通常能有愈多工作年數的人，可能受過的教育年數愈短，這群人可能很早就出社會工作，並且從事較低報酬的工作。smsa為較繁榮的人口集中區域，可能住在smsa的人，就是有比較好的薪資，和教育年數沒有關係，也同時更有誘因接受更常年數的教育。所以比較教育年數的差距，可能只是在比較exper的差(是否從事低報酬工作)，或是是否住在smsa。
+我們認為會造成選擇性偏誤的兩個變數，分別為exper和smsa。exper是因為，通常能有愈多工作年數的人，可能受過的教育年數愈短，這群人可能很早就出社會工作，並且從事較低報酬的工作。smsa為較繁榮的人口集中區域，可能住在smsa的人，就是有比較好的薪資，和教育年數沒有關係，也同時更有誘因接受更長年數的教育。所以比較教育年數的差距，可能只是在比較exper的差(是否從事低報酬工作)，或是是否住在smsa。
 接著比對所有的變數與educ的相關係數可知，exper、numdep、smsa、profserv、profocc都和educ有超過20%的相關性，其中又以exper的-29.9%、smsa的22.4%和profocc的49.6%為最高。此題是討論，有哪些變數可能造成選擇性偏誤，在這個問題下，職業是否為教授邏輯上並非造成選擇性偏誤的原因，表面上是在比教育的效果，其實是在比職業是否為教授邏輯上很奇怪，這裡相關係數很高，只是剛好因為職業是教授，通常教育年數的較長。
-
 ```
 
 5. 延續上題，請完成對應複迴歸模型的估計。
