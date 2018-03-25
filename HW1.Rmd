@@ -3,7 +3,7 @@ title: "作業1"
 output: html_notebook
 params:
   name: ["陳宜榛","周緬緬","林云方"]
-  id: [710661123,710661124]
+  id: [710661113,710661123,710661124]
   group: 9
 ---
 請依狀況更改上面的name,id及group（分別代表組員姓名，學號及組號），但請勿更改下面三行的設定。  
@@ -87,49 +87,65 @@ wage1 %>%
 ```{r}
 #對wage取對數
 wage1 %>% 
-  select(educ,lwage) %>%
+  select(lwage,educ) %>%
   pairs.panels()
 ```
-```
-從都沒有取log的圖中可以看出，對工資變數取log會比較好。
-因為
 
 ```
+從都沒有取對數的圖中可以看出，對工資變數取對數會比較好。
+因為工資變數為一個右偏分布，當我們對它取對數後，才能使其表現出更好的分布特性。
+```
+
 3. 請使用OLS估計以下的迴歸模型：
 $$log(wage)=\beta_0+\beta_1 educ+\epsilon$$
+
 ```{r}
 wage1 %>% 
-  lm(log(wage)~educ,data=.)
+  lm(lwage~educ,data=.)
 ```
+
 4. 從資料裡選出兩個可能造成$\beta_1$OLS估計值帶有選擇性偏誤的變數，請說明理由並加以適當敍述統計量佐證。
 
-簡單迴歸可能有選擇偏誤問題，因為：
-profocc：
-如果是亮領職業的話，可能會比其他行業的立足點來的高，又立足點越高，其觀測值educ也越高，從數據相關性計算出educ與profocc兩者的相關係數有0.5967681，的確有明顯的顯著。進而可以推估，如果是亮領職業人士的話，其wage可能比較高，經計算得出兩者的相關係數為0.4417699，的確此變數影響educ與wage，故單純比較wage與educ的關係，有可能只是在反映「是否為亮領職業人士」
+```
+我們認為smsa及profocc這兩個變數可能使上述估計值帶有選擇性偏誤
 
 smsa：
 如果住在美國大都會地區的話，可能本身的生活水準與機能都不錯，立足點相對其他地區的人來得高，當立足點越高，其educ也越高，從計算的數值得出educ與smsa兩者的相關係數0.2243087，的確顯著。所以如果是住在美國大都會地區的就業者，wage有可能越高，經由計算兩者的相關係數有0.1778852，的確有影響性，故單純比較wage與educ，有可能只是在反映「是否住在美國大都會地區」生活機能的好壞。
+
+profocc：
+如果是亮領職業的話，可能會比其他行業的立足點來的高，又立足點越高，其觀測值educ也越高，從數據相關性計算出educ與profocc兩者的相關係數有0.5967681，的確有明顯的顯著。進而可以推估，如果是亮領職業人士的話，其wage可能比較高，經計算得出兩者的相關係數為0.4417699，的確此變數影響educ與wage，故單純比較wage與educ的關係，有可能只是在反映「是否為亮領職業人士」
+```
+
 ```{r}
-#【建立方程式】
+#建立方程式
 is_numeric<-function(x) all(is.numeric(x))
 cor_wage<-function(x) cor(x,wage1$wage)
-
-#【計算數與wage的相關係數】
-wage1 %>%  
-  select_if(is_numeric) %>%
-  summarise_all(cor_wage) %>%
-  kable()
-
-#【計算數與educ的相關係數】
 cor_educ<-function(x) cor(x,wage1$educ)
+
+#計算數值變數與wage的相關係數
 wage1 %>%  
   select_if(is_numeric) %>%
-  summarise_all(cor_educ) %>%
-  kable()
+  summarise_all(cor_wage)
+
+#計算數值變數與educ的相關係數
+wage1 %>%  
+  select_if(is_numeric) %>%
+  summarise_all(cor_educ)
 ```
+
 5. 延續上題，請完成對應複迴歸模型的估計。
 
+```{r}
+wage1 %>% 
+  lm(lwage~educ+smsa+profocc,data=.)
+```
+
+
 6. 大致說來，教育年限12年表示高中畢業，大學畢業會有16年的教育，請問介於12年以上-16年以下的教育年限代表什麼？
+
+```
+教育年限為12-16，可能是高中讀的比一般人久，或是大學讀到一半放棄的情況
+```
 
 7. 取出教育年限介於12-16年（含上下限）的資料，分別計算以下三群教育年限勞動者的平均薪資：12年，13-15年，16年。
 [hint: dplyr::filter(), dplyr::group_by(), dplyr::summarise(), cut()]
