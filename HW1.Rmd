@@ -65,12 +65,40 @@ wage1 <- read_dta("http://fmwww.bc.edu/ec-p/data/wooldridge/wage1.dta")
 
 2. 請使用`psych::pairs.panels()`來描述教育年限(educ)與勞動薪資(wage)間的特質。在兩者的相關度上，有沒有那個變數取對數(log)會比較好？為什麼？
 
+```{r}
+wage1 %>% select(educ,wage) %>%
+  pairs.panels()
+```
+
 3. 請使用OLS估計以下的迴歸模型：
 $$log(wage)=\beta_0+\beta_1 educ+\epsilon$$
 
+```{r}
+wage1 %>% lm(log(wage)~educ,data=.)
+```
+
 4. 從資料裡選出兩個可能造成$\beta_1$OLS估計值帶有選擇性偏誤的變數，請說明理由並加以適當敍述統計量佐證。
 
+```{r}
+is_numeric<-function(x) all(is.numeric(x))
+corr<-function(x) cor(x,wage1$educ)
+
+wage1 %>%  
+  select_if(is_numeric) %>%
+  summarise_all(corr)
+```
+
+```
+我們認為會造成選擇性偏誤的兩個變數，分別為exper和smsa。exper是因為，通常能有愈多工作年數的人，可能受過的教育年數愈短，這群人可能很早就出社會工作，並且從事較低報酬的工作。smsa為較繁榮的人口集中區域，可能住在smsa的人，就是有比較好的薪資，和教育年數沒有關係，也同時更有誘因接受更常年數的教育。所以比較教育年數的差距，可能只是在比較exper的差(是否從事低報酬工作)，或是是否住在smsa。
+接著比對所有的變數與educ的相關係數可知，exper、numdep、smsa、profserv、profocc都和educ有超過20%的相關性，其中又以exper的-29.9%、smsa的22.4%和profocc的49.6%為最高。此題是討論，有哪些變數可能造成選擇性偏誤，在這個問題下，職業是否為教授邏輯上並非造成選擇性偏誤的原因，表面上是在比教育的效果，其實是在比職業是否為教授邏輯上很奇怪，這裡相關係數很高，只是剛好因為職業是教授，通常教育年數的較長。
+
+```
+
 5. 延續上題，請完成對應複迴歸模型的估計。
+
+```{r}
+wage1 %>% lm(log(wage)~educ+exper+smsa,data=.)
+```
 
 6. 大致說來，教育年限12年表示高中畢業，大學畢業會有16年的教育，請問介於12年以上-16年以下的教育年限代表什麼？
 
