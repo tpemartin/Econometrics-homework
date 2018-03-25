@@ -210,7 +210,7 @@ group_by(educ=cut(wage1$educ,c(12,15,16),labels = FALSE)) %>%
 [Going to university is more important than ever for young people.
 But the financial returns are falling.](https://www.economist.com/news/international/21736151-financial-returns-are-falling-going-university-more-important-ever)
 
-文章中有不少效應評估問句，及造成其無法直接進行簡單迴歸估計的選擇性偏誤原因，請將所有這樣的段落貼過來、寫下它的效應評估問句及造成選擇性偏誤的原因。例如：
+文章中有不少效應評估問句，及造成其無法直接進行簡單迴歸估計的選擇性偏誤原因，請將所有這樣的段落貼過來、寫下它的效應評估問句及造成選擇性偏誤的原因（文章中所提的，非自我發揮）。例如：
 
 ```mp
 1. Policymakers regard it as obvious that sending more young people to university will boost economic growth and social mobility. ... But comparisons between countries provide little evidence of these links. Richer countries have more graduates, but that could be because there is more money to spare, and less urgency to start earning.
@@ -219,7 +219,7 @@ But the financial returns are falling.](https://www.economist.com/news/internati
 
 造成選擇性偏誤原因：「時間多錢多多」造成「越多人上大學」，「時間多錢多多」是「富有國家」常見現象，所以單純比較上大學比例高和低的國家，有可能只是在比誰的「時間多、錢多」。（這類的選擇性偏誤也稱為內生性偏誤。）
 ```
-```
+
 (1) But comparisons between countries provide little evidence of these links. Richer countries have more graduates, but that could be because there is more money to spare, and less urgency to start earning. Rich economies grow more slowly, but that is probably because they have fewer easy ways to raise productivity, not because education depresses their growth.
 許多教育多的國家經濟成長反而緩慢，如果以經濟成長看教育的影響，會有選擇偏誤的問題，它會低估教育所帶來的好處，高開發與教育的國家能夠發展的方法較少，國家已開發非常完整，經濟成長較有限。
 
@@ -259,7 +259,4 @@ graduate premium是不超過中學教育的學生與受超過中學教育學生�
 效應評估問句：學歷沒辦法達到想像中的價值，沒有學歷只會更糟糕嗎?
 造成選擇性偏誤原因：學歷沒辦法達到其應有的價值，可能與因為本身適不適合這個領域有關，不適任的人自然表現與待遇就會欠佳。更進一步說，一個不適任的人他沒有學歷、沒有專業背景，並堅持要從事該行業，其結果自然會更加更加悲慘，如此說來，人的待遇好壞不全然與學歷相關。最後的比較結果會變成”適不適合這個行業?”。
 ```
-
-
-
 
