@@ -1,37 +1,37 @@
 ---
-title: "ä½œæ¥­1"
+title: "§@·~1"
 output: html_notebook
 params:
-  name: ["é™³å»ºå®‡","é™³å½¤","é„­å‘å¾","å½­æ¥·é›¯"]
+  name: ["³¯«Ø¦t","³¯§Í","¾G¦V§^","´^·¢¶²"]
   id: [710661120,710661106,710661103,710661111]
   group: 6
 ---
-è«‹ä¾ç‹€æ³æ›´æ”¹ä¸Šé¢çš„name,idåŠgroupï¼ˆåˆ†åˆ¥ä»£è¡¨çµ„å“¡å§“åï¼Œå­¸è™ŸåŠçµ„è™Ÿï¼‰ï¼Œä½†è«‹å‹¿æ›´æ”¹ä¸‹é¢ä¸‰è¡Œçš„è¨­å®šã€‚  
+½Ğ¨Ìª¬ªp§ó§ï¤W­±ªºname,id¤Îgroup¡]¤À§O¥Nªí²Õ­û©m¦W¡A¾Ç¸¹¤Î²Õ¸¹¡^¡A¦ı½Ğ¤Å§ó§ï¤U­±¤T¦æªº³]©w¡C  
 
 ***
-å§“åï¼š`r params$name`  
-å­¸è™Ÿï¼š`r params$id`  
-çµ„è™Ÿï¼š`r params$group`  
+©m¦W¡G`r params$name`  
+¾Ç¸¹¡G`r params$id`  
+²Õ¸¹¡G`r params$group`  
 
 ***
 
-è«‹ç›´æ¥åœ¨æœ¬æª”æ¡ˆä½œç­”ï¼Œå­˜æª”æ™‚ä¹Ÿç„¡éœ€å¦å­˜æ–°æª”åã€‚äº¤ä½œæ¥­æ™‚ï¼Œåªç”±ã€Œçµ„é•·ã€é€å‡ºpull requestçµ¦æˆ‘ã€‚
+½Ğª½±µ¦b¥»ÀÉ®×§@µª¡A¦sÀÉ®É¤]µL»İ¥t¦s·sÀÉ¦W¡C¥æ§@·~®É¡A¥u¥Ñ¡u²Õªø¡v°e¥Xpull requestµ¹§Ú¡C
 
-ä½œæ¥­é™¤äº†è®“åŒå­¸æª¢è¦–èª²å ‚æ‰€å­¸ç¨‹å¼å¤–ï¼Œæœ‰äº›é¡Œç›®åªæœƒçµ¦ä½ æœªæ•™éçš„å‡½æ•¸å»ºè­°ï¼ˆç´”ç‚ºå»ºè­°ï¼Œä½ ä¹Ÿå¯ä»¥ä¸ä½¿ç”¨ï¼‰ï¼Œä½ å¿…éœ€ä½¿ç”¨Helpæˆ–ç¶²è·¯æŸ¥å°‹å»äº†è§£å‡½æ•¸çš„æ­£ç¢ºä½¿ç”¨ï¼›æœè©¢æ­£ç¢ºç¨‹å¼å‡½æ•¸ä½¿ç”¨çš„èƒ½åŠ›ï¼Œä¹Ÿæ˜¯ç¨‹å¼è¨­è¨ˆçš„åŸºæœ¬åŠŸã€‚
+§@·~°£¤FÅı¦P¾ÇÀËµø½Ò°ó©Ò¾Çµ{¦¡¥~¡A¦³¨ÇÃD¥Ø¥u·|µ¹§A¥¼±Ğ¹Lªº¨ç¼Æ«ØÄ³¡]¯Â¬°«ØÄ³¡A§A¤]¥i¥H¤£¨Ï¥Î¡^¡A§A¥²»İ¨Ï¥ÎHelp©Îºô¸ô¬d´M¥h¤F¸Ñ¨ç¼Æªº¥¿½T¨Ï¥Î¡F·j¸ß¥¿½Tµ{¦¡¨ç¼Æ¨Ï¥Îªº¯à¤O¡A¤]¬Oµ{¦¡³]­pªº°ò¥»¥\¡C
 
-å¦‚æœæ˜¯ç¨‹å¼çš„ç­”æ¡ˆï¼Œè«‹è¨­ç«‹å¦‚ä¸‹çš„chunkå€å¡Šä¸¦åœ¨è£¡é¢ä½œç­”
+¦pªG¬Oµ{¦¡ªºµª®×¡A½Ğ³]¥ß¦p¤Uªºchunk°Ï¶ô¨Ã¦b¸Ì­±§@µª
  ```{r}
- #ä½ çš„ç¨‹å¼ç­”æ¡ˆ
+ #§Aªºµ{¦¡µª®×
  ```
  
- å¦‚æœæ˜¯æ–‡å­—ç­”æ¡ˆï¼Œè«‹è¨­ç«‹æ²’æœ‰{r}çš„chunkå€å¡Šä¸¦åœ¨è£¡é¢ä½œç­”ã€‚
+ ¦pªG¬O¤å¦rµª®×¡A½Ğ³]¥ß¨S¦³{r}ªºchunk°Ï¶ô¨Ã¦b¸Ì­±§@µª¡C
  ```
- ä½ çš„æ–‡å­—ç­”æ¡ˆã€‚
+ §Aªº¤å¦rµª®×¡C
  ```
  
-# æ•™è‚²èˆ‡è–ªè³‡
+# ±Ğ¨|»PÁ~¸ê
 
-ä¸€é–‹å§‹è«‹åŸ·è¡Œ
+¤@¶}©l½Ğ°õ¦æ
 ```{r}
  rm(list=ls())
  library(dplyr)
@@ -40,48 +40,54 @@ params:
  wage1 <- read_dta("http://fmwww.bc.edu/ec-p/data/wooldridge/wage1.dta")
 ```
  
- 1. è«‹ä¾æ“šæ­¤[é€£çµ](http://fmwww.bc.edu/ec-p/data/wooldridge/wage1.des)èªªæ˜wage1è³‡æ–™çš„ä¾†æºåŠè®Šæ•¸ä»£è¡¨æ„ç¾©ã€‚[å…¶ä¸­potential experienceæŒ‡å¾—æ˜¯æ¨ä¼°å·¥ä½œç¶“é©—å¹´è³‡]
+ 1. ½Ğ¨Ì¾Ú¦¹[³sµ²](http://fmwww.bc.edu/ec-p/data/wooldridge/wage1.des)»¡©úwage1¸ê®Æªº¨Ó·½¤ÎÅÜ¼Æ¥Nªí·N¸q¡C[¨ä¤¤potential experience«ü±o¬O±À¦ô¤u§@¸gÅç¦~¸ê]
  
 ``` 
-1. wage1çš„è³‡æ–™ä¾†è‡ªFaculty Microcomputer Resource Centerï¼Œå…±åŒ…å«äº†24å€‹è®Šæ•¸ï¼Œä»¥å‘é‡atomicçš„å½¢å¼å„²å­˜ã€‚ 
-ã€€ å…¶ä¸­wageä»£è¡¨æ¯äººå¹³å‡æ¯å°æ™‚çš„æ‰€å¾—
-ã€€  ã€€ educä»£è¡¨æ¯äººçš„æ•™è‚²ç¨‹åº¦ï¼Œä»¥å—æ•™è‚²å¹´é™è¡¨ç¤º
-ã€€     experä»£è¡¨æ¨ä¼°çš„å·¥ä½œç¶“é©—å¹´è³‡
-ã€€     tenureä»£è¡¨ç¢ºåˆ‡çš„å·¥ä½œå¹´è³‡
-ã€€     nonwhiteä»£è¡¨è†šè‰²ï¼Œ0ç‚ºç™½äººï¼Œ1ç‚ºå…¶ä»–è†šè‰²äººç¨®
-ã€€     femaleä»£è¡¨æ€§åˆ¥ï¼Œ0ç‚ºç”·æ€§ï¼Œ1ç‚ºå¥³æ€§
-ã€€     marriedä»£è¡¨å·²å©šæœªå©šï¼Œ0ç‚ºæœªå©šï¼Œ1ç‚ºå·²å©š
-ã€€     numdepä»£è¡¨å®¶åº­äººæ•¸
-ã€€     smsa,northcen,south,westä»£è¡¨å±…ä½çš„åœ°é»ï¼Œåˆ†åˆ¥ä»£è¡¨
- Â  Â  Â  Â  å±…ä½æ–¼SMSA(smsa=1)ã€å±…ä½æ–¼ç¾åœ‹åŒ—éƒ¨ã€ä¸­éƒ¨(northcen=1)ã€å±…ä½æ–¼ç¾åœ‹å—éƒ¨(south=1)ï¼Œèˆ‡å±…ä½æ–¼ç¾åœ‹è¥¿éƒ¨(west=1)
-ã€€     construc,ndurman,trcommpu,trade,services,profserv,profocc,clerocc,servoccä»£è¡¨è·æ¥­ï¼Œåˆ†åˆ¥ä»£è¡¨
- Â  Â  Â  Â  å»ºé€ æ¥­(construc=1)ã€éè€ä¹…è²¡è£½é€ æ¥­(ndurman=1)ã€ç¿»è­¯å‡ºç‰ˆæ¥­(trcommpu=1)ã€è²¿æ˜“æ¥­(trade=1)ã€åŠ å·¥æ¥­(service=1)ã€
- Â  Â  Â  Â  ç²¾å·¥æ¥­(profserv=1)ã€æ•™æˆ(profocc=1)ã€ç‰§å¸«(clerocc=1) èˆ‡æœå‹™æ¥­(servocc=1)
-ã€€     lwageä»£è¡¨wageå–Logçš„æ•¸å€¼
-ã€€     expersqä»£è¡¨experçš„å¹³æ–¹é …
-ã€€     tenursqä»£è¡¨tenureçš„å¹³æ–¹é …
+1. wage1ªº¸ê®Æ¨Ó¦ÛFaculty Microcomputer Resource Center¡A¦@¥]§t¤F24­ÓÅÜ¼Æ¡A¥H¦V¶qatomicªº§Î¦¡Àx¦s¡C 
+¡@ ¨ä¤¤wage¥Nªí¨C¤H¥­§¡¨C¤p®Éªº©Ò±o
+¡@  ¡@ educ¥Nªí¨C¤Hªº±Ğ¨|µ{«×¡A¥H¨ü±Ğ¨|¦~­­ªí¥Ü
+¡@     exper¥Nªí±À¦ôªº¤u§@¸gÅç¦~¸ê
+¡@     tenure¥Nªí½T¤Áªº¤u§@¦~¸ê
+¡@     nonwhite¥Nªí½§¦â¡A0¬°¥Õ¤H¡A1¬°¨ä¥L½§¦â¤HºØ
+¡@     female¥Nªí©Ê§O¡A0¬°¨k©Ê¡A1¬°¤k©Ê
+¡@     married¥Nªí¤w±B¥¼±B¡A0¬°¥¼±B¡A1¬°¤w±B
+¡@     numdep¥Nªí®a®x¤H¼Æ
+¡@     smsa,northcen,south,west¥Nªí©~¦íªº¦aÂI¡A¤À§O¥Nªí
+ ?? ?? ?? ?? ©~¦í©óSMSA(smsa=1)¡B©~¦í©ó¬ü°ê¥_³¡¡B¤¤³¡(northcen=1)¡B©~¦í©ó¬ü°ê«n³¡(south=1)¡A»P©~¦í©ó¬ü°ê¦è³¡(west=1)
+¡@     construc,ndurman,trcommpu,trade,services,profserv,profocc,clerocc,servocc¥NªíÂ¾·~¡A¤À§O¥Nªí
+ ?? ?? ?? ?? «Ø³y·~(construc=1)¡B«D­@¤[°]»s³y·~(ndurman=1)¡BÂ½Ä¶¥Xª©·~(trcommpu=1)¡B¶T©ö·~(trade=1)¡B¥[¤u·~(service=1)¡B
+ ?? ?? ?? ?? ºë¤u·~(profserv=1)¡B±Ğ±Â(profocc=1)¡Bªª®v(clerocc=1) »PªA°È·~(servocc=1)
+¡@     lwage¥Nªíwage¨úLogªº¼Æ­È
+¡@     expersq¥Nªíexperªº¥­¤è¶µ
+¡@     tenursq¥Nªítenureªº¥­¤è¶µ
 ```
 
-æˆ‘å€‘æƒ³è¦å•ï¼š"æ•™è‚²å¹´é™å¢åŠ ä¸€å¹´å°å‹å‹•è–ªè³‡çš„å½±éŸ¿æœ‰å¤šå°‘ï¼Ÿ"
+§Ú­Ì·Q­n°İ¡G"±Ğ¨|¦~­­¼W¥[¤@¦~¹ï³Ò°ÊÁ~¸êªº¼vÅT¦³¦h¤Ö¡H"
 
-2. è«‹ä½¿ç”¨`psych::pairs.panels()`ä¾†æè¿°æ•™è‚²å¹´é™(educ)èˆ‡å‹å‹•è–ªè³‡(wage)é–“çš„ç‰¹è³ªã€‚åœ¨å…©è€…çš„ç›¸é—œåº¦ä¸Šï¼Œæœ‰æ²’æœ‰é‚£å€‹è®Šæ•¸å–å°æ•¸(log)æœƒæ¯”è¼ƒå¥½ï¼Ÿç‚ºä»€éº¼ï¼Ÿ
+2. ½Ğ¨Ï¥Î`psych::pairs.panels()`¨Ó´y­z±Ğ¨|¦~­­(educ)»P³Ò°ÊÁ~¸ê(wage)¶¡ªº¯S½è¡C¦b¨âªÌªº¬ÛÃö«×¤W¡A¦³¨S¦³¨º­ÓÅÜ¼Æ¨ú¹ï¼Æ(log)·|¤ñ¸û¦n¡H¬°¤°»ò¡H
 
 ```{r}
 wage1 %>% select(educ,wage) %>%
   pairs.panels()
 ```
-```
-educèˆ‡wageçš„ç›¸é—œåº¦å¦‚ç¨‹å¼çµæœæ‰€ç¤ºã€‚ç”±åœ–å¯ç™¼ç¾ï¼Œwageçš„è³‡æ–™æ˜¯å·¦åçš„ã€‚ç‚ºäº†è®“è³‡æ–™ç¬¦åˆå°ç¨±(é˜å½¢åˆ†é…)ï¼Œæ”¹è€ƒæ…®wageçš„è®ŠåŒ–ç‡ï¼Œå³log(wage)èˆ‡educçš„ç›¸é—œåº¦ã€‚è€Œçµæœé¡¯ç¤ºï¼Œlog(wage)ç¢ºå¯¦è¼ƒç¬¦åˆé˜å½¢åˆ†é…ã€‚å¦å¤–ï¼Œå› ç‚ºeducæ˜¯æ•™è‚²å¹´é™ï¼Œå–è®ŠåŒ–ç‡æ²’æœ‰ç¶“æ¿Ÿæ„ç¾©ï¼Œä¸”åŸè³‡æ–™çš„ååº¦æ¥è¿‘0ï¼Œæ•…ä¸å°educåšæ›´å‹•ã€‚
+
+```{r}
+wage1 %>% select(educ,lwage) %>%
+  pairs.panels()
 ```
 
-3. è«‹ä½¿ç”¨OLSä¼°è¨ˆä»¥ä¸‹çš„è¿´æ­¸æ¨¡å‹ï¼š
+```
+educ»Pwageªº¬ÛÃö«×¦pµ{¦¡µ²ªG©Ò¥Ü¡C¥Ñ¹Ï¥iµo²{¡Awageªº¸ê®Æ¬O¥ª°¾ªº¡C¬°¤FÅı¸ê®Æ²Å¦X¹ïºÙ(ÄÁ§Î¤À°t)¡A§ï¦Ò¼{wageªºÅÜ¤Æ²v¡A§Ylog(wage)»Peducªº¬ÛÃö«×¡C¦Óµ²ªGÅã¥Ü¡Alog(wage)½T¹ê¸û²Å¦XÄÁ§Î¤À°t¡C¥t¥~¡A¦]¬°educ¬O±Ğ¨|¦~­­¡A¨úÅÜ¤Æ²v¨S¦³¸gÀÙ·N¸q¡A¥B­ì¸ê®Æªº°¾«×±µªñ0¡A¬G¤£¹ïeduc°µ§ó°Ê¡C
+```
+
+3. ½Ğ¨Ï¥ÎOLS¦ô­p¥H¤Uªº°jÂk¼Ò«¬¡G
 $$log(wage)=\beta_0+\beta_1 educ+\epsilon$$
 
 ```{r}
 wage1 %>% lm(log(wage)~educ,data=.)
 ```
 
-4. å¾è³‡æ–™è£¡é¸å‡ºå…©å€‹å¯èƒ½é€ æˆ$\beta_1$OLSä¼°è¨ˆå€¼å¸¶æœ‰é¸æ“‡æ€§åèª¤çš„è®Šæ•¸ï¼Œè«‹èªªæ˜ç†ç”±ä¸¦åŠ ä»¥é©ç•¶æ•˜è¿°çµ±è¨ˆé‡ä½è­‰ã€‚
+4. ±q¸ê®Æ¸Ì¿ï¥X¨â­Ó¥i¯à³y¦¨$\beta_1$OLS¦ô­p­È±a¦³¿ï¾Ü©Ê°¾»~ªºÅÜ¼Æ¡A½Ğ»¡©ú²z¥Ñ¨Ã¥[¥H¾A·í±Ô­z²Î­p¶q¦õÃÒ¡C
 
 ```{r}
 is_numeric<-function(x) all(is.numeric(x))
@@ -93,23 +99,23 @@ wage1 %>%
 ```
 
 ```
-æˆ‘å€‘èªç‚ºæœƒé€ æˆé¸æ“‡æ€§åèª¤çš„å…©å€‹è®Šæ•¸ï¼Œåˆ†åˆ¥ç‚ºexperå’Œsmsaã€‚experæ˜¯å› ç‚ºï¼Œé€šå¸¸å·¥ä½œå¹´æ•¸æ„ˆé•·çš„äººï¼Œå—æ•™è‚²å¹´æ•¸æ„ˆçŸ­ï¼›é€™ç¾¤äººå¯èƒ½å¾ˆæ—©å‡ºç¤¾æœƒï¼Œä¸”å¾äº‹ä½å ±é…¬å·¥ä½œã€‚smsaç‚ºè¼ƒç¹æ¦®å€åŸŸï¼Œå¯èƒ½ä½åœ¨smsaçš„äººå°±æ˜¯æœ‰æ¯”è¼ƒå¥½çš„è–ªè³‡ï¼ŒåŒæ™‚æ›´æœ‰èª˜å› æ¥å—é•·å¹´æ•¸æ•™è‚²ã€‚æ‰€ä»¥æ¯”è¼ƒæ•™è‚²å¹´æ•¸çš„å·®è·ï¼Œå¯èƒ½åªæ˜¯åœ¨æ¯”è¼ƒexperçš„å·®(æ˜¯å¦å¾äº‹ä½å ±é…¬å·¥ä½œ)ï¼Œæˆ–æ˜¯æ˜¯å¦ä½åœ¨smsa (ç¹æ¦®åœ°å€)ã€‚
-æ¯”å°æ‰€æœ‰è®Šæ•¸èˆ‡educçš„ç›¸é—œä¿‚æ•¸å¯çŸ¥ï¼Œexperã€numdepã€smsaã€profservã€profoccéƒ½å’Œeducæœ‰è¶…é20%çš„ç›¸é—œæ€§ï¼Œå…¶ä¸­åˆä»¥experçš„-29.9%ã€smsaçš„22.4%å’Œprofoccçš„49.6%ç‚ºæœ€é«˜ã€‚æ­¤é¡Œæ˜¯è¨è«–å“ªäº›è®Šæ•¸å¯èƒ½é€ æˆé¸æ“‡æ€§åèª¤ï¼Œåœ¨æ­¤å•é¡Œä¸­ï¼Œè·æ¥­æ˜¯å¦ç‚ºæ•™æˆæ‡‰éé€ æˆé¸æ“‡æ€§åèª¤çš„åŸå› ï¼ˆç›®çš„æ˜¯æ¯”è¼ƒæ•™è‚²æ•ˆæœï¼Œå› æ­¤åªæ¢è¨è·æ¥­æ˜¯å¦ç‚ºæ•™æˆé‚è¼¯å¾ˆæ€ªï¼‰ï¼›profoccèˆ‡educç›¸é—œä¿‚æ•¸é«˜ï¼Œä¹Ÿè¨±æ˜¯å› æ•™æˆé€šå¸¸è¦æ±‚å­¸æ­·ï¼Œæ•™è‚²å¹´æ•¸è¼ƒé•·ã€‚
+§Ú­Ì»{¬°³y¦¨¿ï¾Ü©Ê°¾»~ªºÅÜ¼Æ¡A¤À§O¬°exper©Msmsa¡Cexper¬O¦]¬°¡A³q±`¡]µ¹©w¤@©w¦~¬ö¤U¡^¤u§@¦~¼Æ·Uªøªº¤H¡A¨ü±Ğ¨|¦~¼Æ·Uµu¡F³o¸s¤H¥i¯à«Ü¦­¥XªÀ·|¡A¥B±q¨Æ§C³ø¹S¤u§@¡C¦Ósmsa¬°¸ûÁcºa°Ï°ì¡A©Î³\¯à¦ísmsaªº¤HÁ~¸ê¥»¨Ó´N¤ñ¸û°ª¡A¦P®É¦³»¤¦]±µ¨üªø¦~¼Æ±Ğ¨|¡C©Ò¥H¤ñ¸û±Ğ¨|¦~¼Æªº®t¶Z¡A¥i¯à¥u¬O¦b¤ñexperªº®t(¬O§_±q¨Æ§C³ø¹S¤u§@)©Î¬O¤£¬O¦í¦bsmsa (Ácºa¦a°Ï)¡C
+¤ñ¹ï©Ò¦³ÅÜ¼Æ»Peducªº¬ÛÃö«Y¼Æ¥iª¾¡Aexper¡Bnumdep¡Bsmsa¡Bprofserv¡Bprofocc©Meducªº¬ÛÃö©Ê³£¶W¹L20%¡A¨ä¤¤¤S¥Hexperªº-29.9%¡Bsmsaªº22.4%©Mprofoccªº49.6%¬°³Ì°ª¡C¦¹ÃD¬O°Q½×­ş¨ÇÅÜ¼Æ¥i¯à³y¦¨¿ï¾Ü©Ê°¾»~¡A¦b¦¹°İÃD¤¤¡AÂ¾·~¬O§_¬°±Ğ±ÂÀ³«D³y¦¨¿ï¾Ü©Ê°¾»~ªº­ì¦]¡]¥Øªº¬O¤ñ¸û±Ğ¨|®ÄªG¡A¦]¦¹¥u±´°QÂ¾·~¬O§_¬°±Ğ±ÂÅŞ¿è«Ü©Ç¡^¡Fprofocc»Peduc¬ÛÃö«Y¼Æ°ª¡A¤]³\¬O¦]±Ğ±Â³q±`­n¨D¾Ç¾ú¡A±Ğ¨|¦~¼Æ¸ûªø¡C
 ```
 
-5. å»¶çºŒä¸Šé¡Œï¼Œè«‹å®Œæˆå°æ‡‰è¤‡è¿´æ­¸æ¨¡å‹çš„ä¼°è¨ˆã€‚
+5. ©µÄò¤WÃD¡A½Ğ§¹¦¨¹ïÀ³½Æ°jÂk¼Ò«¬ªº¦ô­p¡C
 
 ```{r}
 wage1 %>% lm(log(wage)~educ+exper+smsa,data=.)
 ```
 
-6. å¤§è‡´èªªä¾†ï¼Œæ•™è‚²å¹´é™12å¹´è¡¨ç¤ºé«˜ä¸­ç•¢æ¥­ï¼Œå¤§å­¸ç•¢æ¥­æœƒæœ‰16å¹´çš„æ•™è‚²ï¼Œè«‹å•ä»‹æ–¼12å¹´ä»¥ä¸Š-16å¹´ä»¥ä¸‹çš„æ•™è‚²å¹´é™ä»£è¡¨ä»€éº¼ï¼Ÿ
+6. ¤j­P»¡¨Ó¡A±Ğ¨|¦~­­12¦~ªí¥Ü°ª¤¤²¦·~¡A¤j¾Ç²¦·~·|¦³16¦~ªº±Ğ¨|¡A½Ğ°İ¤¶©ó12¦~¥H¤W-16¦~¥H¤Uªº±Ğ¨|¦~­­¥Nªí¤°»ò¡H
 
 ```
-é«˜ä¸­ç•¢æ¥­å¾ŒçŸ­æœŸé€²ä¿®ã€å¤§å­¸åœ¨å­¸ç”Ÿæˆ–å¤§å­¸è‚„æ¥­
+°ª¤¤²¦·~«áµu´Á¶i­×¡B¤j¾Ç¦b¾Ç¥Í©Î¤j¾Ç¸w·~
 ```
 
-7. å–å‡ºæ•™è‚²å¹´é™ä»‹æ–¼12-16å¹´ï¼ˆå«ä¸Šä¸‹é™ï¼‰çš„è³‡æ–™ï¼Œåˆ†åˆ¥è¨ˆç®—ä»¥ä¸‹ä¸‰ç¾¤æ•™è‚²å¹´é™å‹å‹•è€…çš„å¹³å‡è–ªè³‡ï¼š12å¹´ï¼Œ13-15å¹´ï¼Œ16å¹´ã€‚
+7. ¨ú¥X±Ğ¨|¦~­­¤¶©ó12-16¦~¡]§t¤W¤U­­¡^ªº¸ê®Æ¡A¤À§O­pºâ¥H¤U¤T¸s±Ğ¨|¦~­­³Ò°ÊªÌªº¥­§¡Á~¸ê¡G12¦~¡A13-15¦~¡A16¦~¡C
 [hint: dplyr::filter(), dplyr::group_by(), dplyr::summarise(), cut()]
 
 ```{r}
@@ -121,15 +127,15 @@ dplyr::filter(wage1,16>= educ&educ>=12) %>%
 ```{r}
 dplyr::filter(wage1,16>= educ&educ>=12) %>%
   group_by(educ=cut(educ,breaks = c(12,13,16),include.lowest=F,right= F)) %>%
-  #å°‡educåˆ†éš”å€é–“[12,13),[13,16),å…¶é¤˜ç‚ºeduc=16
+  #±Neduc¤À¹j°Ï¶¡[12,13),[13,16),¨ä¾l¬°educ=16
   summarise(mean_wage=mean(wage))
 ```
 
-8. åœ¨ä¸‹ä¸€éƒ¨ä»½çš„æ–‡ç« é–±è®€ç·´ç¿’è£¡ï¼Œæ–‡ç« æåˆ°: 
+8. ¦b¤U¤@³¡¥÷ªº¤å³¹¾\Åª½m²ß¸Ì¡A¤å³¹´£¨ì: 
 
 > In a comparison of the earnings of people with degrees and people without them, those who start university but do not finish are lumped in with those who never started, even though they, too, will have paid fees and missed out on earnings. Their numbers are considerable. 
 
-åœ¨å•é¡Œ7ä¸­æˆ‘å€‘è¨ˆç®—äº†ä¸‰ç¾¤äººçš„å¹³å‡è–ªè³‡ã€‚è«‹å•è‹¥è¦é¿å…æ–‡ç« æ‰€æè¿°çš„å•é¡Œï¼Œä½ æœƒå¦‚ä½•è¨ˆç®—ä¸€ä½é«˜ä¸­ç”Ÿè‹¥é¸æ“‡ä¸Šå¤§å­¸ä»–æœƒå¾—åˆ°çš„é æœŸè–ªè³‡å¥½è™•ã€‚[åªä½¿ç”¨å•é¡Œ7çš„æ•¸å­—åŠä¸‰ç¾¤äººäººæ•¸]
+¦b°İÃD7¤¤§Ú­Ì­pºâ¤F¤T¸s¤Hªº¥­§¡Á~¸ê¡C½Ğ°İ­Y­nÁ×§K¤å³¹©Ò´y­zªº°İÃD¡A§A·|¦p¦ó­pºâ¤@¦ì°ª¤¤¥Í­Y¿ï¾Ü¤W¤j¾Ç¥L·|±o¨ìªº¹w´ÁÁ~¸ê¦n³B¡C[¥u¨Ï¥Î°İÃD7ªº¼Æ¦r¤Î¤T¸s¤H¤H¼Æ]
 
 ```{r}
 dplyr::filter(wage1,16>= educ&educ>=12) %>%
@@ -147,45 +153,45 @@ university_wage
 difference_sch
 ```
 ```
-difference_schå€¼è¡¨æ˜ï¼Œè€ƒé‡äº†æœªå®Œæˆå¤§å­¸å­¸æ¥­çš„å­¸ç”Ÿçš„å¹³å‡è–ªè³‡å¾Œï¼Œè®€å¤§å­¸çš„é æœŸè–ªè³‡å¥½è™•æ˜é¡¯ä¸‹é™
+difference_sch­Èªí©ú¡A¦Ò¶q¤F¥¼§¹¦¨¤j¾Ç¾Ç·~ªº¾Ç¥Íªº¥­§¡Á~¸ê«á¡AÅª¤j¾Çªº¹w´ÁÁ~¸ê¦n³B©úÅã¤U­°
 ```
 
-# æ–‡ç« é–±è®€
+# ¤å³¹¾\Åª
 [Going to university is more important than ever for young people.
 But the financial returns are falling.](https://www.economist.com/news/international/21736151-financial-returns-are-falling-going-university-more-important-ever)
 
-æ–‡ç« ä¸­æœ‰ä¸å°‘æ•ˆæ‡‰è©•ä¼°å•å¥ï¼ŒåŠé€ æˆå…¶ç„¡æ³•ç›´æ¥é€²è¡Œç°¡å–®è¿´æ­¸ä¼°è¨ˆçš„é¸æ“‡æ€§åèª¤åŸå› ï¼Œè«‹å°‡æ‰€æœ‰é€™æ¨£çš„æ®µè½è²¼éä¾†ã€å¯«ä¸‹å®ƒçš„æ•ˆæ‡‰è©•ä¼°å•å¥åŠé€ æˆé¸æ“‡æ€§åèª¤çš„åŸå› ï¼ˆæ–‡ç« ä¸­æ‰€æçš„ï¼Œéè‡ªæˆ‘ç™¼æ®ï¼‰ã€‚ä¾‹å¦‚ï¼š
+¤å³¹¤¤¦³¤£¤Ö®ÄÀ³µû¦ô°İ¥y¡A¤Î³y¦¨¨äµLªkª½±µ¶i¦æÂ²³æ°jÂk¦ô­pªº¿ï¾Ü©Ê°¾»~­ì¦]¡A½Ğ±N©Ò¦³³o¼Ëªº¬q¸¨¶K¹L¨Ó¡B¼g¤U¥¦ªº®ÄÀ³µû¦ô°İ¥y¤Î³y¦¨¿ï¾Ü©Ê°¾»~ªº­ì¦]¡]¤å³¹¤¤©Ò´£ªº¡A«D¦Û§Úµo´§¡^¡C¨Ò¦p¡G
 
 ```
 1. Policymakers regard it as obvious that sending more young people to university will boost economic growth and social mobility. ... But comparisons between countries provide little evidence of these links. Richer countries have more graduates, but that could be because there is more money to spare, and less urgency to start earning.
 
-æ•ˆæ‡‰è©•ä¼°å•å¥ï¼šè¶Šå¤šäººä¸Šå¤§å­¸è©²åœ‹ç¶“æ¿Ÿè¡¨ç¾è¶Šå¥½ï¼Ÿ
+®ÄÀ³µû¦ô°İ¥y¡G¶V¦h¤H¤W¤j¾Ç¸Ó°ê¸gÀÙªí²{¶V¦n¡H
 
-é€ æˆé¸æ“‡æ€§åèª¤åŸå› ï¼šã€Œæ™‚é–“å¤šéŒ¢å¤šå¤šã€é€ æˆã€Œè¶Šå¤šäººä¸Šå¤§å­¸ã€ï¼Œã€Œæ™‚é–“å¤šéŒ¢å¤šå¤šã€æ˜¯ã€Œå¯Œæœ‰åœ‹å®¶ã€å¸¸è¦‹ç¾è±¡ï¼Œæ‰€ä»¥å–®ç´”æ¯”è¼ƒä¸Šå¤§å­¸æ¯”ä¾‹é«˜å’Œä½çš„åœ‹å®¶ï¼Œæœ‰å¯èƒ½åªæ˜¯åœ¨æ¯”èª°çš„ã€Œæ™‚é–“å¤šã€éŒ¢å¤šã€ã€‚ï¼ˆé€™é¡çš„é¸æ“‡æ€§åèª¤ä¹Ÿç¨±ç‚ºå…§ç”Ÿæ€§åèª¤ã€‚ï¼‰
+³y¦¨¿ï¾Ü©Ê°¾»~­ì¦]¡G¡u®É¶¡¦h¿ú¦h¦h¡v³y¦¨¡u¶V¦h¤H¤W¤j¾Ç¡v¡A¡u®É¶¡¦h¿ú¦h¦h¡v¬O¡u´I¦³°ê®a¡v±`¨£²{¶H¡A©Ò¥H³æ¯Â¤ñ¸û¤W¤j¾Ç¤ñ¨Ò°ª©M§Cªº°ê®a¡A¦³¥i¯à¥u¬O¦b¤ñ½Öªº¡u®É¶¡¦h¡B¿ú¦h¡v¡C¡]³oÃşªº¿ï¾Ü©Ê°¾»~¤]ºÙ¬°¤º¥Í©Ê°¾»~¡C¡^
 ```
 
 ```
 2.The World Bank has produced estimates of this return for 139 economies. It varies from place to place, but is substantial everywhere. ... Most students know that a degree in mathematics or finance is likely to be more lucrative than one in music or social work.What fewer realise is that the graduate premium overstates the financial benefit of embarking on a degree if their school grades barely qualify them for entry, no matter what they study.
 
-æ•ˆæ‡‰è©•ä¼°å•å¥ï¼šå—å¤§å­¸æ•™è‚²æ˜¯å¦è®“å­¸ç”Ÿç²å¾—è¶³å¤ å¤šçš„æ•™è‚²å ±é…¬ï¼Ÿ
+®ÄÀ³µû¦ô°İ¥y¡G¨ü¤j¾Ç±Ğ¨|¬O§_Åı¾Ç¥ÍÀò±o¨¬°÷¦hªº±Ğ¨|³ø¹S¡H
 
-é€ æˆé¸æ“‡æ€§åèª¤åŸå› ï¼šåœ¨å¤§å­¸æ•™è‚²ä¸­ï¼Œå­¸ç”Ÿçš„ç§‘ç³»é¸æ“‡å¾ˆå¯èƒ½å½±éŸ¿åˆ°å…¶è–ªè³‡ï¼Œä¾‹å¦‚ï¼Œæ•¸å­¸æˆ–è²¡é‡‘ç›¸é—œç§‘ç³»åœ¨å°±æ¥­å¸‚å ´ä¸Šæ¯”éŸ³æ¨‚æˆ–ç¤¾æœƒå·¥ä½œæ›´æœ‰åˆ©å¯åœ–ï¼›æ­¤å¤–ï¼Œå¦‚æœä¸è€ƒé‡å¤§å­¸æ˜¯å¦æœ‰æ˜ç¢ºçš„éŒ„å–æ¨™æº–ï¼ˆæ„å‘³è‘—å¤§å­¸æ•™è‚²å­˜åœ¨å“è³ªå·®ç•°ï¼‰ï¼Œä¹Ÿå¯èƒ½é«˜ä¼°å¤§å­¸å¸¶ä¾†çš„æ•™è‚²å ±é…¬ã€‚å…©è€…éƒ½çŠ¯äº†é¸æ“‡æ€§åèª¤ã€‚
+³y¦¨¿ï¾Ü©Ê°¾»~­ì¦]¡G¦b¤j¾Ç±Ğ¨|¤¤¡A¾Ç¥Íªº¬ì¨t¿ï¾Ü«Ü¥i¯à¼vÅT¨ì¨äÁ~¸ê¡A¨Ò¦p¡A¼Æ¾Ç©Î°]ª÷¬ÛÃö¬ì¨t¦b´N·~¥«³õ¤W¤ñ­µ¼Ö©ÎªÀ·|¤u§@§ó¦³§Q¥i¹Ï¡F¦¹¥~¡A¦pªG¤£¦Ò¶q¤j¾Ç¬O§_¦³©ú½Tªº¿ı¨ú¼Ğ·Ç¡]·N¨ıµÛ¤j¾Ç±Ğ¨|¦s¦b«~½è®t²§¡^¡A¤]¥i¯à°ª¦ô¤j¾Ç±a¨Óªº±Ğ¨|³ø¹S¡C¨âªÌ³£¥Ç¤F¿ï¾Ü©Ê°¾»~¡C
 ```
 
 ```
-3.In a new book, â€œThe Case Against Educationâ€, Bryan Caplan of George Mason University argues that the low graduation rates of marginal students, and the fact that, for a given level of qualification, cleverer people tend to earn more, mean that the return on a four-year degree in America ranges from 6.5% for excellent students to just 1% for the weakest ones. ...Part of that difference is because the weakest students attend the worst universities, where drop-out rates are highest. 
+3.In a new book, ¡§The Case Against Education¡¨, Bryan Caplan of George Mason University argues that the low graduation rates of marginal students, and the fact that, for a given level of qualification, cleverer people tend to earn more, mean that the return on a four-year degree in America ranges from 6.5% for excellent students to just 1% for the weakest ones. ...Part of that difference is because the weakest students attend the worst universities, where drop-out rates are highest. 
 
-æ•ˆæ‡‰è©•ä¼°å•å¥ï¼šå—å¤§å­¸æ•™è‚²æ˜¯å¦è®“å­¸ç”Ÿç²å¾—è¶³å¤ å¤šçš„æ•™è‚²å ±é…¬ï¼Ÿ
+®ÄÀ³µû¦ô°İ¥y¡G¨ü¤j¾Ç±Ğ¨|¬O§_Åı¾Ç¥ÍÀò±o¨¬°÷¦hªº±Ğ¨|³ø¹S¡H
 
-é€ æˆé¸æ“‡æ€§åèª¤åŸå› ï¼šè°æ˜çš„äººå¾€å¾€èƒ½åŠ›è¼ƒå¼·ï¼Œé€éå¤§å­¸æ•™è‚²ç²å¾—çš„æ•™è‚²å ±é…¬ä¹Ÿé«˜ï¼›èƒ½åŠ›æ¯”è¼ƒå·®çš„äººå¯èƒ½é€£å­¸æ¥­ä¹Ÿç„¡æ³•å®Œæˆã€‚æ‰€ä»¥ï¼Œå¦‚æœæœªæ§åˆ¶èƒ½åŠ›å·®ç•°ï¼Œæ‹¿æ•™è‚²å¹´é™çš„å·®ç•°æ¨æ–·æ•™è‚²å ±é…¬ï¼Œä»¥è¨±åªæ˜¯åœ¨æ¯”è¼ƒã€Œè°æ˜äººæ¯”èƒ½åŠ›è¼ƒå·®çš„äººå¤šè³ºå¤šå°‘ã€ã€‚
+³y¦¨¿ï¾Ü©Ê°¾»~­ì¦]¡GÁo©úªº¤H©¹©¹¯à¤O¸û±j¡A³z¹L¤j¾Ç±Ğ¨|Àò±oªº±Ğ¨|³ø¹S¤]°ª¡F¯à¤O¤ñ¸û®tªº¤H¥i¯à³s¾Ç·~¤]µLªk§¹¦¨¡C©Ò¥H¡A¦pªG¥¼±±¨î¯à¤O®t²§¡A®³±Ğ¨|¦~­­ªº®t²§±ÀÂ_±Ğ¨|³ø¹S¡A¥H³\¥u¬O¦b¤ñ¸û¡uÁo©ú¤H¤ñ¯à¤O¸û®tªº¤H¦hÁÈ¦h¤Ö¡v¡C
 ```
 
 ```
-4.Overstating the graduate premium is not the only reason policymakers overestimate the wider benefits of increasing the share of young people who go to university. ... But degrees are in part a way to access a â€œpositional goodâ€ that benefits one person at the expense of another. Part of the premium comes from gaining an advantage over others in the competition for a good job, rather than the acquisition of productivity-boosting skills and knowledge. A complete calculation would include not just gains to graduates, but losses to non-graduates.
+4.Overstating the graduate premium is not the only reason policymakers overestimate the wider benefits of increasing the share of young people who go to university. ... But degrees are in part a way to access a ¡§positional good¡¨ that benefits one person at the expense of another. Part of the premium comes from gaining an advantage over others in the competition for a good job, rather than the acquisition of productivity-boosting skills and knowledge. A complete calculation would include not just gains to graduates, but losses to non-graduates.
 
-æ•ˆæ‡‰è©•ä¼°å•å¥ï¼šæ‹¿ç”Ÿç”¢åŠ›å·®ç•°è©®é‡‹å¤§å­¸çš„æ•™è‚²å ±é…¬å¯èƒ½æœ‰å•é¡Œï¼Ÿ
+®ÄÀ³µû¦ô°İ¥y¡G®³¥Í²£¤O®t²§¸àÄÀ¤j¾Çªº±Ğ¨|³ø¹S¥i¯à¦³°İÃD¡H
 
-é€ æˆé¸æ“‡æ€§åèª¤åŸå› ï¼šå¤§å­¸æ•™è‚²ä¹Ÿè¨±æ²’æœ‰ä¿ƒæˆç”Ÿç”¢åŠ›æå‡ï¼Œè€Œæ˜¯ä¸€ç¨®ã€Œä½ç½®è²¡ã€ï¼Œå¹«åŠ©æ‡‰å¾µè€…åœ¨ç«¶çˆ­å·¥ä½œæ™‚ç²å¾—å„ªå‹¢ï¼Œé€²è€Œç²å¾—é«˜å ±é…¬ã€‚å› æ­¤ï¼Œæ‹¿å¤§å­¸ç•¢æ¥­ç”Ÿçš„å ±é…¬æ¸›å»éå¤§å­¸ç•¢æ¥­ç”Ÿçš„å ±é…¬ï¼Œå¯èƒ½åªä»£è¡¨å¤§å­¸çš„ä¿¡è™Ÿæ•ˆæœï¼Œä¸¦éå…©ç¾¤äººçš„ç”Ÿç”¢åŠ›å·®ç•°ã€‚
+³y¦¨¿ï¾Ü©Ê°¾»~­ì¦]¡G¤j¾Ç±Ğ¨|¤]³\¨S¦³«P¦¨¥Í²£¤O´£¤É¡A¦Ó¬O¤@ºØ¡u¦ì¸m°]¡v¡AÀ°§UÀ³¼xªÌ¦bÄvª§¤u§@®ÉÀò±oÀu¶Õ¡A¶i¦ÓÀò±o°ª³ø¹S¡C¦]¦¹¡A®³¤j¾Ç²¦·~¥Íªº³ø¹S´î¥h«D¤j¾Ç²¦·~¥Íªº³ø¹S¡A¥i¯à¥u¥Nªí¤j¾Çªº«H¸¹®ÄªG¡A¨Ã«D¨â¸s¤Hªº¥Í²£¤O®t²§¡C
 ```
 
 ```
