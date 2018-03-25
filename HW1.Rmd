@@ -173,19 +173,9 @@ smsa和numdep的p-value有三顆星，表示拒絕虛無假說，顯著影響到
 7. 取出教育年限介於12-16年（含上下限）的資料，分別計算以下三群教育年限勞動者的平均薪資：12年，13-15年，16年。
 [hint: dplyr::filter(), dplyr::group_by(), dplyr::summarise(), cut()]
 ```{r}
-filter(wage1,educ==12)%>%
-  group_by(educ=)%>%
-  summarise(wage=mean(wage))
-```
-```{r}
-filter(wage1,educ>12,educ<16)%>%
-  group_by(educ=)%>%
-  summarise(wage=mean(wage))
-```
-```{r}
-filter(wage1,educ==16)%>%
-  group_by(educ=)%>%
-  summarise(wage=mean(wage))
+filter(wage1) %>%
+group_by(educ=cut(wage1$educ,c(11,12,15,16),labels = FALSE)) %>%
+  summarise(meanwage=mean(wage))
 ```
 ```
 由上得知，
@@ -200,23 +190,20 @@ filter(wage1,educ==16)%>%
 在問題k7中我們計算了三群人的平均薪資。請問若要避免文章所描述的問題，你會如何計算一位高中生若選擇上大學他會得到的預期薪資好處。[只使用問題7的數字及三群人人數]
 ```
 先計算人數
-```
 ```{r}
-filter(wage1,educ>12,educ<16)
-```
-```{r}
-filter(wage1,educ>=16)
-```
+filter(wage1) %>%
+group_by(educ=cut(wage1$educ,c(12,15,16),labels = FALSE)) %>%
+  summarise(n=n())
 ```
 得大學輟學者人數為113人
-得大學畢業人數為99人
+得大學畢業人數為68人
 再計算選擇讀大學的期望薪資
 ```
 ```{r}
-(99/(99+113)*8.04)+(113/(99+113)*6.03)
+(68/(68+113)*8.04)+(113/(68+113)*6.03)
 ```
 ```
-6.97>5.37，高中畢業生選擇上大學較好。
+6.79>5.37，高中畢業生選擇上大學較好。
 ```
 
 # 文章閱讀
