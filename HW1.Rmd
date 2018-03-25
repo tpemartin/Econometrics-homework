@@ -102,8 +102,25 @@ wage1 %>% lm(log(wage)~educ+exper+smsa,data=.)
 
 6. 大致說來，教育年限12年表示高中畢業，大學畢業會有16年的教育，請問介於12年以上-16年以下的教育年限代表什麼？
 
+```
+高中畢業後短期進修、大學在學生或大學肄業
+```
+
 7. 取出教育年限介於12-16年（含上下限）的資料，分別計算以下三群教育年限勞動者的平均薪資：12年，13-15年，16年。
 [hint: dplyr::filter(), dplyr::group_by(), dplyr::summarise(), cut()]
+
+```{r}
+dplyr::filter(wage1,16>= educ&educ>=12) %>%
+  group_by(educ) %>%
+  summarise(mean_wage=mean(wage))
+```
+
+```{r}
+dplyr::filter(wage1,16>= educ&educ>=12) %>%
+  group_by(educ=cut(educ,breaks = c(12,13,16),include.lowest=F,right= F)) %>%
+  #將educ分隔區間[12,13),[13,16),其餘為educ=16
+  summarise(mean_wage=mean(wage))
+```
 
 8. 在下一部份的文章閱讀練習裡，文章提到: 
 
