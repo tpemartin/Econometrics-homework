@@ -53,10 +53,10 @@ params:
 　     married代表已婚未婚，0為未婚，1為已婚
 　     numdep代表家庭人數
 　     smsa,northcen,south,west代表居住的地點，分別代表
- ?? ?? ?? ?? 居住於SMSA(smsa=1)、居住於美國北部、中部(northcen=1)、居住於美國南部(south=1)，與居住於美國西部(west=1)
+       居住於SMSA(smsa=1)、居住於美國北部、中部(northcen=1)、居住於美國南部(south=1)，與居住於美國西部(west=1)
 　     construc,ndurman,trcommpu,trade,services,profserv,profocc,clerocc,servocc代表職業，分別代表
- ?? ?? ?? ?? 建造業(construc=1)、非耐久財製造業(ndurman=1)、翻譯出版業(trcommpu=1)、貿易業(trade=1)、加工業(service=1)、
- ?? ?? ?? ?? 精工業(profserv=1)、教授(profocc=1)、牧師(clerocc=1) 與服務業(servocc=1)
+       建造業(construc=1)、非耐久財製造業(ndurman=1)、翻譯出版業(trcommpu=1)、貿易業(trade=1)、加工業(service=1)、
+       精工業(profserv=1)、教授(profocc=1)、牧師(clerocc=1) 與服務業(servocc=1)
 　     lwage代表wage取Log的數值
 　     expersq代表exper的平方項
 　     tenursq代表tenure的平方項
