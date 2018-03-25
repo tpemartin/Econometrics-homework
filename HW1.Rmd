@@ -190,10 +190,12 @@ group_by(educ=cut(wage1$educ,c(11,12,15,16),labels = FALSE)) %>%
 在問題k7中我們計算了三群人的平均薪資。請問若要避免文章所描述的問題，你會如何計算一位高中生若選擇上大學他會得到的預期薪資好處。[只使用問題7的數字及三群人人數]
 ```
 先計算人數
+```
 ```{r}
 filter(wage1) %>%
 group_by(educ=cut(wage1$educ,c(12,15,16),labels = FALSE)) %>%
   summarise(n=n())
+```
 ```
 得大學輟學者人數為113人
 得大學畢業人數為68人
@@ -221,15 +223,12 @@ But the financial returns are falling.](https://www.economist.com/news/internati
 ```
 ```
 (1) But comparisons between countries provide little evidence of these links. Richer countries have more graduates, but that could be because there is more money to spare, and less urgency to start earning. Rich economies grow more slowly, but that is probably because they have fewer easy ways to raise productivity, not because education depresses their growth.
+
 許多教育多的國家經濟成長反而緩慢，如果以經濟成長看教育的影響，會有選擇偏誤的問題，它會低估教育所帶來的好處，高開發與教育的國家能夠發展的方法較少，國家已開發非常完整，經濟成長較有限。
 
-2. The Economist’s analysis of the data finds that returns are linked to the share of people with degrees, and the range of earnings. Returns in Britain and Germany are similar to those in America. In sub-Saharan Africa, where degrees are scarce and the least-educated workers earn little, they are around 21% a year. In Scandinavia, where wages are less unequal and two-fifths of adults have degrees, they are around 9%.
-But as a guide to school-leavers considering going to university—and to policymakers considering expanding aess to higher education—the graduate premium is flawed. Even within countries the average conceals wide differences. Most students know that a degree in mathematics or finance is likely to be more lucrative than one in music or social work. What fewer realize  is that the graduate premium overstates the financial benefit of embarking on a degree if their school grades barely qualify them for entry, no matter what they study.
+(2) The Economist’s analysis of the data finds that returns are linked to the share of people with degrees, and the range of earnings. Returns in Britain and Germany are similar to those in America. In sub-Saharan Africa, where degrees are scarce and the least-educated workers earn little, they are around 21% a year. In Scandinavia, where wages are less unequal and two-fifths of adults have degrees, they are around 9%.But as a guide to school-leavers considering going to university—and to policymakers considering expanding aess to higher education—the graduate premium is flawed. Even within countries the average conceals wide differences. Most students know that a degree in mathematics or finance is likely to be more lucrative than one in music or social work. What fewer realize  is that the graduate premium overstates the financial benefit of embarking on a degree if their school grades barely qualify them for entry, no matter what they study.
+
 graduate premium是不超過中學教育的學生與受超過中學教育學生的平均報酬差異，其中包括減去學費和因為就學而減少的工作收入，可以知道數學或金融相關科系比音樂或社會這類的工作更容易賺錢，所以會導致graduate premium出現選擇偏誤的問題，graduate premium會誇大獲得學位的經濟利益。
-
-
-
-
 
 (3)Including dropouts when calculating the returns to going to university makes a big difference. In a new book, “The Case Against Education”, Bryan Caplan of George Mason University argues that the low graduation rates of marginal students, and the fact that, for a given level of qualification, cleverer people tend to earn more, mean that the return on a four-year degree in America ranges from 6.5% for excellent students to just 1% for the weakest ones.
 
@@ -240,10 +239,6 @@ graduate premium是不超過中學教育的學生與受超過中學教育學生�
 
 效應評估問句：獎學金減去補助金即等於高學歷者的社會回報？
 造成選擇性偏誤原因：有可能高學歷者在拚學歷時，並不是為了獎學金而努力讀書，有時反而是因為周遭同學競爭而促使努力，或是為了取得好的工作而努力讀書，應該包含機會成本（若不努力讀書會失去什麼）。
-
-
-
-
 ```
 
 
