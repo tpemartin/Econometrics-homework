@@ -2,9 +2,9 @@
 title: "作業1"
 output: html_notebook
 params:
-  name: ["王小明","陳二"]
-  id: [410677029,410677044]
-  group: 8
+  name: ["林云方"]
+  id: [710661123]
+  group: 9
 ---
 請依狀況更改上面的name,id及group（分別代表組員姓名，學號及組號），但請勿更改下面三行的設定。  
 
@@ -41,22 +41,102 @@ wage1 <- read_dta("http://fmwww.bc.edu/ec-p/data/wooldridge/wage1.dta")
 ```
 
 1. 請依據此[連結](http://fmwww.bc.edu/ec-p/data/wooldridge/wage1.des)說明wage1資料的來源及變數代表意義。[其中potential experience指得是推估工作經驗年資]
-
+```
+資料的來源：
+http://fmwww.bc.edu/ec-p/data/wooldridge/datasets.list.html
+變數代表意義：
+wage=平均每小時收入
+educ=教育年數
+exper=推估工作經驗年資
+tenure＝和現任雇主的年數
+nonwhite＝1如果為非白人            
+female＝1如果為女性                  
+married＝1如果已婚                  
+numdep＝家庭人數                   
+smsa＝1如果住在SMSA                    
+northcen＝1如果住在美國中北部                
+south＝1如果住在南部地區                   
+west＝1如果住在西部地區                     
+construc＝1如果在建設產業上班                 
+ndurman＝1如果在非耐久財製造產業                
+trcommpu ＝1如果在交通運輸，通訊，大眾ut
+trade＝1如果是批發貨零售                    
+services＝1如果是服務業的產業                 
+profserv＝1如果是專業服務產業                 
+profocc＝1如果是教授職業                  
+clerocc＝1如果是文書職業                  
+servocc＝1如果是做服務的工作        
+lwage＝工資取log                    
+expersq＝推估工作經驗年資平方
+tenursq＝和現任雇主的年數平方               
+```
 我們想要問："教育年限增加一年對勞動薪資的影響有多少？"
 
 2. 請使用`psych::pairs.panels()`來描述教育年限(educ)與勞動薪資(wage)間的特質。在兩者的相關度上，有沒有那個變數取對數(log)會比較好？為什麼？
+```{r}
+library('psych')
+wage1 %>% 
+  dplyr::select(wage,educ) %>%
+  psych::pairs.panels()
+```
+
+```{r}
+library('psych')
+wage1 %>%
+  dplyr::select(wage,educ) %>%
+  mutate(logw=log(wage)) %>%
+  dplyr::select(logw,educ) %>%
+  psych::pairs.panels()
+```
+```
+因為educ的數值中有0，因此educ不能取log，
+已將wage取log，但效果不彰，因為相關係數只上升0.02，而且資料還是很集中，因此沒有哪個變數取log會比較好。
+```
 
 3. 請使用OLS估計以下的迴歸模型：
 $$log(wage)=\beta_0+\beta_1 educ+\epsilon$$
+```{r}
+wage1 %>%
+  lm(log(wage)~educ,data=.) %>%
+  summary()
+```
 
 4. 從資料裡選出兩個可能造成$\beta_1$OLS估計值帶有選擇性偏誤的變數，請說明理由並加以適當敍述統計量佐證。
-
+```{r}
+is_numeric<-function(x) all(is.numeric(x))
+cor_educ<-function(x) cor(x,wage1$educ)
+wage1 %>%
+  select_if(is_numeric) %>%
+  summarise_all(cor_educ) %>%
+  kable()
+```
+```
+expersq是推估工作經驗年資平方，它和教育是反向關係，他們的相關係數是-0.3312559，因此若漏了此變數，可能會高估教育的報酬。其實該複回歸模型應該加入exper變數，才能正確捕捉工資和工作經驗的關係。
+profocc是教授職業，因為是教授，所以教授的教育年數就高，所以比較的有可能不是教育年數，而是職業是不是教授。職業是教授和教育年數的相關係數是0.4967681。
+```
 5. 延續上題，請完成對應複迴歸模型的估計。
+```{r}
+wage1 %>%
+  lm(log(wage)~educ+profocc+expersq,data=.) %>%
+  summary()
+```
 
 6. 大致說來，教育年限12年表示高中畢業，大學畢業會有16年的教育，請問介於12年以上-16年以下的教育年限代表什麼？
-
+```
+大學肄業
+```
 7. 取出教育年限介於12-16年（含上下限）的資料，分別計算以下三群教育年限勞動者的平均薪資：12年，13-15年，16年。
 [hint: dplyr::filter(), dplyr::group_by(), dplyr::summarise(), cut()]
+```{r}
+wage1 %>%
+dplyr::filter(12<=educ&educ<=16)->wage1216
+wage1216%>%
+dplyr::group_by(cut(wage1216,b=c(12,13,15,16)))%>%
+summarise(avg=mean(wage))
+
+
+
+```
 
 8. 在下一部份的文章閱讀練習裡，文章提到: 
 
@@ -76,4 +156,7 @@ But the financial returns are falling.](https://www.economist.com/news/internati
 效應評估問句：越多人上大學該國經濟表現越好？
 
 造成選擇性偏誤原因：「時間多錢多多」造成「越多人上大學」，「時間多錢多多」是「富有國家」常見現象，所以單純比較上大學比例高和低的國家，有可能只是在比誰的「時間多、錢多」。（這類的選擇性偏誤也稱為內生性偏誤。）
+```
+效應評估問句:報酬率與擁有學位的人和收入範圍有關
+造成選擇性偏誤原因：
 ```
