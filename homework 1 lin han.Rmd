@@ -43,6 +43,7 @@ rm(list=ls())
 library(dplyr)
 library(psych)
 library(haven)
+wage1<- read_dta("http://fmwww.bc.edu/ec-p/data/wooldridge/wage1.dta")
 ```
 
 1. 請依據此[連結](http://fmwww.bc.edu/ec-p/data/wooldridge/wage1.des)說明wage1資料的來源及變數代表意義。[其中potential experience指得是推估工作經驗年資]
@@ -50,13 +51,13 @@ library(haven)
 ```
   1. wage                     average hourly earnings(平均每小時收入)
   2. educ                     years of education(幾年的教育)
-  3. exper                    years potential experience(推估工作經驗年資)
-  4. tenure                   years with current employer(現任雇主共同任期)
-  5. nonwhite                 =1 if nonwhite(非白人)
-  6. female                   =1 if female(女性)
-  7. married                  =1 if married(已婚，結婚= 1)
+  3. exper                    years potential experience(推估工作年資)
+  4. tenure                   years with current employer(與現任雇主共同工作時間)
+  5. nonwhite                 =1 if nonwhite(非白人=1)
+  6. female                   =1 if female(女性=1)
+  7. married                  =1 if married(已婚= 1)
   8. numdep                   number of dependents(家屬人數)
-  9. smsa                     =1 if live in SMSA(住在Standard Metropolitan Statistical Area(美國行政區劃單位) 大城市及其郊區中，smsa = 1)
+  9. smsa                     =1 if live in SMSA(住在Standard Metropolitan Statistical Area(美國行政區劃單位) 大城市及其郊區，smsa = 1)
  10. northcen                 =1 if live in north central U.S(住在美國北部)
  11. south                    =1 if live in southern region(住在南部地區)
  12. west                     =1 if live in western region(住在西部地區)
@@ -71,13 +72,14 @@ library(haven)
  21. servocc                  =1 if in service occupation(如果是服務生)
  22. lwage                    log(wage)(log(平均時薪))
  23. expersq                  exper^2(推估工作經驗年資^2)
- 24. tenursq                  tenure^2(現任雇主共同任期^2)
+ 24. tenursq                  tenure^2(與現任雇主共同工作時間^2)
 ```
 
 我們想要問："教育年限增加一年對勞動薪資的影響有多少？"
 ```{r}
 wage1 %>%
   lm(formula = wage ~ educ)
+# 54%
 ```
 
 2. 請使用`psych::pairs.panels()`來描述教育年限(educ)與勞動薪資(wage)間的特質。在兩者的相關度上，有沒有那個變數取對數(log)會比較好？為什麼？
@@ -105,12 +107,10 @@ wage1 %>%
 4. 從資料裡選出兩個可能造成$\beta_1$OLS估計值帶有選擇性偏誤的變數，請說明理由並加以適當敍述統計量佐證。
 
 ```
-
   3. exper                    years potential experience(推估工作經驗年資)
-=======
-  5. nonwhite                 =1 if nonwhite(非白人)
-
+  #因其與educ的相關係數有-0.2995418，相比其他為高
   9. smsa                     =1 if live in SMSA(住在Standard Metropolitan Statistical Area(美國行政區劃單位) 大城市及其郊區中，smsa = 1)
+  #因其與smsa的相關係數有0.2243087，相比其他為高
   
 ```
 ```{r}
@@ -124,35 +124,22 @@ wage1 %>%
 ```
 ```{r}
 library(psych)
-
 wage1 %>%
   select(educ	,exper,smsa) %>%
-=======
-wage1 %>% 
-  select(educ	,nonwhite,smsa) %>%
-
   pairs.panels()
 ```  
 
 5. 延續上題，請完成對應複迴歸模型的估計。
 ```{r}
 wage1 %>%
-
   lm(lwage~educ+exper+smsa,data=.)%>%
-=======
-  lm(educ~nonwhite+smsa,data=.)%>%
-
   summary
 ```
 ```{r}
 wage1 %>% 
   lm(lwage~educ,data=.) -> model_1
 wage1 %>%
-
   lm(lwage~educ+exper+smsa,data=.) -> model_2
-=======
-  lm(lwage~educ+nonwhite+smsa,data=.) -> model_2
-
 
 library(sandwich)
 library(lmtest)
@@ -178,14 +165,12 @@ stargazer(model_1, model_2,
 [hint: dplyr::filter(), dplyr::group_by(), dplyr::summarise(), cut()]
 
 ```{r}
-uvv<-wage1 %>% arrange(educ,wage) %>% 
-  filter(educ>= 12,educ<= 16) %>%
+ab<-wage1 %>% 
   select(educ,wage) 
-uvv$educ_cut<-cut(uvv$educ,breaks = c(11,12,15,16))
-uvvv <- uvv %>%
+ab$educ_cut<-cut(ab$educ,breaks = c(0,11,12,15,16,Inf))
+abc <- ab %>%
   group_by(educ_cut) %>% summarise(size_educ = n(), sumwage = sum(wage) , meanwage = mean(wage))
-uvvv %>% mutate("theer parties name"=c("12","13-15","16")) -> uvvv
-uvvv
+abc
 ```
 
 8. 在下一部份的文章閱讀練習裡，文章提到: 
