@@ -106,16 +106,6 @@ wage1 %>%
 
 4. 從資料裡選出兩個可能造成$\beta_1$OLS估計值帶有選擇性偏誤的變數，請說明理由並加以適當敍述統計量佐證。
 
-```
-我們認為smsa及profocc這兩個變數可能使上述估計值帶有選擇性偏誤
-
-smsa：
-如果住在美國大都會地區的話，可能本身的生活水準與機能都不錯，立足點相對其他地區的人來得高，當立足點越高，其educ也越高，從計算的數值得出educ與smsa兩者的相關係數0.2243087，的確顯著。所以如果是住在美國大都會地區的就業者，wage有可能越高，經由計算兩者的相關係數有0.1778852，的確有影響性，故單純比較wage與educ，有可能只是在反映「是否住在美國大都會地區」生活機能的好壞。
-
-profocc：
-如果是亮領職業的話，可能會比其他行業的立足點來的高，又立足點越高，其觀測值educ也越高，從數據相關性計算出educ與profocc兩者的相關係數有0.5967681，的確有明顯的顯著。進而可以推估，如果是亮領職業人士的話，其wage可能比較高，經計算得出兩者的相關係數為0.4417699，的確此變數影響educ與wage，故單純比較wage與educ的關係，有可能只是在反映「是否為亮領職業人士」
-```
-
 ```{r 第四題}
 #建立方程式
 is_numeric<-function(x) all(is.numeric(x))
@@ -133,6 +123,29 @@ wage1 %>%
   summarise_all(cor_educ)
 ```
 
+```
+我們認為smsa及profocc這兩個變數可能使上述估計值帶有選擇性偏誤
+
+smsa：
+如果住在美國大都會地區，
+因為本身的生活水準與機能都不錯，會比較有機會接受教育，
+造成他們的立足點相對於其他地區的人還高。
+所以如果單純比較不同教育年數下的薪資，
+其中的差異除了反應教育效果外，也反應了「是否住在美國大都會地區」。
+
+從計算的數值得出educ與smsa兩者的相關係數0.2243087，的確顯著。
+所以如果是住在美國大都會地區的就業者，wage有可能越高，經由計算兩者的相關係數有0.1778852，的確有影響性，故單純比較wage與educ，有可能只是在反映「是否住在美國大都會地區」生活機能的好壞。
+
+profocc：
+如果從事具有專業技能的工作職位，
+因為他們的工作專業，通常都需要比較高的受教年數，
+造成他們的立足點相對於其他職業的人還高。
+所以如果單純比較不同教育年數下的薪資，
+其中的差異除了反應教育效果外，也反應了「是否從事具有專業技能的工作職位」。
+
+從數據相關性計算出educ與profocc兩者的相關係數有0.5967681，的確有明顯的顯著。進而可以推估，如果是亮領職業人士的話，其wage可能比較高，經計算得出兩者的相關係數為0.4417699，的確此變數影響educ與wage，故單純比較wage與educ的關係，有可能只是在反映「是否為亮領職業人士」
+
+```
 5. 延續上題，請完成對應複迴歸模型的估計。
 
 ```{r 第五題}
@@ -152,7 +165,7 @@ wage1 %>%
 ```{r 第七題}
 wage1%>%
   filter(educ>=12&educ<=16)%>%
-  group_by(cut(educ,breaks=c(12,12.5,15,16),right = F,include.lowest = T))%>%
+  group_by(cut(educ,breaks=c(12,12.5,15,16),include.lowest = T))%>%
   summarise(mean(wage),N = n())
 ```
 
@@ -163,7 +176,9 @@ wage1%>%
 在問題7中我們計算了三群人的平均薪資。請問若要避免文章所描述的問題，你會如何計算一位高中生若選擇上大學他會得到的預期薪資好處。[只使用問題7的數字及三群人人數]
 
 ```{r 第八題}
-
+# p=68/(113+68) The probability graduate from college
+# p*8.04+(1-p)*6.03-5.37
+(68/(113+68))*8.041618+(113/(68+113))*6.030000-5.371364
 ```
 
 
@@ -179,4 +194,23 @@ But the financial returns are falling.](https://www.economist.com/news/internati
 效應評估問句：越多人上大學該國經濟表現越好？
 
 造成選擇性偏誤原因：「時間多錢多多」造成「越多人上大學」，「時間多錢多多」是「富有國家」常見現象，所以單純比較上大學比例高和低的國家，有可能只是在比誰的「時間多、錢多」。（這類的選擇性偏誤也稱為內生性偏誤。）
+```
+```
+1. The Economist’s analysis of the data finds that returns are linked to the share of people with degrees, and the range of earnings. ...
+
+效應評估問句：上大學人數的比例越低教育溢酬越高？
+
+造成選擇性偏誤原因：
+
+2. The Economist’s analysis of the data finds that returns are linked to the share of people with degrees, and the range of earnings. ...
+
+效應評估問句：收入級距越大教育溢酬越高？
+
+造成選擇性偏誤原因：
+
+3. The main piece of evidence cited by policymakers is the “graduate premium”—the difference between the average earnings of someone with a degree and someone with no more than a secondary-school education, after accounting for fees and the income forgone while studying. This gap is often expressed as the “return on investment” in higher education, or the annualised boost to lifetime earnings from gaining a degree. ... The premium includes the income-boosting effects of personal characteristics that are more likely to be held by those with degrees, not because they acquired them at university, but because they possessed them on admission.
+
+效應評估問句：有上大學會導致教育溢酬較高？
+
+造成選擇性偏誤原因：擁有某些個人特質容易上大學，所以單純比較上大學對教育溢酬的影響，可能只是在比較哪些特質的人教育溢酬較高
 ```
