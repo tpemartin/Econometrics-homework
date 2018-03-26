@@ -43,6 +43,10 @@ rm(list=ls())
 library(dplyr)
 library(psych)
 library(haven)
+
+wage1<- read_dta("http://fmwww.bc.edu/ec-p/data/wooldridge/wage1.dta")
+=======
+
 ```
 
 1. 請依據此[連結](http://fmwww.bc.edu/ec-p/data/wooldridge/wage1.des)說明wage1資料的來源及變數代表意義。[其中potential experience指得是推估工作經驗年資]
@@ -108,7 +112,11 @@ wage1 %>%
 
   3. exper                    years potential experience(推估工作經驗年資)
 =======
+
+  3. exper                    years potential experience(推估工作經驗年資)
+=======
   5. nonwhite                 =1 if nonwhite(非白人)
+
 
   9. smsa                     =1 if live in SMSA(住在Standard Metropolitan Statistical Area(美國行政區劃單位) 大城市及其郊區中，smsa = 1)
   
@@ -128,8 +136,13 @@ library(psych)
 wage1 %>%
   select(educ	,exper,smsa) %>%
 =======
+
+wage1 %>%
+  select(educ	,exper,smsa) %>%
+=======
 wage1 %>% 
   select(educ	,nonwhite,smsa) %>%
+
 
   pairs.panels()
 ```  
@@ -140,7 +153,11 @@ wage1 %>%
 
   lm(lwage~educ+exper+smsa,data=.)%>%
 =======
+
+  lm(lwage~educ+exper+smsa,data=.)%>%
+=======
   lm(educ~nonwhite+smsa,data=.)%>%
+
 
   summary
 ```
@@ -151,7 +168,11 @@ wage1 %>%
 
   lm(lwage~educ+exper+smsa,data=.) -> model_2
 =======
+
+  lm(lwage~educ+exper+smsa,data=.) -> model_2
+=======
   lm(lwage~educ+nonwhite+smsa,data=.) -> model_2
+
 
 
 library(sandwich)
