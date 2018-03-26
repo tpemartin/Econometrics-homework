@@ -32,7 +32,7 @@ params:
 # 教育與薪資 
 
 一開始請執行
-```{r}
+```{r set up}
 rm(list=ls())
 library(dplyr)
 library(psych)
@@ -77,14 +77,14 @@ wage1 <- read_dta("http://fmwww.bc.edu/ec-p/data/wooldridge/wage1.dta")
 
 2. 請使用`psych::pairs.panels()`來描述教育年限(educ)與勞動薪資(wage)間的特質。在兩者的相關度上，有沒有那個變數取對數(log)會比較好？為什麼？
 
-```{r}
+```{r 第二題}
 #沒有取對數
 wage1 %>% 
   select(wage,educ) %>%
   pairs.panels()
 ```
 
-```{r}
+```{r 第二題}
 #對wage取對數
 wage1 %>% 
   select(lwage,educ) %>%
@@ -99,7 +99,7 @@ wage1 %>%
 3. 請使用OLS估計以下的迴歸模型：
 $$log(wage)=\beta_0+\beta_1 educ+\epsilon$$
 
-```{r}
+```{r 第三題}
 wage1 %>% 
   lm(lwage~educ,data=.)
 ```
@@ -116,7 +116,7 @@ profocc：
 如果是亮領職業的話，可能會比其他行業的立足點來的高，又立足點越高，其觀測值educ也越高，從數據相關性計算出educ與profocc兩者的相關係數有0.5967681，的確有明顯的顯著。進而可以推估，如果是亮領職業人士的話，其wage可能比較高，經計算得出兩者的相關係數為0.4417699，的確此變數影響educ與wage，故單純比較wage與educ的關係，有可能只是在反映「是否為亮領職業人士」
 ```
 
-```{r}
+```{r 第四題}
 #建立方程式
 is_numeric<-function(x) all(is.numeric(x))
 cor_wage<-function(x) cor(x,wage1$wage)
@@ -135,7 +135,7 @@ wage1 %>%
 
 5. 延續上題，請完成對應複迴歸模型的估計。
 
-```{r}
+```{r 第五題}
 wage1 %>% 
   lm(lwage~educ+smsa+profocc,data=.)
 ```
@@ -143,17 +143,17 @@ wage1 %>%
 6. 大致說來，教育年限12年表示高中畢業，大學畢業會有16年的教育，請問介於12年以上-16年以下的教育年限代表什麼？
 
 ```
-教育年限為12-16，可能是高中讀的比一般人久，或是大學讀到一半放棄的情況。
+教育年限為12-16年，可能是高中讀的比一般人久，或是大學讀到一半放棄的情況。
 ```
 
 7. 取出教育年限介於12-16年（含上下限）的資料，分別計算以下三群教育年限勞動者的平均薪資：12年，13-15年，16年。
 [hint: dplyr::filter(), dplyr::group_by(), dplyr::summarise(), cut()]
 
-```{r}
+```{r 第七題}
 wage1%>%
   filter(educ>=12&educ<=16)%>%
-  group_by(educ)%>%
-  summarise(meanwage = mean(wage))
+  group_by(cut(educ,breaks=c(12,12.5,15,16),right = F,include.lowest = T))%>%
+  summarise(mean(wage),N = n())
 ```
 
 8. 在下一部份的文章閱讀練習裡，文章提到: 
@@ -162,8 +162,8 @@ wage1%>%
 
 在問題7中我們計算了三群人的平均薪資。請問若要避免文章所描述的問題，你會如何計算一位高中生若選擇上大學他會得到的預期薪資好處。[只使用問題7的數字及三群人人數]
 
-```{r}
-(68/(113+68))*8.041618+(113/(68+113))*6.030000-5.371364
+```{r 第八題}
+
 ```
 
 
