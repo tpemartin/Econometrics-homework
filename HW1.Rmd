@@ -44,19 +44,113 @@ wage1 <- read_dta("http://fmwww.bc.edu/ec-p/data/wooldridge/wage1.dta")
 
 我們想要問："教育年限增加一年對勞動薪資的影響有多少？"
 
+這份資料來自知名的計量經濟學教科書作者 Wooldridge所提供的資料集，共有526筆資料及24個變數，其中變數定義如下
+
+  1. wage                     數值變數        平均薪資 average hourly earnings
+  2. educ                     數值變數(整數)  教育年限 years of education
+  3. exper                    數值變數(整數)  推估工作經驗年資 years potential experience
+  4. tenure                   數值變數(整數)  現職年資 years with current employer
+  5. nonwhite                 類別變數  人種，其中非白人為1 =1 if nonwhite
+  6. female                   類別變數  性別  女性為1 =1 if female
+  7. married                  類別變數  婚姻狀況，其中已婚為1 =1 if married
+  8. numdep                   數值變數(整數)  撫養人數  number of dependents
+  9. smsa                     類別變數  是否居住在城市，其中居住在城市為1 =1 if live in SMSA
+ 10. northcen                 類別變數  是否居住在北部地區  =1 if live in north central U.S
+ 11. south                    類別變數  是否居住在南部地區  =1 if live in southern region
+ 12. west                     類別變數  是否居住在西部地區  =1 if live in western region
+ 
+  以下為一組產業別類別變數
+ 13. construc                 是否在營造業工作  =1 if work in construc. indus.
+ 14. ndurman                  是否在製造業工作  =1 if in nondur. manuf. indus.
+ 15. trcommpu                 是否在大眾運輸、公共設施產業工作  =1 if in trans, commun, pub ut
+ 16. trade                    是否在批發零售業工作  =1 if in wholesale or retail
+ 17. services                 是否在服務業工作  =1 if in services indus.
+ 18. profserv                 是否在專業服務業工作  =1 if in prof. serv. indus.
+
+  以下為一組職級類別變數
+ 19. profocc                  是否為專業職位  =1 if in profess. occupation
+ 20. clerocc                  是否為文書職位  =1 if in clerical occupation
+ 21. servocc                  是否為服務員職位  =1 if in service occupation
+ 
+ 
+ 22. lwage                    數值變數，為薪資取自然對數後的數值  log(wage)
+ 23. expersq                  數值變數  將工作年資取平方後的數值  exper^2
+ 24. tenursq                  數值變數  將現職年資取平方後的數值  tenure^2
+
+
 2. 請使用`psych::pairs.panels()`來描述教育年限(educ)與勞動薪資(wage)間的特質。在兩者的相關度上，有沒有那個變數取對數(log)會比較好？為什麼？
+
+```{r}
+wage1 %>%
+  select(wage,educ) %>%
+  psych::pairs.panels()
+
+
+```
+從wage 對educ 的分布可以看出，隨著教育年限的增加，對薪資有正向的影響
+但在反應變數wage的直方圖可以看出其具有右偏分布，因此適合取對數log，使其較對稱、較接近常態分佈，較容易滿足常態性假設
+
 
 3. 請使用OLS估計以下的迴歸模型：
 $$log(wage)=\beta_0+\beta_1 educ+\epsilon$$
+```{r}
+summary(lm(log(wage1$wage)~wage1$educ))
+
+```
+
+由估計結果可以得到 \beta_0 = 0.583773, \beta_1 = 0.082744
+代表教育年限每增加一年，薪資約增加為 exp(0.00823)倍
 
 4. 從資料裡選出兩個可能造成$\beta_1$OLS估計值帶有選擇性偏誤的變數，請說明理由並加以適當敍述統計量佐證。
 
+我們的初步估計使用教育年限來解釋薪資，但是教育年限可能同時受到其他變數影響，而導致未控制其他變數下，我們所估計得到的\beta_1 將有所偏誤
+其中，推測性別和膚色這兩個類別變數對於教育年限本身就有解釋能力，而不控制這兩個變數將可能導致估計結果的偏誤
+
+我們以盒形圖可以觀察到，居住在市區的樣本(smsa==1)其教育年限資料呈現左偏分布，平均值較非居住在市區的樣本高了許多，或是採取educ 對 smsa進行迴歸可以看出，平均而言教育年限多了1.3857
+
+```{r}
+boxplot(wage1$educ ~ wage1$smsa, xlab="smsa", ylab="educ")
+
+wage1 %>% group_by(smsa) %>%
+  summarise(mean(educ,na.rm=T),sd(educ,na.rm=T))
+
+```
+
+另一個可能的變因是性別，從盒形圖及其迴歸分析果可以看出，女性平均而言較男性的教育年限少了0.471年，
+```{r}
+
+boxplot(wage1$educ ~ wage1$female, xlab="female", ylab="educ")
+wage1 %>% group_by(female) %>%
+  summarise(mean(educ,na.rm=T),sd(educ,na.rm=T))
+
+```
+
+
 5. 延續上題，請完成對應複迴歸模型的估計。
+
+由複回歸的估計結果可以看出，在控制了性別及居住地點後，教育年限對於log(wage)的影響降為0.0719，而更多的解釋都由smsa及female給吸收了。
+
+```{r}
+summary(lm(log(wage1$wage)~ wage1$educ + wage1$female + wage1$smsa))
+
+```
 
 6. 大致說來，教育年限12年表示高中畢業，大學畢業會有16年的教育，請問介於12年以上-16年以下的教育年限代表什麼？
 
+教育年限於12年以上及16年以下的資料，有可能是大學輟學生，未完成大學學業
+
 7. 取出教育年限介於12-16年（含上下限）的資料，分別計算以下三群教育年限勞動者的平均薪資：12年，13-15年，16年。
 [hint: dplyr::filter(), dplyr::group_by(), dplyr::summarise(), cut()]
+
+```{r}
+
+wage1 %>%
+  group_by(educ<=12 , 13<=educ&educ<=15, 16<=educ) %>%
+  summarise(mean(wage,na.rm=T), length(wage))   ####################### 蠢到不行的方法##################
+
+```
+由以上的表可以看到，修業年限為16年以上的的人共有99筆資料，平均薪資最高，為8.948；而修業年限介於13-15年間的人，推測未完成大學學業有113筆資料，其平均薪資為6.03，而修業年限小於等於12年的人有314人，平均薪資僅4.886
+
 
 8. 在下一部份的文章閱讀練習裡，文章提到: 
 
@@ -64,11 +158,20 @@ $$log(wage)=\beta_0+\beta_1 educ+\epsilon$$
 
 在問題7中我們計算了三群人的平均薪資。請問若要避免文章所描述的問題，你會如何計算一位高中生若選擇上大學他會得到的預期薪資好處。[只使用問題7的數字及三群人人數]
 
+在忽略這個人數來源的選擇性偏誤下，我們將人數比率作為機率計算
+則選擇上大學將有 99/(99+113) 的機率可以完成學業，使薪資期望值上升至8.95，而有113/(99+113)的機率無法完成學業，薪資僅上升至6.03
+則選擇上大學的預期薪資好處為  8.947980 * 99/(99+113) + 6.03 * 113/(99+113) - 4.885701 = 2.506941 per hour
+
+```{r}
+8.947980 * 99/(99+113) + 6.03 * 113/(99+113) - 4.885701
+
+```
+
 # 文章閱讀
 [Going to university is more important than ever for young people.
 But the financial returns are falling.](https://www.economist.com/news/international/21736151-financial-returns-are-falling-going-university-more-important-ever)
 
-文章中有不少效應評估問句，及造成其無法直接進行簡單迴歸估計的選擇性偏誤原因，請將所有這樣的段落貼過來、寫下它的效應評估問句及造成選擇性偏誤的原因（文章中所提的，非自我發揮）。例如：
+文章中有不少效應評估問句，及造成其無法直接進行簡單迴歸估計的選擇性偏誤原因，請將所有這樣的段落貼過來、寫下它的效應評估問句及造成選擇性偏誤的原因。例如：
 
 ```
 1. Policymakers regard it as obvious that sending more young people to university will boost economic growth and social mobility. ... But comparisons between countries provide little evidence of these links. Richer countries have more graduates, but that could be because there is more money to spare, and less urgency to start earning.
