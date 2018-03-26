@@ -37,7 +37,6 @@ rm(list=ls())
 library(dplyr)
 library(psych)
 library(haven)
-library(knitr)
 wage1 <- read_dta("http://fmwww.bc.edu/ec-p/data/wooldridge/wage1.dta")
 ```
 
@@ -110,13 +109,13 @@ wage1 %>%
 我們認為profocc及smsa這兩個變數可能使上述的估計值帶有選擇性偏誤。
 
 profocc：
-如果從事具有專業技能的工作職位，因為他們需要較多專業，通常會有比較高的受教年數，所以造成他們的立足點相對於其他職業的人高，此時profocc與educ的相關係數會較高。
-另外從事具有專業技能工作的人薪水也會較其他職業的人高，因此profocc與wage也會是正相關。
+如果從事具有專業技能的工作職位，因為他們需要較多專業，通常會有比較高的受教年數，所以造成他們的立足點相對於其他職業的人高，又立足點越高，其educ也越高，此時profocc與educ的相關係數會較高。
+進而推估如果從事具有專業技能工作的人，其薪水也會較其他職業的人高，因此profocc與wage也會是正相關。
 所以如果單純比較不同教育年數下的薪資，其中的差異除了反應教育效果外，也反應了「是否從事具有專業技能的工作職位」。
 
 smsa：
-如果住在美國大都會地區，因為本身的生活水準與機能都不錯，會比較有機會接受教育，所以造成他們的立足點相對於其他地區的人高，此時smsa與educ的相關係數會較高。
-另外如果是住在美國大都會地區的就業者，薪資也有可能越高，因此smsa與wage也會是正相關。
+如果住在美國大都會地區，因為本身的生活水準與機能都不錯，會比較有機會接受教育，所以造成他們的立足點相對於其他地區的人高，又立足點越高，其educ也越高，此時smsa與educ的相關係數會較高。
+進而推估如果是住在美國大都會地區的就業者，薪資也有可能越高，因此smsa與wage也會是正相關。
 所以如果單純比較不同教育年數下的薪資，其中的差異除了反應教育效果外，也反應了「是否住在美國大都會地區」。
 
 ```
@@ -124,8 +123,8 @@ smsa：
 ```{r 第四題}
 #建立方程式
 is_numeric<-function(x) all(is.numeric(x))
-cor_wage<-function(x) cor(x,wage1$wage)
 cor_educ<-function(x) cor(x,wage1$educ)
+cor_wage<-function(x) cor(x,wage1$wage)
 
 #計算數值變數與educ的相關係數
 wage1 %>%  
