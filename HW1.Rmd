@@ -42,27 +42,111 @@ wage1 <- read_dta("http://fmwww.bc.edu/ec-p/data/wooldridge/wage1.dta")
 
 1. 請依據此[連結](http://fmwww.bc.edu/ec-p/data/wooldridge/wage1.des)說明wage1資料的來源及變數代表意義。[其中potential experience指得是推估工作經驗年資]
 
+  1. wage                     average hourly earnings         平均時薪
+  2. educ                     years of education              教育年限
+  3. exper                    years potential experience      工作經驗年資
+  4. tenure                   years with current employer     在同雇主下的任期 
+  5. nonwhite                 =1 if nonwhite                  =1為非白人
+  6. female                   =1 if female                    =1為女性
+  7. married                  =1 if married                   =1為已婚
+  8. numdep                   number of dependents            需撫養的人
+  9. smsa                     =1 if live in SMSA              =1為居住於大城市中
+ 10. northcen                 =1 if live in north central U.S =1為居住於美國北部
+ 11. south                    =1 if live in southern region   =1為居住於南部地區
+ 12. west                     =1 if live in western region    =1為居住於西部地區
+ 13. construc                 =1 if work in construc. indus.  =1為從事建築業
+ 14. ndurman                  =1 if in nondur. manuf. indus.  =1為從事從事製造耐久財
+ 15. trcommpu                 =1 if in trans, commun, pub ut  =1為從事運輸業、通訊業、公營事業
+ 16. trade                    =1 if in wholesale or retail    =1為從事零售或批發業
+ 17. services                 =1 if in services indus.        =1為從事服務業
+ 18. profserv                 =1 if in prof. serv. indus.     =1為從事專業服務業
+ 19. profocc                  =1 if in profess. occupation    =1為教授的職業
+ 20. clerocc                  =1 if in clerical occupation    =1為牧師的職業
+ 21. servocc                  =1 if in service occupation     =1為服務的職業
+ 22. lwage                    log(wage)                       對變數wage取自然對數log
+ 23. expersq                  exper^2                         對變數exper開平方
+ 24. tenursq                  tenure^2                        對變數tenure開平方
 我們想要問："教育年限增加一年對勞動薪資的影響有多少？"
+```{r}
+wage1 %>% 
+  lm(wage~educ,data=.)
+```
+教育年限增加一年勞動薪資增加54%
 
 2. 請使用`psych::pairs.panels()`來描述教育年限(educ)與勞動薪資(wage)間的特質。在兩者的相關度上，有沒有那個變數取對數(log)會比較好？為什麼？
+```{r}
+library(psych)
+wage1 %>% 
+  select(educ,wage) %>%
+  pairs.panels()
+```
+```{r}
+wage1 %>% 
+  dplyr::select(educ,wage) %>%
+  dplyr::mutate_all(log) %>%
+  pairs.panels()
+```
+教育年限取對數後分配會不接近常態不會比較好，而勞動薪資取對數後會趨近常態非配，沒有相關係數。
 
 3. 請使用OLS估計以下的迴歸模型：
 $$log(wage)=\beta_0+\beta_1 educ+\epsilon$$
+```{r}
+wage1 %>%
+  lm(lwage ~educ,data=.)
+```
 
 4. 從資料裡選出兩個可能造成$\beta_1$OLS估計值帶有選擇性偏誤的變數，請說明理由並加以適當敍述統計量佐證。
 
+exper,profocc
+
 5. 延續上題，請完成對應複迴歸模型的估計。
+
+```{r}
+wage1 %>%
+  lm(educ~exper+profocc,data = .)
+```
+
 
 6. 大致說來，教育年限12年表示高中畢業，大學畢業會有16年的教育，請問介於12年以上-16年以下的教育年限代表什麼？
 
+表示高中畢業大學未畢業，可能是肄業包括退學或休學。
+
 7. 取出教育年限介於12-16年（含上下限）的資料，分別計算以下三群教育年限勞動者的平均薪資：12年，13-15年，16年。
 [hint: dplyr::filter(), dplyr::group_by(), dplyr::summarise(), cut()]
+
+```{r}
+dplyr::filter(wage1,educ==12) %>%
+  dplyr::group_by(educ) %>%
+  dplyr::summarise(wage=mean(wage))
+```
+```{r}
+dplyr::filter(wage1,educ>=13,educ<=15) %>%
+  dplyr::group_by(educ) %>%
+  dplyr::summarise(wage=mean(wage))
+```
+```{r}
+dplyr::filter(wage1,educ==16) %>%
+  dplyr::group_by(educ) %>%
+  dplyr::summarise(wage=mean(wage))
+```
+12年的平均薪資5.37，13-15年的平均薪資6.05，16年的平均薪資8.04
 
 8. 在下一部份的文章閱讀練習裡，文章提到: 
 
 > In a comparison of the earnings of people with degrees and people without them, those who start university but do not finish are lumped in with those who never started, even though they, too, will have paid fees and missed out on earnings. Their numbers are considerable. 
 
 在問題7中我們計算了三群人的平均薪資。請問若要避免文章所描述的問題，你會如何計算一位高中生若選擇上大學他會得到的預期薪資好處。[只使用問題7的數字及三群人人數]
+
+```{r}
+filter(wage1,educ>=13,educ<=15)
+```
+有113個人高中畢業後就讀大學，但大學未畢業
+
+```{r}
+filter(wage1,educ==16)
+```
+(68/68+113)*8.04+(113/68+113)*6.05=6.8
+6.8>5.37，我已上大學得到的預期薪資會比高中畢業來的好。
 
 # 文章閱讀
 [Going to university is more important than ever for young people.
