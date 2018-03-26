@@ -165,14 +165,12 @@ stargazer(model_1, model_2,
 [hint: dplyr::filter(), dplyr::group_by(), dplyr::summarise(), cut()]
 
 ```{r}
-uvv<-wage1 %>% arrange(educ,wage) %>% 
-  filter(educ>= 12,educ<= 16) %>%
+ab<-wage1 %>% 
   select(educ,wage) 
-uvv$educ_cut<-cut(uvv$educ,breaks = c(11,12,15,16))
-uvvv <- uvv %>%
+ab$educ_cut<-cut(ab$educ,breaks = c(0,11,12,15,16,Inf))
+abc <- ab %>%
   group_by(educ_cut) %>% summarise(size_educ = n(), sumwage = sum(wage) , meanwage = mean(wage))
-uvvv %>% mutate("theer parties name"=c("12","13-15","16")) -> uvvv
-uvvv
+abc
 ```
 
 8. 在下一部份的文章閱讀練習裡，文章提到: 
