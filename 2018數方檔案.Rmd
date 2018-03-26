@@ -1,0 +1,161 @@
+---
+title: "2018/03/23"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+```{r}
+rm(list=ls())
+library(dplyr)
+library(psych)
+library(haven)
+wage1 <- read_dta("http://fmwww.bc.edu/ec-p/data/wooldridge/wage1.dta")
+```
+```{r}
+str(wage1)
+```
+```{r}
+wage1$educ
+```
+
+```{r}
+wage1$wage
+```
+
+```{r}
+summary(wage1)
+```
+
+```{r}
+wage1%>%
+  dplyr::select(wage,educ)%>%
+  pairs.panels()
+```
+```{r}
+wage1%>%
+  dplyr::select(lwage,educ)%>%
+  pairs.panels()
+
+```
+
+```{r}
+wage1%>%
+lm(lwage~educ,data=.)
+```
+```{r}
+wage1%>%
+lm(lwage~educ+nonwhite,data= .)
+```
+```{r}
+wage1%>%
+lm(lwage~educ+numdep,data= .)
+```
+```{r}
+wage1%>%
+lm(lwage~educ+trcommpu,data= .)
+```
+```{r}
+wage1%>%
+lm(lwage~educ+clerocc,data= .)
+```
+
+```{r}
+wage1%>%
+lm(lwage~educ+exper,data= .)
+```
+```{r}
+wage1%>%
+lm(lwage~educ,data=.)->model_1
+wage1%>%
+lm(lwage~educ+numdep,data= .)->model_2
+
+library(sandwich)
+library(lmtest)
+library(stargazer)
+coeftest(model_1, vcov. = vcovHC, type="HC1") -> model_1_coeftest
+coeftest(model_2, vcov. = vcovHC, type="HC1") -> model_2_coeftest
+
+stargazer(model_1, model_2, 
+          se=list(model_1_coeftest[,"Std. Error"], model_2_coeftest[,2]),
+          type="text",
+          align=TRUE)
+
+
+
+```
+
+```{r}
+wage1%>%
+lm(lwage~educ,data=.)->model_1
+wage1%>%
+lm(lwage~educ+nonwhite,data= .)->model_3
+
+library(sandwich)
+library(lmtest)
+library(stargazer)
+coeftest(model_1, vcov. = vcovHC, type="HC1") -> model_1_coeftest
+coeftest(model_3, vcov. = vcovHC, type="HC1") -> model_3_coeftest
+
+stargazer(model_1, model_3, 
+          se=list(model_1_coeftest[,"Std. Error"], model_3_coeftest[,3]),
+          type="text",
+          align=TRUE)
+```
+
+
+```{r}
+wage1%>%
+lm(lwage~educ,data=.)->model_1
+wage1%>%
+lm(lwage~educ+trcommpu,data= .)->model_4
+
+library(sandwich)
+library(lmtest)
+library(stargazer)
+coeftest(model_1, vcov. = vcovHC, type="HC1") -> model_1_coeftest
+coeftest(model_4, vcov. = vcovHC, type="HC1") -> model_4_coeftest
+
+stargazer(model_1, model_4, 
+          se=list(model_1_coeftest[,"Std. Error"], model_4_coeftest[,4]),
+          type="text",
+          align=TRUE)
+```
+
+
+```{r}
+dplyr::filter(wage1, educ==12)%>%
+  dplyr::group_by(educ)%>%
+  dplyr::summarise(wage=mean(wage))
+```
+
+```{r}
+filter(wage1,educ==12) %>%
+  group_by(educ) %>%
+  summarise(wage=mean(wage))
+
+```
+
+
+
