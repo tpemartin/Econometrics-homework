@@ -59,8 +59,8 @@ wage1 <- read_dta("http://fmwww.bc.edu/ec-p/data/wooldridge/wage1.dta")
  10. northcen                 =1 ，如果居住在美國中北部
  11. south                    =1 ，如果居住在美國南部地區
  12. west                     =1 ，如果居住在美國西部地區
- 13. construc                 =1 ，如果工作屬於建造業
- 14. ndurman                  =1 ，如果工作屬於非耐用品的製造產業
+ 13. construc                 =1 ，如果工作屬於建築業
+ 14. ndurman                  =1 ，如果工作屬於非耐久財的製造產業
  15. trcommpu                 =1 ，如果工作屬於國營交通運輸業
  16. trade                    =1 ，如果工作屬於批發或零售產業
  17. services                 =1 ，如果工作屬於服務業
@@ -68,7 +68,7 @@ wage1 <- read_dta("http://fmwww.bc.edu/ec-p/data/wooldridge/wage1.dta")
  19. profocc                  =1 ，如果為具有專業技能的工作職位
  20. clerocc                  =1 ，如果為文書類的工作職位
  21. servocc                  =1 ，如果為服務類的工作職位
- 22. lwage                    平均每小時所得取log
+ 22. lwage                    平均每小時所得取對數
  23. expersq                  推估工作經驗年資的平方
  24. tenursq                  現任工作其工作年數的平方
 ```
@@ -140,21 +140,32 @@ wage1 %>%
   lm(lwage~educ+smsa+profocc,data=.)
 ```
 
-
 6. 大致說來，教育年限12年表示高中畢業，大學畢業會有16年的教育，請問介於12年以上-16年以下的教育年限代表什麼？
 
 ```
-教育年限為12-16，可能是高中讀的比一般人久，或是大學讀到一半放棄的情況
+教育年限為12-16，可能是高中讀的比一般人久，或是大學讀到一半放棄的情況。
 ```
 
 7. 取出教育年限介於12-16年（含上下限）的資料，分別計算以下三群教育年限勞動者的平均薪資：12年，13-15年，16年。
 [hint: dplyr::filter(), dplyr::group_by(), dplyr::summarise(), cut()]
+
+```{r}
+wage1%>%
+  filter(educ>=12&educ<=16)%>%
+  group_by(educ)%>%
+  summarise(meanwage = mean(wage))
+```
 
 8. 在下一部份的文章閱讀練習裡，文章提到: 
 
 > In a comparison of the earnings of people with degrees and people without them, those who start university but do not finish are lumped in with those who never started, even though they, too, will have paid fees and missed out on earnings. Their numbers are considerable. 
 
 在問題7中我們計算了三群人的平均薪資。請問若要避免文章所描述的問題，你會如何計算一位高中生若選擇上大學他會得到的預期薪資好處。[只使用問題7的數字及三群人人數]
+
+```{r}
+(68/(113+68))*8.041618+(113/(68+113))*6.030000-5.371364
+```
+
 
 # 文章閱讀
 [Going to university is more important than ever for young people.
