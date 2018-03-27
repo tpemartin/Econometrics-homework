@@ -100,12 +100,10 @@ wage1 %>%
 由估計結果可以得到 \beta_0 = 0.583773, \beta_1 = 0.082744
 代表教育年限每增加一年，薪資約增加為 exp(0.00823)倍
 
-### 四五題需要再討論
-
 4. 從資料裡選出兩個可能造成$\beta_1$OLS估計值帶有選擇性偏誤的變數，請說明理由並加以適當敍述統計量佐證。
 
 我們的初步估計使用教育年限來解釋薪資，但是教育年限可能同時受到其他變數影響，而導致未控制其他變數下，我們所估計得到的\beta_1 將有所偏誤
-其中，推測性別和膚色這兩個類別變數對於教育年限本身就有解釋能力，而不控制這兩個變數將可能導致估計結果的偏誤
+其中，推測居住地區和性別這兩個類別變數對於教育年限本身就有解釋能力，而不控制這兩個變數將可能導致估計結果的偏誤
 
 我們以盒形圖可以觀察到，居住在市區的樣本(smsa==1)其教育年限資料呈現左偏分布，平均值較非居住在市區的樣本高了許多，或是採取educ 對 smsa進行迴歸可以看出，平均而言教育年限多了1.3857
 
@@ -118,45 +116,16 @@ wage1 %>% group_by(smsa) %>%
 
 另一個可能的變因是性別，從盒形圖及其迴歸分析果可以看出，女性平均而言較男性的教育年限少了0.471年，
 ```{r}
-
 boxplot(wage1$educ ~ wage1$female, xlab="female", ylab="educ")
 wage1 %>% group_by(female) %>%
   summarise(mean(educ,na.rm=T),sd(educ,na.rm=T))
-
 ```
 
-
 5. 延續上題，請完成對應複迴歸模型的估計。
-
-由複回歸的估計結果可以看出，在控制了性別及居住地點後，教育年限對於log(wage)的影響降為0.0719，而更多的解釋都由smsa及female給吸收了。
-
 ```{r}
 summary(lm(log(wage1$wage)~ wage1$educ + wage1$female + wage1$smsa))
-
 ```
-
-##(類別資料取log有意義嗎？）4. 從資料裡選出兩個可能造成$\beta_1$OLS估計值帶有選擇性偏誤的變數，請說明理由並加以適當敍述統計量佐證。
-```
-我會挑幾個變數，分別是：nonwhite、female、numdep  
-目前受教育這個treatment的立足點，就是沒有受教育。
-是否接受過教育從當下往前推的角度來看，有許多因素會影響一個人是否能夠接受到教育。
-Seletion bias是指個體立足點會影響其是否接受試驗與否。
-其中，nonwhite是指是否為白人，female是指其為男性或女性。
-若上述兩變數與lwage的相關係數偏高，我們有理由懷疑其實我們測到的並不是教育年限對薪資的影響，
-反而也包含了立足點不同的雜訊。畢竟（白人）、（男性）、（小孩越少將較有能力把重心放在自己去接受更多教育），是比較容易接受到教育的(也就是beta_0不見得是一樣的）。
-```
-```{r}
-wage1 %>% select(nonwhite, lwage) %>% psych::pairs.panels() #-0.04
-wage1 %>% select(female, lwage) %>% psych::pairs.panels() #-0.37
-wage1 %>% select(numdep, lwage) %>% psych::pairs.panels() #-0.10
-#類別變數，(0,1) (0,1,2,3,4)這種也可以取log嗎？（或者說取log有意義嗎？
-```
-
-5. 延續上題，請完成對應複迴歸模型的估計。
-```{r}
-#因為nonwhite、numdep的相關係數都偏小，所以僅有加入female的解釋變數
-wage1 %>% lm(lwage~educ+female, data = .)
-```
+由複回歸的估計結果可以看出，在控制了性別及居住地點後，教育年限對於log(wage)的影響降為0.0719，而更多的解釋都由smsa及female給吸收了。
 
 6. 大致說來，教育年限12年表示高中畢業，大學畢業會有16年的教育，請問介於12年以上-16年以下的教育年限代表什麼？
 ```
@@ -175,8 +144,6 @@ wageforUniTreatment
 # 不曉得有沒有更好的cut的表達方式？
 ```
 
-### 第八題需要再討論
-
 8. 在下一部份的文章閱讀練習裡，文章提到: 
 
 > In a comparison of the earnings of people with degrees and people without them, those who start university but do not finish are lumped in with those who never started, even though they, too, will have paid fees and missed out on earnings. Their numbers are considerable. 
@@ -187,10 +154,11 @@ wageforUniTreatment
 # wage1 %>% filter(educ==12) %>% nrow()
 # wage1 %>% filter(educ>=13 & educ <= 15) %>% nrow() 
 # wage1 %>% filter(educ==16) %>% nrow() 
-#高中畢業樣本量198
-#大學肄業樣本量113
-#大學畢業樣本量68
 ```
+
+高中畢業樣本量198
+大學肄業樣本量113
+大學畢業樣本量68
 
 在忽略這個人數來源的選擇性偏誤下，我們將人數比率作為機率計算
 則選擇上大學將有 68/(68+113) 的機率可以完成學業，使薪資期望值上升至8.041618，而有113/(68+113)的機率無法完成學業，薪資僅上升至6.03
@@ -200,7 +168,6 @@ wageforUniTreatment
 8.041618 * 68/(68+113) + 6.03 * 113/(68+113) - 5.371364 -> x
 x
 ```
-
 
 # 文章閱讀
 [Going to university is more important than ever for young people.
@@ -222,7 +189,7 @@ Seletion bias是指個體立足點會影響其是否接受試驗與否。
 2. The World Bank has produced estimates of this return for 139 economies. It varies from place to place, but is substantial everywhere. The Economist’s analysis of the data finds that returns are linked to the share of people with degrees, and the range of earnings. Returns in Britain and Germany are similar to those in America. In sub-Saharan Africa, where degrees are scarce and the least-educated workers earn little, they are around 21% a year. In Scandinavia, where wages are less unequal and two-fifths of adults have degrees, they are around 9%.
 
 效應評估問句：該地區越多人擁有大學學歷，學歷報酬越低？
-造成選擇性偏誤原因： 看起來，立足點是「該地區有較低人口比例有高學歷」，主要解釋變量是：是否為高人口比例有大學學歷的地區。其coefficient應該<0。這可能忽略了所屬地區的產業環境需要高學歷族群的多寡，理由是因為若產業環境不佳，人才供給過剩，越多人擁有大學學歷，那麼必定學歷貶值。但是若產業環境蓬勃發展，需要更多高端人才的比例提高，有可能越越多大學學歷者投入勞動市場，創造產值越多，市場餅越大，吸引更多人才進入，最後人人有分紅。
+造成選擇性偏誤原因： 看起來，立足點是「該地區有較低人口比例有高學歷」，主要解釋變量為：是否為高人口比例有大學學歷的地區。其coefficient應該<0。這可能忽略了所屬地區的產業環境需要高學歷族群的多寡，理由是因為若產業環境不佳，人才供給過剩，越多人擁有大學學歷，那麼必定學歷貶值。但是若產業環境蓬勃發展，需要更多高端人才的比例提高，有可能越越多大學學歷者投入勞動市場，創造產值越多，市場餅越大，吸引更多人才進入，最後人人有分紅。
 單純迴歸分析，有可能只是在比誰的產業環境較佳，較有發展潛力。
 
 3. In a new book, “The Case Against Education”, Bryan Caplan of George Mason University argues that the low graduation rates of marginal students, and the fact that, for a given level of qualification, cleverer people tend to earn more, mean that the return on a four-year degree in America ranges from 6.5% for excellent students to just 1% for the weakest ones.
