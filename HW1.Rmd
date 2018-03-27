@@ -103,6 +103,7 @@ wage1 %>%
 
 4. 從資料裡選出兩個可能造成$\beta_1$OLS估計值帶有選擇性偏誤的變數，請說明理由並加以適當敍述統計量佐證。
 ```{r}
+library("knitr")
 is_numeric<-function(x) all(is.numeric(x))
 cor_educ<-function(x) cor(x,wage1$educ)
 wage1 %>%
@@ -110,6 +111,7 @@ wage1 %>%
   summarise_all(cor_educ) %>%
   kable()
 ```
+
 ```
 expersq是推估工作經驗年資平方，它和教育是反向關係，他們的相關係數是-0.3312559，因此若漏了此變數，可能會高估教育的報酬。其實該複回歸模型應該加入exper變數，才能正確捕捉工資和工作經驗的關係。
 profocc是教授職業，因為是教授，所以教授的教育年數就高，所以比較的有可能不是教育年數，而是職業是不是教授。職業是教授和教育年數的相關係數是0.4967681。
@@ -131,10 +133,8 @@ wage1 %>%
 wage1 %>%
 dplyr::filter(12<=educ&educ<=16)->wage1216
 wage1216%>%
-dplyr::group_by(cut(wage1216,b=c(12,13,15,16)))%>%
-summarise(avg=mean(wage))
-
-
+dplyr::group_by(cut(wage1216$educ,breaks=c(12,12.9,15,16),include.lowest = T))%>%
+summarise(avg=mean(wage),N = n())
 
 ```
 
@@ -143,6 +143,12 @@ summarise(avg=mean(wage))
 > In a comparison of the earnings of people with degrees and people without them, those who start university but do not finish are lumped in with those who never started, even though they, too, will have paid fees and missed out on earnings. Their numbers are considerable. 
 
 在問題7中我們計算了三群人的平均薪資。請問若要避免文章所描述的問題，你會如何計算一位高中生若選擇上大學他會得到的預期薪資好處。[只使用問題7的數字及三群人人數]
+p=68/(113+68) The probability graduate from college
+p*8.04+(1-p)*6.03-5.37
+```{r}
+(68/(113+68))*8.041618+(113/(68+113))*6.030000-5.371364
+```
+
 
 # 文章閱讀
 [Going to university is more important than ever for young people.
@@ -157,6 +163,15 @@ But the financial returns are falling.](https://www.economist.com/news/internati
 
 造成選擇性偏誤原因：「時間多錢多多」造成「越多人上大學」，「時間多錢多多」是「富有國家」常見現象，所以單純比較上大學比例高和低的國家，有可能只是在比誰的「時間多、錢多」。（這類的選擇性偏誤也稱為內生性偏誤。）
 ```
-效應評估問句:報酬率與擁有學位的人和收入範圍有關
+1.The Economist’s analysis of the data finds that returns are linked to the share of people with degrees, and the range of earnings....
+
+Most students know that a degree in mathematics or finance is likely to be more lucrative than one in music or social work. What fewer realise is that the graduate premium overstates the financial benefit of embarking on a degree if their school grades barely qualify them for entry, no matter what they study.....
+
+Including dropouts when calculating the returns to going to university makes a big difference. In a new book, “The Case Against Education”, Bryan Caplan of George Mason University argues that the low graduation rates of marginal students, and the fact that, for a given level of qualification, cleverer people tend to earn more, mean that the return on a four-year degree in America ranges from 6.5% for excellent students to just 1% for the weakest ones.
+
+效應評估問句:報酬率和擁有學位的人的比例有關？
 造成選擇性偏誤原因：
+  雖然數學或金融學位可能比音樂或社會工作更有利可圖，但不管大學學位在哪一個領域學習，必須具備一定的能力才能進入學校，所以能上大學和能力有一定的相關。而資料上顯示，邊緣學生的畢業率低，而擁有一定水平的資格且聰明的人傾向賺取更多，優秀學生的回報率是6.5％，最差的學生只有1％，中間的差距即是能力的差距，在同樣學歷下，能力差也會有影響。
 ```
+2.
+
