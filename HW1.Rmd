@@ -77,3 +77,23 @@ But the financial returns are falling.](https://www.economist.com/news/internati
 
 造成選擇性偏誤原因：「時間多錢多多」造成「越多人上大學」，「時間多錢多多」是「富有國家」常見現象，所以單純比較上大學比例高和低的國家，有可能只是在比誰的「時間多、錢多」。（這類的選擇性偏誤也稱為內生性偏誤。）
 ```
+```
+2.Even within countries the average conceals wide differences. Most students know that a degree in mathematics or finance is likely to be more lucrative than one in music or social work. What fewer realise is that the graduate premium overstates the financial benefit of embarking on a degree if their school grades barely qualify them for entry, no matter what they study.
+效應評估問句：擁有數學或金融系學位會比音樂或社會工作的學位有較高的薪水?
+造成選擇性偏誤原因：造成數學或金融系學位比音樂或社會工作學位擁有較高薪水的原因可能在於入學前的成績篩選，數學或金融系學位的進入門檻較高，可能會造成畢業後的薪水較高。
+```
+```
+3.Degrees are also signalling devices. The premium includes the income-boosting effects of personal characteristics that are more likely to be held by those with degrees, not because they acquired them at university, but because they possessed them on admission.
+效應評估問句：有較好人格特質的人有較高的收入?
+造成選擇性偏誤原因：有大學學歷的人有較好的人格特質，但人格特質並非大學時所生成，而是入學前就有的。
+```
+```
+4.Analysis by The Economist of American census data finds that between 1970 and 2015 the share of workers aged 25-64 with at least a bachelor’s degree increased in 256 out of 265 occupations. Some of these are intellectually demanding jobs that changed a lot over that period, such as aerospace engineer or statistician. Others are non-graduate jobs such as waiting tables. Sixteen percent of waiters now have degrees—presumably, in most cases, because they could not find a graduate job. But other jobs that are mostly done by graduates, such as journalism, nursing and teaching in primary schools, used to require only shorter training, often received while working. Today, having a degree is usually an entry requirement.
+效應評估問句：大學畢業有學位者比沒有的人有更高的收入?
+造成選擇性偏誤原因：現今有許多工作有學歷要求，使得許多原本僅需要短暫培訓即可就職的職業無法被畢業者所選擇，因此造成大學畢業者有較高的收入。
+```
+```
+5.Part of that difference is because the weakest students attend the worst universities, where drop-out rates are highest. When they make it into better institutions, the returns may be higher.
+效應評估問句：進到較好的大學會有較高的收入回報?
+造成選擇性偏誤原因：成績較好的人才能進到較好的大學，成績較差的學生本來就比較容易被退學，所以如果單純比較學生退學率，有可能只是在比較學校的好壞。
+```
