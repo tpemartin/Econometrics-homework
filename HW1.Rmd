@@ -78,6 +78,7 @@ wage1 %>% lm(log(wage)~(educ),data=.)
 
 4. 從資料裡選出兩個可能造成$\beta_1$OLS估計值帶有選擇性偏誤的變數，請說明理由並加以適當敍述統計量佐證。
 
+## Selection bias常見錯誤
 經由計算educ與profocc兩者的相關係數有0.5，的確顯著，所以可能造成選擇性偏誤
 ```{r}
 library("psych")
