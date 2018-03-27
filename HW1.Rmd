@@ -46,7 +46,7 @@ wage1 <- read_dta("http://fmwww.bc.edu/ec-p/data/wooldridge/wage1.dta")
  資料來源為Faculty Microcomputer Resource Center
  
  變數解釋
- 1. wage                      平均每小時所得
+  1. wage                     平均每小時所得
   2. educ                     受教育年數
   3. exper                    推估工作經驗年資
   4. tenure                   現任工作的工作年數
@@ -206,16 +206,9 @@ But the financial returns are falling.](https://www.economist.com/news/internati
 造成選擇性偏誤原因：好學校比差學校輟學率低，所以上好學校的報酬率會高於上差學校的報酬率，因此雖然都是能力差不多的學生，一旦分別進入較好及較差的學校，此時立足點馬上不同。所以成績差的學生其教育報酬率低不單純是自身能力的問題，而是因為他進入比較差的學校，進而造成讀較差學校的學生對於教育溢酬的高估。
 ```
 ```
-3. The premium includes the income-boosting effects of personal characteristics that are more likely to be held by those with degrees, not because they acquired them at university, but because they possessed them on admission.
+3. This gap is often expressed as the “return on investment” in higher education, or the annualised boost to lifetime earnings from gaining a degree. ...The premium includes the income-boosting effects of personal characteristics that are more likely to be held by those with degrees, not because they acquired them at university, but because they possessed them on admission.
 
 效應評估問句：有上大學會導致教育溢酬較高？
 
 造成選擇性偏誤原因：擁有某些特質的人容易上大學，所以單純比較上大學對教育溢酬的影響，可能只是在比較哪些特質的人教育溢酬較高。
-```
-```
-4. 
-
-效應評估問句：
-
-造成選擇性偏誤原因：
 ```
