@@ -85,9 +85,10 @@ wage1 %>%
   select(wage,educ) %>%
   psych::pairs.panels()
 ```
-
+```
 從wage 對educ 的分布可以看出，隨著教育年限的增加，對薪資有正向的影響
 但在反應變數wage的直方圖可以看出其具有右偏分布，因此適合取對數log，使其較對稱、較接近常態分佈，較容易滿足常態性假設
+```
 
 3. 請使用OLS估計以下的迴歸模型：
 $$log(wage)=\beta_0+\beta_1 educ+\epsilon$$
@@ -113,7 +114,6 @@ boxplot(wage1$educ ~ wage1$smsa, xlab="smsa", ylab="educ")
 
 wage1 %>% group_by(smsa) %>%
   summarise(mean(educ,na.rm=T),sd(educ,na.rm=T))
-
 ```
 
 另一個可能的變因是性別，從盒形圖及其迴歸分析果可以看出，女性平均而言較男性的教育年限少了0.471年，
@@ -149,17 +149,19 @@ Seletion bias是指個體立足點會影響其是否接受試驗與否。
 wage1 %>% select(nonwhite, lwage) %>% psych::pairs.panels() #-0.04
 wage1 %>% select(female, lwage) %>% psych::pairs.panels() #-0.37
 wage1 %>% select(numdep, lwage) %>% psych::pairs.panels() #-0.10
-#類別資料，(0,1) (0,1,2,3,4)這種也可以取log嗎？（或者說取log有意義嗎？
+#類別變數，(0,1) (0,1,2,3,4)這種也可以取log嗎？（或者說取log有意義嗎？
 ```
 
 5. 延續上題，請完成對應複迴歸模型的估計。
 ```{r}
+#因為nonwhite、numdep的相關係數都偏小，所以僅有加入female的解釋變數
 wage1 %>% lm(lwage~educ+female, data = .)
 ```
 
 6. 大致說來，教育年限12年表示高中畢業，大學畢業會有16年的教育，請問介於12年以上-16年以下的教育年限代表什麼？
-
+```
 教育年限於12年以上及16年以下的資料，有可能是大學輟學生，未完成大學學業,就進入職場
+```
 
 7. 取出教育年限介於12-16年（含上下限）的資料，分別計算以下三群教育年限勞動者的平均薪資：12年，13-15年，16年。
 [hint: dplyr::filter(), dplyr::group_by(), dplyr::summarise(), cut()]
@@ -181,27 +183,24 @@ wageforUniTreatment
 
 在問題7中我們計算了三群人的平均薪資。請問若要避免文章所描述的問題，你會如何計算一位高中生若選擇上大學他會得到的預期薪資好處。[只使用問題7的數字及三群人人數]
 
+```{r}
+# wage1 %>% filter(educ==12) %>% nrow()
+# wage1 %>% filter(educ>=13 & educ <= 15) %>% nrow() 
+# wage1 %>% filter(educ==16) %>% nrow() 
+#高中畢業樣本量198
+#大學肄業樣本量113
+#大學畢業樣本量68
+```
+
 在忽略這個人數來源的選擇性偏誤下，我們將人數比率作為機率計算
-則選擇上大學將有 99/(99+113) 的機率可以完成學業，使薪資期望值上升至8.95，而有113/(99+113)的機率無法完成學業，薪資僅上升至6.03
-則選擇上大學的預期薪資好處為  8.947980 * 99/(99+113) + 6.03 * 113/(99+113) - 4.885701 = 2.506941 per hour
+則選擇上大學將有 68/(68+113) 的機率可以完成學業，使薪資期望值上升至8.041618，而有113/(68+113)的機率無法完成學業，薪資僅上升至6.03
+則選擇上大學的預期薪資好處為：1.414382/per hour 
 
 ```{r}
-8.947980 * 99/(99+113) + 6.03 * 113/(99+113) - 4.885701
+8.041618 * 68/(68+113) + 6.03 * 113/(68+113) - 5.371364 -> x
+x
 ```
 
-```
-#wage1 %>% filter(educ >= 12 & educ <= 16) %>% select(lwage, educ) %>% pairs.panels()
-#相關係數0.30
-#wage1 %>% filter(educ == 12) 
-#198筆樣本
-#wage1 %>% filter(educ == 16) 
-#68筆樣本
-#wage1 %>% filter(educ >= 13 & educ <= 15)
-#113筆樣本
-
-現在問題是那些有上大學但是沒有畢業的人的比例有一定水準，同時也僅能和教育年限十二年的高中畢業的人，視為在同一類。
-我的做法會是，把他們排除掉，專心比較教育年限剛好是12年以及16年的兩群人。並且我會額外控制其他變數（包含性別、膚色），再重新計算剩下樣本的avgwage bar in 16 - avgwage in 12，來作為高中生上大學的預期薪資好處。
-```
 
 # 文章閱讀
 [Going to university is more important than ever for young people.
@@ -217,6 +216,8 @@ Seletion bias是指個體立足點會影響其是否接受試驗與否。
 效應評估問句：越多人上大學該國經濟表現越好？
 
 造成選擇性偏誤原因：「時間多錢多多」造成「越多人上大學」，「時間多錢多多」是「富有國家」常見現象，所以單純比較上大學比例高和低的國家，有可能只是在比誰的「時間多、錢多」。（這類的選擇性偏誤也稱為內生性偏誤。）
+
+(以下為作答)
 
 2. The World Bank has produced estimates of this return for 139 economies. It varies from place to place, but is substantial everywhere. The Economist’s analysis of the data finds that returns are linked to the share of people with degrees, and the range of earnings. Returns in Britain and Germany are similar to those in America. In sub-Saharan Africa, where degrees are scarce and the least-educated workers earn little, they are around 21% a year. In Scandinavia, where wages are less unequal and two-fifths of adults have degrees, they are around 9%.
 
