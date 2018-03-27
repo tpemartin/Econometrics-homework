@@ -192,20 +192,18 @@ But the financial returns are falling.](https://www.economist.com/news/internati
 造成選擇性偏誤原因：「時間多錢多多」造成「越多人上大學」，「時間多錢多多」是「富有國家」常見現象，所以單純比較上大學比例高和低的國家，有可能只是在比誰的「時間多、錢多」。（這類的選擇性偏誤也稱為內生性偏誤。）
 ```
 ```
-2. The Economist’s analysis of the data finds that returns are linked to the share of people with degrees, and the range of earnings. ...Most students know that a degree in mathematics or finance is likely to be more lucrative than one in music or social work. What fewer realise is that the graduate premium overstates the financial benefit of embarking on a degree if their school grades barely qualify them for entry, no matter what they study.....
+1. The Economist’s analysis of the data finds that returns are linked to the share of people with degrees, and the range of earnings. .. Their numbers are considerable. In America 40% of college students fail to graduate with four-year degrees within six years of enrolling. Drop-out rates across the developed world average around 30%. It is the students admitted with the lowest grades who are least likely to graduate.
 
-Including dropouts when calculating the returns to going to university makes a big difference. In a new book, “The Case Against Education”, Bryan Caplan of George Mason University argues that the low graduation rates of marginal students, and the fact that, for a given level of qualification, cleverer people tend to earn more, mean that the return on a four-year degree in America ranges from 6.5% for excellent students to just 1% for the weakest ones.
+效應評估問句：越多人上大學該國教育溢酬越高？
 
-效應評估問句：上大學人數的比例越低教育溢酬越高？
-
-造成選擇性偏誤原因：雖然數學或金融學位可能比音樂或社會工作更有利可圖，但不管大學學位在哪一個領域學習，必須具備一定的能力才能進入學校，所以能上大學和能力有一定的相關。而資料上顯示，邊緣學生的畢業率低，而擁有一定水平的資格且聰明的人傾向賺取更多，優秀學生的回報率是6.5％，最差的學生只有1％，中間的差距即是能力的差距，在同樣學歷下，能力差也會有影響。
+造成選擇性偏誤原因：一部分的學生進入大學後，中途可能會放棄學業轉而工作，尤其以已開發國家中的比例較高，所以單純比較大學學歷比例高和低的國家，可能忽略被退學那群人對教育溢酬的影響，高估了已開發國家的教育溢酬。
 ```
 ```
-2. The Economist’s analysis of the data finds that returns are linked to the share of people with degrees, and the range of earnings. ...
+2. Part of that difference is because the weakest students attend the worst universities, where drop-out rates are highest. When they make it into better institutions, the returns may be higher. ...They graduated at a rate similar to that of the broader student population. They went on to earn considerably more than those just below the cut-off, and their return on investment was substantial.
 
-效應評估問句：收入級距越大教育溢酬越高？
+效應評估問句：對於成績差的學生，即使平均教育溢酬越高，上大學就越有利？
 
-造成選擇性偏誤原因：
+造成選擇性偏誤原因：較好的學校比較差的學校輟學率低，所以上好學校的報酬率會高於上差學校的報酬率，因此雖然都是能力差不多的學生，一旦分別進入較好及較差學校，此時立足點馬上不同，所以成績差的學生其教育報酬率低不單純是自身能力的問題，而是因為他進入比較差的學校，進而造成讀較差學校的學生對於教育溢酬的高估。
 ```
 ```
 3. The main piece of evidence cited by policymakers is the “graduate premium”—the difference between the average earnings of someone with a degree and someone with no more than a secondary-school education, after accounting for fees and the income forgone while studying. This gap is often expressed as the “return on investment” in higher education, or the annualised boost to lifetime earnings from gaining a degree. ... The premium includes the income-boosting effects of personal characteristics that are more likely to be held by those with degrees, not because they acquired them at university, but because they possessed them on admission.
