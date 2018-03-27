@@ -174,11 +174,9 @@ wage1 %>%
 $$log(wage)=\beta_0+\beta_1 C+\beta_2 G+\epsilon$$
 
 令<br /> 
-C =  $\lbrace$ 0 為未進入大學 
-     1 為進入大學$ \rbrace$
+C =  0 為未進入大學 ,C=1 為進入大學
      
-   G = 0 為大學沒有畢業
-     = 1 為大學有畢業 
+   G = 0 為大學沒有畢業,G= 1 為大學有畢業 
 
 其中,<br />
 
@@ -239,4 +237,3 @@ Better-educated people should surely be more likely to come up with productivity
 
 
 ```
-
