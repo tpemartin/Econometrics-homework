@@ -4,7 +4,7 @@ output: html_notebook
 params:
   name: ["秦嘉偉","饒雲韶","吳婉如"]
   id: [810432103,810632102,810632103]
-  group: 
+  group: 8
 ---
 請依狀況更改上面的name,id及group（分別代表組員姓名，學號及組號），但請勿更改下面三行的設定。  
 
