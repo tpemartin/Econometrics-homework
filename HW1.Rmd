@@ -76,14 +76,14 @@ wage1 <- read_dta("http://fmwww.bc.edu/ec-p/data/wooldridge/wage1.dta")
 
 2. 請使用`psych::pairs.panels()`來描述教育年限(educ)與勞動薪資(wage)間的特質。在兩者的相關度上，有沒有那個變數取對數(log)會比較好？為什麼？
 
-```{r 第二題}
+```{r 第二題-沒有取對數}
 #沒有取對數
 wage1 %>% 
   select(wage,educ) %>%
   pairs.panels()
 ```
 
-```{r 第二題}
+```{r 第二題-對wage取對數}
 #對wage取對數
 wage1 %>% 
   select(lwage,educ) %>%
@@ -98,7 +98,7 @@ wage1 %>%
 3. 請使用OLS估計以下的迴歸模型：
 $$log(wage)=\beta_0+\beta_1 educ+\epsilon$$
 
-```{r 第三題}
+```{r 第三題-簡單迴歸}
 wage1 %>% 
   lm(lwage~educ,data=.)
 ```
@@ -121,7 +121,7 @@ smsa：
 所以如果單純比較不同教育年數下的薪資，其中的差異除了反應教育效果外，也反應了「是否住在美國大都會地區」。
 ```
 
-```{r 第四題}
+```{r 第四題-相關係數}
 #建立方程式
 is_numeric<-function(x) all(is.numeric(x))
 cor_educ<-function(x) cor(x,wage1$educ)
@@ -145,7 +145,7 @@ wage1 %>%
 
 5. 延續上題，請完成對應複迴歸模型的估計。
 
-```{r 第五題}
+```{r 第五題-複迴歸}
 wage1 %>% 
   lm(lwage~educ+smsa+profocc,data=.)
 ```
@@ -159,7 +159,7 @@ wage1 %>%
 7. 取出教育年限介於12-16年（含上下限）的資料，分別計算以下三群教育年限勞動者的平均薪資：12年，13-15年，16年。
 [hint: dplyr::filter(), dplyr::group_by(), dplyr::summarise(), cut()]
 
-```{r 第七題}
+```{r 第七題-分群薪資平均}
 wage1%>%
   filter(educ>=12&educ<=16)%>%
   group_by(cut(educ,breaks=c(12,12.5,15,16),include.lowest = T))%>%
@@ -172,7 +172,7 @@ wage1%>%
 
 在問題7中我們計算了三群人的平均薪資。請問若要避免文章所描述的問題，你會如何計算一位高中生若選擇上大學他會得到的預期薪資好處。[只使用問題7的數字及三群人人數]
 
-```{r 第八題}
+```{r 第八題-預期薪資好處}
 #將12年以上-16年以下與16年的資料合併，和12年的平均薪資比較差異
 (8.041618*68+6.030000*113)/(68+113)-5.371364
 ```
