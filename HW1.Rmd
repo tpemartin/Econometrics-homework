@@ -71,6 +71,7 @@ wage1
  23. expersq                  exper^2
  24. tenursq                  tenure^2
 ```
+
 我們想要問："教育年限增加一年對勞動薪資的影響有多少？"
 
 2. 請使用`psych::pairs.panels()`來描述教育年限(educ)與勞動薪資(wage)間的特質。在兩者的相關度上，有沒有那個變數取對數(log)會比較好？為什麼？
@@ -147,20 +148,35 @@ wageforUniTreatment
 現在問題是那些有上大學但是沒有畢業的人的比例有一定水準，同時也僅能和教育年限十二年的高中畢業的人，視為在同一類。
 我的做法會是，把他們排除掉，專心比較教育年限剛好是12年以及16年的兩群人。並且我會額外控制其他變數（包含性別、膚色），再重新計算剩下樣本的avgwage bar in 16 - avgwage in 12，來作為高中生上大學的預期薪資好處。
 ```
-```{r}
-wage1 %>% filter(educ == 12 & educ == 16) %>% select(lwage, educ) %>% pairs.panels()
-```
 
 # 文章閱讀
 [Going to university is more important than ever for young people.
 But the financial returns are falling.](https://www.economist.com/news/international/21736151-financial-returns-are-falling-going-university-more-important-ever)
 
-文章中有不少效應評估問句，及造成其無法直接進行簡單迴歸估計的選擇性偏誤原因，請將所有這樣的段落貼過來、寫下它的效應評估問句及造成選擇性偏誤的原因。例如：
+文章中有不少效應評估問句，及造成其無法直接進行簡單迴歸估計的選擇性偏誤原因，請將所有這樣的段落貼過來、寫下它的效應評估問句及造成選擇性偏誤的原因（文章中所提的，非自我發揮）。例如：
 
 ```
+Seletion bias是指個體立足點會影響其是否接受試驗與否。
+
 1. Policymakers regard it as obvious that sending more young people to university will boost economic growth and social mobility. ... But comparisons between countries provide little evidence of these links. Richer countries have more graduates, but that could be because there is more money to spare, and less urgency to start earning.
 
 效應評估問句：越多人上大學該國經濟表現越好？
 
 造成選擇性偏誤原因：「時間多錢多多」造成「越多人上大學」，「時間多錢多多」是「富有國家」常見現象，所以單純比較上大學比例高和低的國家，有可能只是在比誰的「時間多、錢多」。（這類的選擇性偏誤也稱為內生性偏誤。）
+
+2. The World Bank has produced estimates of this return for 139 economies. It varies from place to place, but is substantial everywhere. The Economist’s analysis of the data finds that returns are linked to the share of people with degrees, and the range of earnings. Returns in Britain and Germany are similar to those in America. In sub-Saharan Africa, where degrees are scarce and the least-educated workers earn little, they are around 21% a year. In Scandinavia, where wages are less unequal and two-fifths of adults have degrees, they are around 9%.
+
+效應評估問句：該地區越多人擁有大學學歷，學歷報酬越低？
+造成選擇性偏誤原因： 看起來，立足點是「該地區有較低人口比例有高學歷」，主要解釋變量是：是否為高人口比例有大學學歷的地區。其coefficient應該<0。這可能忽略了所屬地區的產業環境需要高學歷族群的多寡，理由是因為若產業環境不佳，人才供給過剩，越多人擁有大學學歷，那麼必定學歷貶值。但是若產業環境蓬勃發展，需要更多高端人才的比例提高，有可能越越多大學學歷者投入勞動市場，創造產值越多，市場餅越大，吸引更多人才進入，最後人人有分紅。
+單純迴歸分析，有可能只是在比誰的產業環境較佳，較有發展潛力。
+
+3. In a new book, “The Case Against Education”, Bryan Caplan of George Mason University argues that the low graduation rates of marginal students, and the fact that, for a given level of qualification, cleverer people tend to earn more, mean that the return on a four-year degree in America ranges from 6.5% for excellent students to just 1% for the weakest ones.
+
+效應評估問句：越聰明的人，其上大學的學歷報酬越高？
+造成選擇性偏誤原因：若單純只比較聰明與不聰明對學歷報酬的影響，是需要留意通常聰明人學習能力較好，成績表現也較優異，所以進入到好大學的機會比較高，所以最後只有可能在比較進入好學校對於學歷報酬的影響（也就是表面上立足點是不聰明的人，treatment是（是否為聰明人），但是實際上會測到的是立足點是進到普通大學，treatment是進入到好大學。
+
+4.  In a study published in 2014 Seth Zimmerman of the University of Chicago compared the earnings of school-leavers in Florida whose grades were close to the minimum for admission to a good state university. Those just above the cut-off were much more likely than those just below to start courses in good institutions. They graduated at a rate similar to that of the broader student population. They went on to earn considerably more than those just below the cut-off, and their return on investment was substantial.
+
+效應評估問句：榜上有名讀到好大學的人，其學歷報酬較高？
+造成選擇性偏誤原因：讀到好大學的同學和普通大學的同學，比較他們日後賺錢的多寡，需要留意好的私立學校（以美國為例）學費並不便宜，若單純只比較讀到好大學的同學和爛大學，有可能只是在比誰家庭環境較理想，有的環境較多，較有能力上好的私立大學。
 ```
