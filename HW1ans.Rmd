@@ -121,7 +121,7 @@ wage1 %>%
   
 ```
 
-  ```{r}
+```{r}
 library(psych)
 wage1 %>%
   select(educ ,exper,smsa) %>%
