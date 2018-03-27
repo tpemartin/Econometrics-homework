@@ -201,23 +201,21 @@ But the financial returns are falling.](https://www.economist.com/news/internati
 ```
 2. Part of that difference is because the weakest students attend the worst universities, where drop-out rates are highest. When they make it into better institutions, the returns may be higher. ...They graduated at a rate similar to that of the broader student population. They went on to earn considerably more than those just below the cut-off, and their return on investment was substantial.
 
-效應評估問句：對於成績差的學生，即使平均教育溢酬越高，上大學就越有利？
+效應評估問句：對於成績差的學生，平均教育溢酬越高，上大學就越有利？
 
-造成選擇性偏誤原因：較好的學校比較差的學校輟學率低，所以上好學校的報酬率會高於上差學校的報酬率，因此雖然都是能力差不多的學生，一旦分別進入較好及較差學校，此時立足點馬上不同，所以成績差的學生其教育報酬率低不單純是自身能力的問題，而是因為他進入比較差的學校，進而造成讀較差學校的學生對於教育溢酬的高估。
+造成選擇性偏誤原因：好學校比差學校輟學率低，所以上好學校的報酬率會高於上差學校的報酬率，因此雖然都是能力差不多的學生，一旦分別進入較好及較差的學校，此時立足點馬上不同。所以成績差的學生其教育報酬率低不單純是自身能力的問題，而是因為他進入比較差的學校，進而造成讀較差學校的學生對於教育溢酬的高估。
 ```
 ```
-3. The main piece of evidence cited by policymakers is the “graduate premium”—the difference between the average earnings of someone with a degree and someone with no more than a secondary-school education, after accounting for fees and the income forgone while studying. This gap is often expressed as the “return on investment” in higher education, or the annualised boost to lifetime earnings from gaining a degree. ... The premium includes the income-boosting effects of personal characteristics that are more likely to be held by those with degrees, not because they acquired them at university, but because they possessed them on admission.
+3. The premium includes the income-boosting effects of personal characteristics that are more likely to be held by those with degrees, not because they acquired them at university, but because they possessed them on admission.
 
 效應評估問句：有上大學會導致教育溢酬較高？
 
-造成選擇性偏誤原因：擁有某些個人特質容易上大學，所以單純比較上大學對教育溢酬的影響，可能只是在比較哪些特質的人教育溢酬較高。
+造成選擇性偏誤原因：擁有某些特質的人容易上大學，所以單純比較上大學對教育溢酬的影響，可能只是在比較哪些特質的人教育溢酬較高。
 ```
 ```
-4. The Economist’s analysis of the data finds that returns are linked to the share of people with degrees, and the range of earnings. ...In a comparison of the earnings of people with degrees and people without them, those who start university but do not finish are lumped in with those who never started, even though they, too, will have paid fees and missed out on earnings. 
+4. 
 
-Overstating the graduate premium is not the only reason policymakers overestimate the wider benefits of increasing the share of young people who go to university. The usual way to calculate the social returns of higher education is to sum up all the graduate premiums and subtract any public subsidies. But degrees are in part a way to access a “positional good” that benefits one person at the expense of another. Part of the premium comes from gaining an advantage over others in the competition for a good job, rather than the acquisition of productivity-boosting skills and knowledge. A complete calculation would include not just gains to graduates, but losses to non-graduates.
+效應評估問句：
 
-效應評估問句：收入區間與學位的高低有關嗎？
-
-造成選擇性偏誤原因：從計算「高等教育投資報酬率」來探討，雖然某些學生進入大學就讀，但在學習上無法適應而選擇退學或者在競爭中被淘汰，導致在計算每年報酬率時，他們被劃分到大學以下的類別當中，又因為他們可能還未找到工作或是在大學學習時，主要還是開銷學費等居多，所得的比重並不會佔太多，造成計算高等教育報酬率時，低估減項，而高估整體報酬率。
+造成選擇性偏誤原因：
 ```
