@@ -1,15 +1,10 @@
----
-title: "20180327作業"
-author: "Lin Han"
-date: "2018/3/22"
-output: html_document
----
+
 ---
 title: "作業1"
 output: html_notebook
 params:
-  name: ["林盈涵",""]
-  id: [710661114,]
+  name:  ["林昭芳","郭家瑄",林盈涵",林妤洵"]
+  id: [710661126,710661116,710661114,710661127]
   group: 3
 ---
 請依狀況更改上面的name,id及group（分別代表組員姓名，學號及組號），但請勿更改下面三行的設定。  
@@ -20,20 +15,6 @@ params:
 組號：`r params$group`  
 
 ***
-
-請直接在本檔案作答，存檔時也無需另存新檔名。交作業時，只由「組長」送出pull request給我。
-
-作業除了讓同學檢視課堂所學程式外，有些題目只會給你未教過的函數建議（純為建議，你也可以不使用），你必需使用Help或網路查尋去了解函數的正確使用；搜詢正確程式函數使用的能力，也是程式設計的基本功。
-
-如果是程式的答案，請設立如下的chunk區塊並在裡面作答
-```{r}
-#你的程式答案
-```
-
-如果是文字答案，請設立沒有{r}的chunk區塊並在裡面作答。
-```
-你的文字答案。
-```
 
 # 教育與薪資 
 
@@ -50,7 +31,7 @@ wage1<- read_dta("http://fmwww.bc.edu/ec-p/data/wooldridge/wage1.dta")
 
 ```
   1. wage                     average hourly earnings(平均每小時收入)
-  2. educ                     years of education(幾年的教育)
+  2. educ                     years of education(教育年限)
   3. exper                    years potential experience(推估工作年資)
   4. tenure                   years with current employer(與現任雇主共同工作時間)
   5. nonwhite                 =1 if nonwhite(非白人=1)
@@ -81,6 +62,9 @@ wage1 %>%
   lm(formula = wage ~ educ)
 # 54%
 ```
+```
+我們發現每增加一年的教育年限，勞動薪資會增加0.5414
+```
 
 2. 請使用`psych::pairs.panels()`來描述教育年限(educ)與勞動薪資(wage)間的特質。在兩者的相關度上，有沒有那個變數取對數(log)會比較好？為什麼？
 ```{r}
@@ -95,6 +79,9 @@ wage1 %>%
   select(educ,lwage) %>%
   pairs.panels()
 ```
+```
+對薪資取log會比較好，因為它是右偏資料。
+```
 
 3. 請使用OLS估計以下的迴歸模型：
 $$log(wage)=\beta_0+\beta_1 educ+\epsilon$$
@@ -107,12 +94,11 @@ wage1 %>%
 4. 從資料裡選出兩個可能造成$\beta_1$OLS估計值帶有選擇性偏誤的變數，請說明理由並加以適當敍述統計量佐證。
 
 ```
-  3. exper                    years potential experience(推估工作經驗年資)
-  #因其與educ的相關係數有-0.2995418，相比其他為高
-  9. smsa                     =1 if live in SMSA(住在Standard Metropolitan Statistical Area(美國行政區劃單位) 大城市及其郊區中，smsa = 1)
-  #因其與smsa的相關係數有0.2243087，相比其他為高
+ 第三個變數 exper                    years potential experience(推估工作經驗年資)
   
+  因其與educ的相關係數有-0.2995418，相比其他為高
 ```
+
 ```{r}
 is_numeric<-function(x) all(is.numeric(x))
 cor_educ<-function(x) cor(x,wage1$educ)
@@ -122,12 +108,21 @@ wage1 %>%
   summarise_all(cor_educ)
 
 ```
-```{r}
+  
+```
+  第九個變數 smsa                     =1 if live in SMSA(住在Standard Metropolitan Statistical Area(美國行政區劃單位) 大城市及其郊區中，smsa = 1)
+  
+  因其與smsa的相關係數有0.2243087，相比其他為高
+  
+```
+
+  ```{r}
 library(psych)
 wage1 %>%
-  select(educ	,exper,smsa) %>%
+  select(educ ,exper,smsa) %>%
   pairs.panels()
-```  
+```
+
 
 5. 延續上題，請完成對應複迴歸模型的估計。
 ```{r}
@@ -181,28 +176,64 @@ uvvv
 
 在問題7中我們計算了三群人的平均薪資。請問若要避免文章所描述的問題，你會如何計算一位高中生若選擇上大學他會得到的預期薪資好處。[只使用問題7的數字及三群人人數]
 
-# 文章閱讀
-[Going to university is more important than ever for young people.
-But the financial returns are falling.](https://www.economist.com/news/international/21736151-financial-returns-are-falling-going-university-more-important-ever)
-
-文章中有不少效應評估問句，及造成其無法直接進行簡單迴歸估計的選擇性偏誤原因，請將所有這樣的段落貼過來、寫下它的效應評估問句及造成選擇性偏誤的原因（文章中所提的，非自我發揮）。例如：
+```{r}
++filter(wage1,educ>=13,educ<=15)
+```
 
 ```
-1. Policymakers regard it as obvious that sending more young people to university will boost economic growth and social mobility. ... But comparisons between countries provide little evidence of these links. Richer countries have more graduates, but that could be because there is more money to spare, and less urgency to start earning.
-
-效應評估問句：越多人上大學該國經濟表現越好？
-
-造成選擇性偏誤原因：「時間多錢多多」造成「越多人上大學」，「時間多錢多多」是「富有國家」常見現象，所以單純比較上大學比例高和低的國家，有可能只是在比誰的「時間多、錢多」。（這類的選擇性偏誤也稱為內生性偏誤。）
+有113個人高中畢業後就讀大學，但大學未畢業
 ```
 
 
 ```{r}
-ab<-wage1 %>% 
-  select(educ,wage) 
-ab$educ_cut<-cut(ab$educ,breaks = c(0,11,12,15,16,Inf))
-abc <- ab %>%
-  group_by(educ_cut) %>% summarise(size_educ = n(), sumwage = sum(wage) , meanwage = mean(wage))
-abc
+filter(wage1,educ==16)
+```
+
+````
+(68/68+113)*8.04+(113/68+113)*6.05=6.8
+6.8>5.37，我已上大學得到的預期薪資會比高中畢業來的好。
+````
+
+# 文章閱讀
+[Going to university is more important than ever for young people.
+But the financial returns are falling.](https://www.economist.com/news/international/21736151-financial-returns-are-falling-going-university-more-important-ever)
+
 
 ```
+1.
+Most students know that a degree in mathematics or finance is likely to be more lucrative than one in music or social work. 
+
+效應評估問句：
+擁有數學或金融學位的賺錢機會比擁有音樂或社工學位的機會大嗎?
+
+造成選擇性偏誤原因：
+從事金融行業人數比例漸漸變多，反而在這個職位上要更有競爭力才能賺到更多的錢，相較於音樂和社工，他們的賺錢機會更多。
+
+2.
+Better-educated people should surely be more likely to come up with productivity-boosting innovations
+評估問句:
+人們受教育越高，就越有可能做出創新提高生產效率?
+
+造成選擇性偏誤的原因：
+受教育程度越高，未必能真的學到並學以致用於提高生產效率。
+
+3.
+"The main piece of evidence cited by policymakers is the “graduate premium”—the difference between the average earnings of someone with a degree and someone with no more than a secondary-school education, after accounting for fees and the income forgone while studying.This gap is often expressed as the “return on investment” in higher education, or the annualised boost to lifetime earnings from gaining a degree."
+
+評估問句：
+學歷越高，平均薪水變高？
+
+造成選擇性偏誤原因：
+這此提及平均的概念，會掩蓋在不同產業間所造成薪水的差異。
+
+4.
+Richer countries have more graduates, but that could be because there is more money to spare, and less urgency to start earning. Rich economies grow more slowly, but that is probably because they have fewer easy ways to raise productivity, not because education depresses their growth.
+
+效應評估問句：
+越多人上大學該國經濟表現越好？
+
+造成選擇性偏誤原因：
+發達國家有更多大學畢業生，但畢業平均薪水不高的原因，可能因富裕而賺錢的急迫性不強
+```
+
 
