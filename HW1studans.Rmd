@@ -95,10 +95,26 @@ wage1 %>%
 
 5. 延續上題，請完成對應複迴歸模型的估計。
 
-
 ```{r}
-wage1 %>% lm(log(wage)~educ+exper+smsa,data=.)
+wage1 %>% 
+  lm(lwage~educ,data=.) -> model_1
+wage1 %>%
+  lm(lwage~educ+exper+smsa,data=.) -> model_2
+
+library(sandwich)
+library(lmtest)
+library(stargazer)
+
+#使用vcovHC函數來計算HC1型的異質變異（即橫斷面資料下的線性迴歸模型）
+coeftest(model_1, vcov. = vcovHC, type="HC1") -> model_1_coeftest
+coeftest(model_2, vcov. = vcovHC, type="HC1") -> model_2_coeftest
+
+stargazer(model_1, model_2, 
+          se=list(model_1_coeftest[,"Std. Error"], model_2_coeftest[,2]),
+          type="text",
+          align=TRUE)
 ```
+
 
 6. 大致說來，教育年限12年表示高中畢業，大學畢業會有16年的教育，請問介於12年以上-16年以下的教育年限代表什麼？
 
