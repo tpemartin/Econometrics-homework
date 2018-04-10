@@ -6,16 +6,9 @@ params:
   id: [410373092,310356001]
   group: 4
 ---
-請依狀況更改上面的name,id及group（分別代表組員姓名，學號及組號），但請勿更改下面三行的設定。  
-
-***
 姓名：`r params$name`  
 學號：`r params$id`  
 組號：`r params$group`  
-
-***
-
-請直接在本檔案作答，存檔時也無需另存新檔名。交作業時，只由「組長」送出pull request給我。
 
 作業除了讓同學檢視課堂所學程式外，有些題目只會給你未教過的函數建議（純為建議，你也可以不使用），你必需使用Help或網路查尋去了解函數的正確使用；搜詢正確程式函數使用的能力，也是程式設計的基本功。
 
@@ -79,6 +72,11 @@ wage1 <- read_dta("http://fmwww.bc.edu/ec-p/data/wooldridge/wage1.dta")
 
 
 2. 請使用`psych::pairs.panels()`來描述教育年限(educ)與勞動薪資(wage)間的特質。在兩者的相關度上，有沒有那個變數取對數(log)會比較好？為什麼？
+```{r}
+wage1 %>% select(educ,wage) %>%
+  mutate(lwage=log(wage)) %>%
+  pairs.panels()
+```
 
 ```{r}
 wage1 %>%
@@ -135,20 +133,18 @@ summary(lm(log(wage1$wage)~ wage1$educ + wage1$female + wage1$smsa))
 7. 取出教育年限介於12-16年（含上下限）的資料，分別計算以下三群教育年限勞動者的平均薪資：12年，13-15年，16年。
 [hint: dplyr::filter(), dplyr::group_by(), dplyr::summarise(), cut()]
 ```{r}
-wage1 %>% 
-  filter(educ >= 12 & educ <= 16) %>% 
-  group_by(cut(educ, c(11, 12, 15, 16))) %>% 
-  summarise(avgwage = mean(wage)) -> wageforUniTreatment
-names(wageforUniTreatment)[1] <- "EducInterval"
-wageforUniTreatment
-# 不曉得有沒有更好的cut的表達方式？
+library(magrittr)
+wage1 %>% filter(educ>11 & educ<17) %>%
+  mutate(educ_level=cut(educ,c(11,12.5,15.5,16.5))) %>%
+  group_by(educ_level) %>%
+  summarise(meanwage=mean(wage))
 ```
 
 8. 在下一部份的文章閱讀練習裡，文章提到: 
 
 > In a comparison of the earnings of people with degrees and people without them, those who start university but do not finish are lumped in with those who never started, even though they, too, will have paid fees and missed out on earnings. Their numbers are considerable. 
 
-在問題7中我們計算了三群人的平均薪資。請問若要避免文章所描述的問題，你會如何計算一位高中生若選擇上大學他會得到的預期薪資好處。[只使用問題7的數字及三群人人數]
+在問題7中我們計算了三群人的平均薪資。請問若要避免文章所描述的問題，你會如何計算一位高中生若選擇上大學的預期薪資好處。[只使用問題7的數字及三群人人數]
 
 ```{r}
 # wage1 %>% filter(educ==12) %>% nrow()
@@ -173,7 +169,7 @@ x
 [Going to university is more important than ever for young people.
 But the financial returns are falling.](https://www.economist.com/news/international/21736151-financial-returns-are-falling-going-university-more-important-ever)
 
-文章中有不少效應評估問句，及造成其無法直接進行簡單迴歸估計的選擇性偏誤原因，請將所有這樣的段落貼過來、寫下它的效應評估問句及造成選擇性偏誤的原因（文章中所提的，非自我發揮）。例如：
+文章中有不少效應評估問句，及造成其無法直接進行簡單迴歸估計的選擇性偏誤原因，請將所有這樣的段落貼過來、寫下它的效應評估問句及造成選擇性偏誤的原因。例如：
 
 ```
 Seletion bias是指個體立足點會影響其是否接受試驗與否。
@@ -183,9 +179,10 @@ Seletion bias是指個體立足點會影響其是否接受試驗與否。
 效應評估問句：越多人上大學該國經濟表現越好？
 
 造成選擇性偏誤原因：「時間多錢多多」造成「越多人上大學」，「時間多錢多多」是「富有國家」常見現象，所以單純比較上大學比例高和低的國家，有可能只是在比誰的「時間多、錢多」。（這類的選擇性偏誤也稱為內生性偏誤。）
+```
 
 (以下為作答)
-
+```
 2. The World Bank has produced estimates of this return for 139 economies. It varies from place to place, but is substantial everywhere. The Economist’s analysis of the data finds that returns are linked to the share of people with degrees, and the range of earnings. Returns in Britain and Germany are similar to those in America. In sub-Saharan Africa, where degrees are scarce and the least-educated workers earn little, they are around 21% a year. In Scandinavia, where wages are less unequal and two-fifths of adults have degrees, they are around 9%.
 
 效應評估問句：該地區越多人擁有大學學歷，學歷報酬越低？
@@ -202,3 +199,5 @@ Seletion bias是指個體立足點會影響其是否接受試驗與否。
 效應評估問句：榜上有名讀到好大學的人，其學歷報酬較高？
 造成選擇性偏誤原因：讀到好大學的同學和普通大學的同學，比較他們日後賺錢的多寡，需要留意好的私立學校（以美國為例）學費並不便宜，若單純只比較讀到好大學的同學和爛大學，有可能只是在比誰家庭環境較理想，有的環境較多，較有能力上好的私立大學。
 
+
+```
