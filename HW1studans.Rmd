@@ -124,6 +124,11 @@ graduate premium是不超過中學教育的學生與受超過中學教育學生�
 效應評估問句：獎學金減去補助金即等於高學歷者的社會回報？
 造成選擇性偏誤原因：有可能高學歷者在拚學歷時，並不是為了獎學金而努力讀書，有時反而是因為周遭同學競爭而促使努力，或是為了取得好的工作而努力讀書，應該包含機會成本（若不努力讀書會失去什麼）。
 ```
+```
+Companies routinely require applicants to have degrees, even though only a minority of those already working in the role have them. This increases the graduate premium - but by punishing non-graduates rather than boosting the absolute returns to degrees.
+效應評估問句：graduate premium 增加使absolute returns to degrees增加？
+造成選擇性偏誤的原因:"companies routinely require applicants to have degrees"造成"graduate premium增加"，"companies routinely require applicants to have degrees"造成"returns to degrees 增加"，所以單純比較兩者會造成選擇性偏誤
+```
 
 
 
