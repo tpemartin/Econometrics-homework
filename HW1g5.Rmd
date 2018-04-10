@@ -4,7 +4,7 @@ output: html_notebook
 params:
   name: ["蔡朕寧","林宜臻"]
   id: [710661121,710661125]
-  group:5
+  group:5
 ---
 請依狀況更改上面的name,id及group（分別代表組員姓名，學號及組號），但請勿更改下面三行的設定。  
 
@@ -12,7 +12,6 @@ params:
 姓名：`r params$name`  
 學號：`r params$id`  
 組號：`r params$group`  
-
 ***
 
 請直接在本檔案作答，存檔時也無需另存新檔名。交作業時，只由「組長」送出pull request給我。
