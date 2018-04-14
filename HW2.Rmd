@@ -2,8 +2,8 @@
 title: "作業2"
 params:
   group: 11
-  id: [1234, 5678]
-  name: ["王","李"]
+  id: [710661113, 710661123, 710661124]
+  name: ["陳宜榛","林云方","周緬緬"]
 output:
   html_notebook:
     df_print: paged
@@ -26,7 +26,7 @@ knitr::opts_chunk$set(echo = TRUE,warning=F,message=F)
 
 執行以下程式引入勞動市場資料labordata，資料說明請見連結[Cornwell and Rupert Returns to Schooling Data, 595 Individuals, 7 Years.](http://people.stern.nyu.edu/wgreene/Econometrics/PanelDataSets.htm)
 
-```{r}
+```{r 讀取資料}
 library(readr)
 labordata <- read_csv("http://people.stern.nyu.edu/wgreene/Econometrics/cornwell&rupert.csv")
 ```
@@ -36,8 +36,8 @@ labordata <- read_csv("http://people.stern.nyu.edu/wgreene/Econometrics/cornwell
 ### (1)
 將labordata只留下第7年的資料
 
-```{r}
-
+```{r 留下第7年的資料}
+labordata %<>% filter(YEAR=="7")
 ```
 
 ### (2) 
@@ -45,8 +45,8 @@ labordata <- read_csv("http://people.stern.nyu.edu/wgreene/Econometrics/cornwell
 $$wks_{i}=\beta_0+\beta_1 lwage_{i}+\epsilon_i$$
 
 請使用plot()畫出橫軸為每週工時（WKS）與縱軸為取對數後薪資（LWAGE, 後往直接稱呼「薪資」）的離散圖。
-```{r}
-
+```{r 工時與薪資的離散圖}
+labordata$WKS %>% plot(labordata$LWAGE)
 ```
 
 ### (3)
@@ -54,14 +54,16 @@ $$wks_{i}=\beta_0+\beta_1 lwage_{i}+\epsilon_i$$
 [請不要使用任何程式或數字計算，單純文字故事邏輯]
 
 ```
-
+勞工是否屬於工會，可能會造成選擇性偏誤。因為工會的談判力量較強大，通常可以對雇主要求較高的薪資，所以加入公會的人薪資通常會比沒加入工會的人高。另外工會與雇主的談判也會包括工作時數的部分，工會可以向雇主要求較低的工時，所以藉由工會與雇主談判，加入工會的人可能其工時也會比沒加入公會的人低。
 ```
 
 ### (4)
 在不做迴歸下，請用union分組計算lwage與wks的平均，並用數字結果來支持你在(c)小題的擔心。
 
-```{r}
-
+```{r 用union分組計算lwage與wks的平均}
+labordata %>%
+  group_by(UNION) %>%
+  summarise(mean(LWAGE),mean(WKS))
 ```
 
 ### (5)
@@ -70,14 +72,33 @@ $$wks_{i}=\beta_0+\beta_1 lwage_{i} + \beta_2 ed_{i} +\beta_3 union_{i} +\beta_4
 請用『純文字說明』(不要寫程式，不要算任何數字)：為什麼要再放教育水準及性別二個控制變數？
 
 ```
-
+因為我們在同樣是否加入公會的人中，還是無法控制住「非薪資效應的勞動供給量」對薪資與工時關聯的干擾，所以可加入至少兩個工具變數以改善此問題。
+1.教育水準：通常教育水準越高，其薪資也會較高，就像碩士、學士的起薪不同，不過如果在同樣的薪資下，教育水準的高低便不會直接影響工作時數，所以我們可以找教育水準當控制變數。
+2.性別：因為職場的性別歧視，通常男性平均薪資會比女性平均薪資高，不過如果在同樣的薪資下，是男性或女性便不會直接影響到工作時數，所以我們可以找性別當控制變數。
 ```
 
 ### (6)
 同時OLS估計簡單迴歸和複迴歸下的勞動供給，並用stargarzer呈現估計結果（請設定type="html"）。
 
-```{r}
-
+```{r 簡單回歸、複迴歸r結果}
+#建立model
+modelr1<-WKS ~ LWAGE
+model2<-WKS ~ LWAGE+UNION
+#跑OLS
+ols1<-lm(model1,labordata)
+ols2<-lm(model2,labordata)
+#載入packages
+library(sandwich)
+library(lmtest)
+library(stargazer)
+#使用vcovHC函數來計算HC1型的異質變異（即橫斷面資料下的線性迴歸模型）
+coeftest(ols1, vcov. = vcovHC, type="HC1") -> ols1_coeftest
+coeftest(ols2, vcov. = vcovHC, type="HC1") -> ols2_coeftest
+#OLS結果比較
+stargazer(ols1,ols2,
+          se=list(ols1_coeftest[,"Std. Error"],
+                  ols2_coeftest[,2]),
+          type="html")
 ```
 
 ### (7)
