@@ -1,0 +1,149 @@
+---
+title: "作業2"
+params:
+  group: 11
+  id: [1234, 5678]
+  name: ["王","李"]
+output:
+  html_notebook:
+    df_print: paged
+---
+請依狀況更改上面的name,id及group（分別代表組員姓名，學號及組號），但請「勿」更改下面姓名、學號、組號三行的設定。  
+
+***
+
+姓名：`r params$name`  
+學號：`r params$id`  
+組號：`r params$group`  
+
+***
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,warning=F,message=F)
+```
+
+# 勞動市場
+
+執行以下程式引入勞動市場資料labordata，資料說明請見連結[Cornwell and Rupert Returns to Schooling Data, 595 Individuals, 7 Years.](http://people.stern.nyu.edu/wgreene/Econometrics/PanelDataSets.htm)
+
+```{r}
+library(readr)
+labordata <- read_csv("http://people.stern.nyu.edu/wgreene/Econometrics/cornwell&rupert.csv")
+```
+
+## 勞動供給
+
+### (1)
+將labordata只留下第7年的資料
+
+```{r}
+
+```
+
+### (2) 
+我們想要估計薪資對工時的影響（即勞動供給），考慮如下的勞動供給函數
+$$wks_{i}=\beta_0+\beta_1 lwage_{i}+\epsilon_i$$
+
+請使用plot()畫出橫軸為每週工時（WKS）與縱軸為取對數後薪資（LWAGE, 後往直接稱呼「薪資」）的離散圖。
+```{r}
+
+```
+
+### (3)
+我們擔心「勞工屬於工會」這個變數(union, 為1若屬於工會, 反之為0)遺漏的話會造成勞動供給的工資係數估計偏誤。請用文字故事說明為什麼會有這層擔心？[記得要有兩個面向故事] 這擔心應該會高估或低估工資係數？
+[請不要使用任何程式或數字計算，單純文字故事邏輯]
+
+```
+
+```
+
+### (4)
+在不做迴歸下，請用union分組計算lwage與wks的平均，並用數字結果來支持你在(c)小題的擔心。
+
+```{r}
+
+```
+
+### (5)
+我們最後考慮如下的複迴歸勞動供給函數
+$$wks_{i}=\beta_0+\beta_1 lwage_{i} + \beta_2 ed_{i} +\beta_3 union_{i} +\beta_4 fem_{i}+\epsilon_{i}$$
+請用『純文字說明』(不要寫程式，不要算任何數字)：為什麼要再放教育水準及性別二個控制變數？
+
+```
+
+```
+
+### (6)
+同時OLS估計簡單迴歸和複迴歸下的勞動供給，並用stargarzer呈現估計結果（請設定type="html"）。
+
+```{r}
+
+```
+
+### (7)
+複迴歸模型估計下，LWAGE的係數要如何詮譯？顯不顯著？
+
+```
+
+```
+
+### (8)
+找出一個使複迴歸模型在控制變數下依然不符合條件性獨立的故事（必需牽扯到labordata資料不會有的變數，所以只能純文字故事）。
+
+```
+
+```
+
+## 內生性偏誤
+在(2)小題，圖形看不出明顯正斜率的勞動供給線，一個主要原因是薪資與工時是勞動供需決定的結果，因此任何影響勞動供給的因素都會影響薪資，也就是供給線的誤差項不你放多少的變數，最後誤差項還是會改變供給線，也因此一定會影響薪資——誤差項一定會和薪資變數相關。使用複迴歸不管加多少控制變數永遠不會得到薪資係數的一致性估計，這樣的狀況我們稱為內生性偏誤（endogeneity bias）。
+
+然而內生性偏誤卻是相當容易使用工具變數解決，解決方式就是從勞動「需求」函數下手——任何影響勞動需求線的因素都會是合理的工具變數。
+
+### (9)
+在勞動市場中，產業別不同其對勞動力的需求也不一樣。另外，不同地點的勞動需求狀況也不同。使用文字邏輯說明「產業別」、勞動者「居住地」可能是合理工具變數的理由。
+
+```
+
+```
+
+### (10)
+使用工具變數法及產業別（ind）當工具變數，估計複迴歸模型下的$\beta_1$係數，並進行工具變數合理性的相關檢定。
+
+```{r}
+
+```
+
+### (11) 
+使用工具變數法, 同時使用ind及smsa當工具變數，估計複迴歸模型下的$\beta_1$係數，並進行工具變數合理性的相關檢定。
+
+```{r}
+
+```
+
+### (12)
+將簡單迴歸、複迴歸、一個工具變數、二個工具變數的四種估算結果（含應有的檢定），用stargazer產生「一張」報表同時呈現（請設定type="html"）。
+
+```{r}
+
+```
+
+
+# 文章閱讀
+以下問題請依《經濟學人》文章來回答：
+[Forcing employers to reveal their gender pay gaps is making them think](https://www.economist.com/news/britain/21739993-despite-its-flaws-new-obligation-could-spark-change-employment-practices-forcing)
+
+## 效應結構式
+
+### (13)
+文章問的因果效應問句是什麼？（盡量一言以敝之）
+
+```
+
+```
+
+### (14)
+找出文章中所列舉可造成OVB（omitted variable bias）的應控制變數，並說明它會造成OVB的「兩」面向原因（缺一不可）。
+
+```
+
+```

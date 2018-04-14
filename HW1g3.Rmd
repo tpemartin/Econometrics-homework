@@ -1,0 +1,251 @@
+---
+title: "作業1"
+output: html_notebook
+params:
+  name: ["林昭芳","郭家瑄","林盈涵",林妤洵"]
+  id: [710661126,710661116,710661114,710661127]
+  group: 3
+  
+---
+
+
+
+***
+姓名：`r params$name`  
+學號：`r params$id`  
+組號：`r params$group`  
+
+***
+
+
+# 教育與薪資 
+
+一開始請執行
+```{r}
+rm(list=ls())
+library(dplyr)
+library(psych)
+library(haven)
+wage1<- read_dta("http://fmwww.bc.edu/ec-p/data/wooldridge/wage1.dta")
+```
+
+1. 請依據此[連結](http://fmwww.bc.edu/ec-p/data/wooldridge/wage1.des)說明wage1資料的來源及變數代表意義。[其中potential experience指得是推估工作經驗年資]
+
+```
+  1. wage                     average hourly earnings(平均每小時收入)
+  2. educ                     years of education(教育年限)
+  3. exper                    years potential experience(推估工作年資)
+  4. tenure                   years with current employer(與現任雇主共同工作時間)
+  5. nonwhite                 =1 if nonwhite(非白人=1)
+  6. female                   =1 if female(女性=1)
+  7. married                  =1 if married(已婚= 1)
+  8. numdep                   number of dependents(家屬人數)
+  9. smsa                     =1 if live in SMSA(住在Standard Metropolitan Statistical Area(美國行政區劃單位) 大城市及其郊區，smsa = 1)
+ 10. northcen                 =1 if live in north central U.S(住在美國北部)
+ 11. south                    =1 if live in southern region(住在南部地區)
+ 12. west                     =1 if live in western region(住在西部地區)
+ 13. construc                 =1 if work in construc. indus.(如果從事建築業)
+ 14. ndurman                  =1 if in nondur. manuf. indus.(如果從事非耐久財製造)
+ 15. trcommpu                 =1 if in trans, commun, pub ut(如果從事運輸產業,通訊產業與公用事業)
+ 16. trade                    =1 if in wholesale or retail(如果從事零售批發業)
+ 17. services                 =1 if in services indus.(如果從事服務業)
+ 18. profserv                 =1 if in prof. serv. indus.(如果從事專業服務產業)
+ 19. profocc                  =1 if in profess. occupation(如果是教授)
+ 20. clerocc                  =1 if in clerical occupation(如果是牧師)
+ 21. servocc                  =1 if in service occupation(如果是服務生)
+ 22. lwage                    log(wage)(log(平均時薪))
+ 23. expersq                  exper^2(推估工作經驗年資^2)
+ 24. tenursq                  tenure^2(與現任雇主共同工作時間^2)
+```
+
+我們想要問："教育年限增加一年對勞動薪資的影響有多少？"
+```{r}
+wage1 %>%
+  lm(formula = wage ~ educ)
+# 54%
+```
+
+```
+我們發現每增加一年的教育年限，勞動薪資會增加0.5414
+```
+
+2. 請使用`psych::pairs.panels()`來描述教育年限(educ)與勞動薪資(wage)間的特質。在兩者的相關度上，有沒有那個變數取對數(log)會比較好？為什麼？
+```{r}
+wage1 %>% 
+  select(educ,wage) %>%
+  pairs.panels()
+```
+
+
+```{r}
+wage1 %>% 
+  select(educ,lwage) %>%
+  pairs.panels()
+```
+
+```
+對薪資取log會比較好，因為它是右偏資料。
+```
+
+3. 請使用OLS估計以下的迴歸模型：
+$$log(wage)=\beta_0+\beta_1 educ+\epsilon$$
+```{r}
+wage1 %>% 
+  lm(lwage~educ,data=.) %>% 
+  summary
+```
+
+
+4. 從資料裡選出兩個可能造成$\beta_1$OLS估計值帶有選擇性偏誤的變數，請說明理由並加以適當敍述統計量佐證。
+
+```
+ 第三個變數 exper                    years potential experience(推估工作經驗年資)
+  
+  因其與educ的相關係數有-0.2995418，相比其他為高
+```
+
+```{r}
+is_numeric<-function(x) all(is.numeric(x))
+cor_educ<-function(x) cor(x,wage1$educ)
+
+wage1 %>%  
+  select_if(is_numeric) %>%
+  summarise_all(cor_educ)
+
+```
+  
+```
+  第九個變數 smsa                     =1 if live in SMSA(住在Standard Metropolitan Statistical Area(美國行政區劃單位) 大城市及其郊區中，smsa = 1)
+  
+  因其與smsa的相關係數有0.2243087，相比其他為高
+  
+```
+
+```{r}
+library(psych)
+wage1 %>%
+  select(educ ,exper,smsa) %>%
+  pairs.panels()
+```
+
+5. 延續上題，請完成對應複迴歸模型的估計。
+```{r}
+wage1 %>%
+  lm(lwage~educ+exper+smsa,data=.)%>%
+  summary
+```
+```{r}
+wage1 %>% 
+  lm(lwage~educ,data=.) -> model_1
+wage1 %>%
+  lm(lwage~educ+exper+smsa,data=.) -> model_2
+
+library(sandwich)
+library(lmtest)
+library(stargazer)
+
+#使用vcovHC函數來計算HC1型的異質變異（即橫斷面資料下的線性迴歸模型）
+coeftest(model_1, vcov. = vcovHC, type="HC1") -> model_1_coeftest
+coeftest(model_2, vcov. = vcovHC, type="HC1") -> model_2_coeftest
+
+stargazer(model_1, model_2, 
+          se=list(model_1_coeftest[,"Std. Error"], model_2_coeftest[,2]),
+          type="text",
+          align=TRUE)
+```
+
+
+6. 大致說來，教育年限12年表示高中畢業，大學畢業會有16年的教育，請問介於12年以上-16年以下的教育年限代表什麼？
+
+```
+有高中文憑且有選擇讀大學，但沒有畢業。
+```
+
+7. 取出教育年限介於12-16年（含上下限）的資料，分別計算以下三群教育年限勞動者的平均薪資：12年，13-15年，16年。
+[hint: dplyr::filter(), dplyr::group_by(), dplyr::summarise(), cut()]
+
+```{r}
+uvv<-wage1 %>% arrange(educ,wage) %>% 
+  filter(educ>= 12,educ<= 16) %>%
+  select(educ,wage) 
+uvv$educ_cut<-cut(uvv$educ,breaks = c(11,12,15,16))
+uvvv <- uvv %>%
+  group_by(educ_cut) %>% summarise(size_educ = n(), sumwage = sum(wage) , meanwage = mean(wage))
+uvvv %>% mutate("theer parties name"=c("12","13-15","16")) -> uvvv
+uvvv
+```
+
+8. 在下一部份的文章閱讀練習裡，文章提到: 
+
+> In a comparison of the earnings of people with degrees and people without them, those who start university but do not finish are lumped in with those who never started, even though they, too, will have paid fees and missed out on earnings. Their numbers are considerable. 
+
+在問題7中我們計算了三群人的平均薪資。請問若要避免文章所描述的問題，你會如何計算一位高中生若選擇上大學他會得到的預期薪資好處。[只使用問題7的數字及三群人人數]
+
+```{r}
++filter(wage1,educ>=13,educ<=15)
+```
+
+```
+有113個人高中畢業後就讀大學，但大學未畢業
+```
+
+
+```{r}
+filter(wage1,educ==16)
+```
+
+````
+(68/68+113)*8.04+(113/68+113)*6.05=6.8
+6.8>5.37，我已上大學得到的預期薪資會比高中畢業來的好。
+````
+
+# 文章閱讀
+[Going to university is more important than ever for young people.
+But the financial returns are falling.](https://www.economist.com/news/international/21736151-financial-returns-are-falling-going-university-more-important-ever)
+
+文章中有不少效應評估問句，及造成其無法直接進行簡單迴歸估計的選擇性偏誤原因，請將所有這樣的段落貼過來、寫下它的效應評估問句及造成選擇性偏誤的原因（文章中所提的，非自我發揮）。例如：
+
+```
+1. Policymakers regard it as obvious that sending more young people to university will boost economic growth and social mobility. ... But comparisons between countries provide little evidence of these links. Richer countries have more graduates, but that could be because there is more money to spare, and less urgency to start earning.
+
+效應評估問句：越多人上大學該國經濟表現越好？
+
+造成選擇性偏誤原因：「時間多錢多多」造成「越多人上大學」，「時間多錢多多」是「富有國家」常見現象，所以單純比較上大學比例高和低的國家，有可能只是在比誰的「時間多、錢多」。（這類的選擇性偏誤也稱為內生性偏誤。）
+```
+
+```
+1.
+Most students know that a degree in mathematics or finance is likely to be more lucrative than one in music or social work. 
+
+效應評估問句：
+擁有數學或金融學位的賺錢機會比擁有音樂或社工學位的機會大嗎?
+
+造成選擇性偏誤原因：
+從事金融行業人數比例漸漸變多，反而在這個職位上要更有競爭力才能賺到更多的錢，相較於音樂和社工，他們的賺錢機會更多。
+
+2.
+Better-educated people should surely be more likely to come up with productivity-boosting innovations
+評估問句:
+人們受教育越高，就越有可能做出創新提高生產效率?
+
+造成選擇性偏誤的原因：
+受教育程度越高，未必能真的學到並學以致用於提高生產效率。
+
+3.
+"The main piece of evidence cited by policymakers is the “graduate premium”—the difference between the average earnings of someone with a degree and someone with no more than a secondary-school education, after accounting for fees and the income forgone while studying.This gap is often expressed as the “return on investment” in higher education, or the annualised boost to lifetime earnings from gaining a degree."
+
+評估問句：
+學歷越高，平均薪水變高？
+
+造成選擇性偏誤原因：
+這此提及平均的概念，會掩蓋在不同產業間所造成薪水的差異。
+
+4.
+Richer countries have more graduates, but that could be because there is more money to spare, and less urgency to start earning. Rich economies grow more slowly, but that is probably because they have fewer easy ways to raise productivity, not because education depresses their growth.
+
+效應評估問句：
+越多人上大學該國經濟表現越好？
+
+造成選擇性偏誤原因：
+發達國家有更多大學畢業生，但畢業平均薪水不高的原因，可能因富裕而賺錢的急迫性不強
+```

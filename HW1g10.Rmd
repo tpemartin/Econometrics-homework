@@ -1,0 +1,176 @@
+---
+title: "作業1"
+output: html_notebook
+params:
+  name: ["徐敏軒","陳培鴻","丁冠文"]
+  id: [710561123,710561118,710561110]
+  group: 10
+---
+請依狀況更改上面的name,id及group（分別代表組員姓名，學號及組號），但請勿更改下面三行的設定。  
+
+***
+姓名：`r params$name`  
+學號：`r params$id`  
+組號：`r params$group`  
+
+***
+
+請直接在本檔案作答，存檔時也無需另存新檔名。交作業時，只由「組長」送出pull request給我。
+
+作業除了讓同學檢視課堂所學程式外，有些題目只會給你未教過的函數建議（純為建議，你也可以不使用），你必需使用Help或網路查尋去了解函數的正確使用；搜詢正確程式函數使用的能力，也是程式設計的基本功。
+
+如果是程式的答案，請設立如下的chunk區塊並在裡面作答
+```{r}
+#你的程式答案
+```
+
+如果是文字答案，請設立沒有{r}的chunk區塊並在裡面作答。
+```
+你的文字答案。
+```
+
+# 教育與薪資 
+
+一開始請執行
+```{r}
+rm(list=ls())
+library(dplyr)
+library(psych)
+library(haven)
+wage1 <- read_dta("http://fmwww.bc.edu/ec-p/data/wooldridge/wage1.dta")
+```
+
+1. 請依據此[連結](http://fmwww.bc.edu/ec-p/data/wooldridge/wage1.des)說明wage1資料的來源及變數代表意義。[其中potential experience指得是推估工作經驗年資]
+
+wage1資料是來自美國民眾
+wage1資料是調查不同教育年限是否會對薪資產生影響，或者有其他因素會影響薪資，其中，wage為被解釋變數(Y)
+wage為薪資，educ為教育年限，exper為工作經驗，tenure為目前的工作之工作年限，nonwhite為是否為白人，married為是否已婚，female為是否為女性，numdep為撫養人數，smsa為是否住在都市，northcen為是否住在北部，south為是否住在南部，west為是否住在西部，services為是否從事服務業，lwage為取log後的薪資
+
+我們想要問："教育年限增加一年對勞動薪資的影響有多少？"
+
+```{r}
+lm(wage~(educ),data=wage1)
+```
+教育年限若增加一年，勞動薪資會增加0.54
+
+2. 請使用`psych::pairs.panels()`來描述教育年限(educ)與勞動薪資(wage)間的特質。在兩者的相關度上，有沒有那個變數取對數(log)會比較好？為什麼？
+
+```{r}
+library(psych)
+wage1 %>% 
+  dplyr::select(educ,wage) %>%
+  pairs.panels()
+```
+
+```{r}
+wage1 %>% 
+  dplyr::select(educ,wage) %>%
+  dplyr::mutate_all(log) %>%
+  pairs.panels()
+```
+
+3. 請使用OLS估計以下的迴歸模型：
+$$log(wage)=\beta_0+\beta_1 educ+\epsilon$$
+
+```{r}
+wage1 %>% lm(log(wage)~(educ),data=.)
+```
+
+4. 從資料裡選出兩個可能造成$\beta_1$OLS估計值帶有選擇性偏誤的變數，請說明理由並加以適當敍述統計量佐證。
+
+## Selection bias常見錯誤
+經由計算educ與profocc兩者的相關係數有0.5，的確顯著，所以可能造成選擇性偏誤
+```{r}
+library("psych")
+wage1 %>% select(educ,profocc) %>% pairs.panels()
+```
+經由計算educ與smsa兩者的相關係數有0.22，的確顯著，所以可能造成選擇性偏誤
+```{r}
+library("psych")
+wage1 %>% select(educ,smsa) %>% pairs.panels()
+```
+
+5. 延續上題，請完成對應複迴歸模型的估計。
+
+```{r}
+wage1 %>% lm(log(wage)~(educ)+(profocc)+(smsa),data=.)
+```
+
+6. 大致說來，教育年限12年表示高中畢業，大學畢業會有16年的教育，請問介於12年以上-16年以下的教育年限代表什麼？
+
+有念大學但沒畢業
+
+7. 取出教育年限介於12-16年（含上下限）的資料，分別計算以下三群教育年限勞動者的平均薪資：12年，13-15年，16年。
+[hint: dplyr::filter(), dplyr::group_by(), dplyr::summarise(), cut()]
+
+```{r}
+filter(wage1,educ==12) 
+```
+
+```{r}
+group_by(wage1,educ==12,add=FALSE) -> educ1 
+```
+
+```{r}
+summarise(educ1,mean(wage))
+```
+教育年限=12勞動者的平均薪資:5.371364
+
+```{r}
+filter(wage1,educ>12,educ<16) 
+```
+
+```{r}
+group_by(wage1,educ>12,educ<16,add=FALSE) -> educ2
+```
+
+```{r}
+summarise(educ2,mean(wage))
+```
+12<教育年限<16勞動者的平均薪資:6.030000
+
+```{r}
+filter(wage1,educ>16) 
+```
+
+```{r}
+group_by(wage1,educ>16,add=FALSE) -> educ3
+```
+
+```{r}
+summarise(educ3,mean(wage))
+```
+教育年限=16勞動者的平均薪資:10.936129
+
+8. 在下一部份的文章閱讀練習裡，文章提到: 
+
+> In a comparison of the earnings of people with degrees and people without them, those who start university but do not finish are lumped in with those who never started, even though they, too, will have paid fees and missed out on earnings. Their numbers are considerable. 
+
+在問題7中我們計算了三群人的平均薪資。請問若要避免文章所描述的問題，你會如何計算一位高中生若選擇上大學他會得到的預期薪資好處。[只使用問題7的數字及三群人人數]
+算教育年限介於13-15的人數和教育年限>16的人數再算選擇讀大學的期望薪資
+
+# 文章閱讀
+[Going to university is more important than ever for young people.
+But the financial returns are falling.](https://www.economist.com/news/international/21736151-financial-returns-are-falling-going-university-more-important-ever)
+
+文章中有不少效應評估問句，及造成其無法直接進行簡單迴歸估計的選擇性偏誤原因，請將所有這樣的段落貼過來、寫下它的效應評估問句及造成選擇性偏誤的原因（文章中所提的，非自我發揮）。例如：
+
+```
+1. Policymakers regard it as obvious that sending more young people to university will boost economic growth and social mobility. ... But comparisons between countries provide little evidence of these links. Richer countries have more graduates, but that could be because there is more money to spare, and less urgency to start earning.
+
+效應評估問句：越多人上大學該國經濟表現越好？
+
+造成選擇性偏誤原因：「時間多錢多多」造成「越多人上大學」，「時間多錢多多」是「富有國家」常見現象，所以單純比較上大學比例高和低的國家，有可能只是在比誰的「時間多、錢多」。（這類的選擇性偏誤也稱為內生性偏誤。）
+```
+
+...
+Clever people tend to earn more.
+效應評估問句：越聰明的人賺越多？
+造成選擇性偏誤的原因:"家庭所得越高"(較有機會多元學習，得到更多資源)造成"人變聰明"，"家庭所得越高"造成"所得較高"，所以單純比較兩者會造成選擇性偏誤
+...
+
+...
+Companies routinely require applicants to have degrees, even though only a minority of those already working in the role have them. This increases the graduate premium - but by punishing non-graduates rather than boosting the absolute returns to degrees.
+效應評估問句：graduate premium 增加使absolute returns to degrees增加？
+造成選擇性偏誤的原因:"companies routinely require applicants to have degrees"造成"graduate premium增加"，"companies routinely require applicants to have degrees"造成"returns to degrees 增加"，所以單純比較兩者會造成選擇性偏誤
+...
