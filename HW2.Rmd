@@ -20,6 +20,9 @@ output:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE,warning=F,message=F)
+library(dplyr)
+library(magrittr)
+library(AER)
 ```
 
 # 勞動市場
@@ -135,8 +138,7 @@ tsls_1iv <- ivreg(
   WKS ~ LWAGE + ED + UNION + FEM | ED + UNION + FEM + IND ,
   data=labordata
   ) 
-summary(tsls_1iv, vcov = sandwich, diagnostics = TRUE, df=Inf) -> tsls_1iv_tests
-tsls_1iv_tests
+summary(tsls_1iv, vcov = sandwich, diagnostics = TRUE, df=Inf)
 ```
 
 ### (11) 
@@ -147,8 +149,7 @@ tsls_2iv <- ivreg(
   WKS ~ LWAGE + ED + UNION + FEM | ED + UNION + FEM + IND + SMSA,
   data=labordata
   )
-summary(tsls_2iv, vcov = sandwich, diagnostics = TRUE, df=Inf) -> tsls_2iv_tests
-tsls_2iv_tests
+summary(tsls_2iv, vcov = sandwich, diagnostics = TRUE, df=Inf)
 ```
 
 ### (12)
@@ -158,7 +159,7 @@ tsls_2iv_tests
 stargazer(ols1,ols2,tsls_1iv,tsls_2iv,
           se=list(ols1_coeftest[,"Std. Error"],
                   ols2_coeftest[,2]),
-          type="text")
+          type="html")
 ```
 
 
