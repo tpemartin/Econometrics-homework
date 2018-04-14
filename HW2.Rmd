@@ -72,7 +72,7 @@ $$wks_{i}=\beta_0+\beta_1 lwage_{i} + \beta_2 ed_{i} +\beta_3 union_{i} +\beta_4
 請用『純文字說明』(不要寫程式，不要算任何數字)：為什麼要再放教育水準及性別二個控制變數？
 
 ```
-因為我們在同樣是否加入公會的人中，還是無法控制住「非薪資效應的勞動供給量」對薪資與工時關聯的干擾，所以可加入至少兩個工具變數以改善此問題。
+因為我們在同樣是否加入公會的人中，還是無法控制住「非薪資效應的勞動供給量」對薪資與工時關聯的干擾，所以加入控制變數以改善此問題。
 1.教育水準：通常教育水準越高，其薪資也會較高，就像碩士、學士的起薪不同，不過如果在同樣的薪資下，教育水準的高低便不會直接影響工作時數，所以我們可以找教育水準當控制變數。
 2.性別：因為職場的性別歧視，通常男性平均薪資會比女性平均薪資高，不過如果在同樣的薪資下，是男性或女性便不會直接影響到工作時數，所以我們可以找性別當控制變數。
 ```
@@ -82,8 +82,8 @@ $$wks_{i}=\beta_0+\beta_1 lwage_{i} + \beta_2 ed_{i} +\beta_3 union_{i} +\beta_4
 
 ```{r 簡單回歸、複迴歸r結果}
 #建立model
-modelr1<-WKS ~ LWAGE
-model2<-WKS ~ LWAGE+UNION
+model1<-WKS ~ LWAGE
+model2<-WKS ~ LWAGE+ED+UNION+FEM
 #跑OLS
 ols1<-lm(model1,labordata)
 ols2<-lm(model2,labordata)
@@ -105,7 +105,7 @@ stargazer(ols1,ols2,
 複迴歸模型估計下，LWAGE的係數要如何詮譯？顯不顯著？
 
 ```
-
+當薪資增加1%時，工作時數會增加 0.538單位，但不顯著
 ```
 
 ### (8)
@@ -130,22 +130,35 @@ stargazer(ols1,ols2,
 ### (10)
 使用工具變數法及產業別（ind）當工具變數，估計複迴歸模型下的$\beta_1$係數，並進行工具變數合理性的相關檢定。
 
-```{r}
-
+```{r 加入一個工具變數}
+tsls_1iv <- ivreg(
+  WKS ~ LWAGE + ED + UNION + FEM | ED + UNION + FEM + IND ,
+  data=labordata
+  ) 
+summary(tsls_1iv, vcov = sandwich, diagnostics = TRUE, df=Inf) -> tsls_1iv_tests
+tsls_1iv_tests
 ```
 
 ### (11) 
 使用工具變數法, 同時使用ind及smsa當工具變數，估計複迴歸模型下的$\beta_1$係數，並進行工具變數合理性的相關檢定。
 
-```{r}
-
+```{r 加入兩個工具變數}
+tsls_2iv <- ivreg(
+  WKS ~ LWAGE + ED + UNION + FEM | ED + UNION + FEM + IND + SMSA,
+  data=labordata
+  )
+summary(tsls_2iv, vcov = sandwich, diagnostics = TRUE, df=Inf) -> tsls_2iv_tests
+tsls_2iv_tests
 ```
 
 ### (12)
 將簡單迴歸、複迴歸、一個工具變數、二個工具變數的四種估算結果（含應有的檢定），用stargazer產生「一張」報表同時呈現（請設定type="html"）。
 
 ```{r}
-
+stargazer(ols1,ols2,tsls_1iv,tsls_2iv,
+          se=list(ols1_coeftest[,"Std. Error"],
+                  ols2_coeftest[,2]),
+          type="text")
 ```
 
 
