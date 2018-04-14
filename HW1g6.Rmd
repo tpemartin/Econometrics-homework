@@ -1,0 +1,222 @@
+---
+title: "作業1"
+output: html_notebook
+params:
+  name: ["陳建宇","陳彤","鄭向吾","彭楷雯"]
+  id: [710661120,710661106,710661103,710661111]
+  group: 6
+---
+請依狀況更改上面的name,id及group（分別代表組員姓名，學號及組號），但請勿更改下面三行的設定。
+
+***
+姓名：`r params$name`
+學號：`r params$id`
+組號：`r params$group`
+
+***
+
+請直接在本檔案作答，存檔時也無需另存新檔名。交作業時，只由「組長」送出pull request給我。
+
+作業除了讓同學檢視課堂所學程式外，有些題目只會給你未教過的函數建議（純為建議，你也可以不使用），你必需使用Help或網路查尋去了解函數的正確使用；搜詢正確程式函數使用的能力，也是程式設計的基本功。
+
+如果是程式的答案，請設立如下的chunk區塊並在裡面作答
+ ```{r}
+ #你的程式答案
+ ```
+
+ 如果是文字答案，請設立沒有{r}的chunk區塊並在裡面作答。
+ ```
+ 你的文字答案。
+ ```
+
+# 教育與薪資
+
+一開始請執行
+```{r}
+ rm(list=ls())
+ library(dplyr)
+ library(psych)
+ library(haven)
+ wage1 <- read_dta("http://fmwww.bc.edu/ec-p/data/wooldridge/wage1.dta")
+```
+
+ 1. 請依據此[連結](http://fmwww.bc.edu/ec-p/data/wooldridge/wage1.des)說明wage1資料的來源及變數代表意義。[其中potential experience指得是推估工作經驗年資]
+
+```
+1. wage1的資料來自Faculty Microcomputer Resource Center，共包含了24個變數，以向量atomic的形式儲存。
+　 其中wage代表每人平均每小時的所得
+　  　 educ代表每人的教育程度，以受教育年限表示
+　     exper代表推估的工作經驗年資
+　     tenure代表確切的工作年資
+　     nonwhite代表膚色，0為白人，1為其他膚色人種
+　     female代表性別，0為男性，1為女性
+　     married代表已婚未婚，0為未婚，1為已婚
+　     numdep代表家庭人數
+　     smsa,northcen,south,west代表居住的地點，分別代表
+       居住於SMSA(smsa=1)、居住於美國北部、中部(northcen=1)、居住於美國南部(south=1)，與居住於美國西部(west=1)
+　     construc,ndurman,trcommpu,trade,services,profserv,profocc,clerocc,servocc代表職業，分別代表
+       建造業(construc=1)、非耐久財製造業(ndurman=1)、翻譯出版業(trcommpu=1)、貿易業(trade=1)、加工業(service=1)、
+       精工業(profserv=1)、教授(profocc=1)、牧師(clerocc=1) 與服務業(servocc=1)
+　     lwage代表wage取Log的數值
+　     expersq代表exper的平方項
+　     tenursq代表tenure的平方項
+```
+
+我們想要問："教育年限增加一年對勞動薪資的影響有多少？"
+
+2. 請使用`psych::pairs.panels()`來描述教育年限(educ)與勞動薪資(wage)間的特質。在兩者的相關度上，有沒有那個變數取對數(log)會比較好？為什麼？
+
+```{r}
+wage1 %>% select(educ,wage) %>%
+  pairs.panels()
+```
+
+```{r}
+wage1 %>% select(educ,lwage) %>%
+  pairs.panels()
+```
+
+```
+educ與wage的相關度如程式結果所示。由圖可發現，wage的資料是左偏的。為了讓資料符合對稱(鐘形分配)，改考慮wage的變化率，
+即log(wage)與educ的相關度。而結果顯示，log(wage)確實較符合鐘形分配。另外，因為educ是教育年限，取變化率沒有經濟意義，
+且原資料的偏度接近0，故不對educ做更動。
+```
+
+3. 請使用OLS估計以下的迴歸模型：
+$$log(wage)=\beta_0+\beta_1 educ+\epsilon$$
+
+```{r}
+wage1 %>% lm(log(wage)~educ,data=.)
+```
+
+4. 從資料裡選出兩個可能造成$\beta_1$OLS估計值帶有選擇性偏誤的變數，請說明理由並加以適當敘述統計量佐證。
+
+```{r}
+is_numeric<-function(x) all(is.numeric(x))
+corr<-function(x) cor(x,wage1$educ)
+
+wage1 %>%
+  select_if(is_numeric) %>%
+  summarise_all(corr)
+```
+
+```
+我們認為造成選擇性偏誤的變數，分別為exper和smsa。exper是因為，通常（給定一定年紀下）工作年數愈長的人，受教育年數愈短
+；這群人可能很早出社會，且從事低報酬工作。而smsa為較繁榮區域，或許能住smsa的人薪資本來就比較高，同時有誘因接受長年數
+教育。所以比較教育年數的差距，可能只是在比exper的差(是否從事低報酬工作)或是不是住在smsa (繁榮地區)。
+比對所有變數與educ的相關係數可知，exper、numdep、smsa、profserv、profocc和educ的相關性都超過20%，其中又以exper的-29.9%
+、smsa的22.4%和profocc的49.6%為最高。此題是討論哪些變數可能造成選擇性偏誤，在此問題中，職業是否為教授應非造成選擇性偏誤
+的原因（目的是比較教育效果，因此只探討職業是否為教授邏輯很怪）；profocc與educ相關係數高，也許是因教授通常要求學歷，教育
+年數較長。
+```
+
+5. 延續上題，請完成對應複迴歸模型的估計。
+
+```{r}
+wage1 %>% lm(log(wage)~educ+exper+smsa,data=.)
+```
+
+6. 大致說來，教育年限12年表示高中畢業，大學畢業會有16年的教育，請問介於12年以上-16年以下的教育年限代表什麼？
+
+```
+高中畢業後短期進修、大學在學生或大學肄業
+```
+
+7. 取出教育年限介於12-16年（含上下限）的資料，分別計算以下三群教育年限勞動者的平均薪資：12年，13-15年，16年。
+[hint: dplyr::filter(), dplyr::group_by(), dplyr::summarise(), cut()]
+
+```{r}
+dplyr::filter(wage1,16>= educ&educ>=12) %>%
+  group_by(educ) %>%
+  summarise(mean_wage=mean(wage))
+```
+
+```{r}
+dplyr::filter(wage1,16>= educ&educ>=12) %>%
+  group_by(educ=cut(educ,breaks = c(12,13,16),include.lowest=F,right= F)) %>%
+  #將educ分隔區間[12,13),[13,16),其餘為educ=16
+  summarise(mean_wage=mean(wage))
+```
+
+8. 在下一部份的文章閱讀練習裡，文章提到:
+
+> In a comparison of the earnings of people with degrees and people without them, those who start university but do not finish are lumped in with those who never started, even though they, too, will have paid fees and missed out on earnings. Their numbers are considerable.
+
+在問題7中我們計算了三群人的平均薪資。請問若要避免文章所描述的問題，你會如何計算一位高中生若選擇上大學他會得到的預期薪資好處。[只使用問題7的數字及三群人人數]
+
+```{r}
+dplyr::filter(wage1,16>= educ&educ>=12) %>%
+  group_by(educ=cut(educ,breaks = c(12,13,16),include.lowest=F,right= F)) %>%
+  summarise(n=n())
+```
+
+```{r}
+(8.04*68)/(68+113)+(6.03*113)/(68+113) -> university_wage
+university_wage
+```
+
+```{r}
+6.785138-5.371364 -> difference_sch
+difference_sch
+```
+```
+difference_sch值表明，考量了未完成大學學業的學生的平均薪資後，讀大學的預期薪資好處明顯下降
+```
+
+# 文章閱讀
+[Going to university is more important than ever for young people.
+But the financial returns are falling.](https://www.economist.com/news/international/21736151-financial-returns-are-falling-going-university-more-important-ever)
+
+文章中有不少效應評估問句，及造成其無法直接進行簡單迴歸估計的選擇性偏誤原因，請將所有這樣的段落貼過來、寫下它的效應評估問句及造成選擇性偏誤的原因（文章中所提的，非自我發揮）。例如：
+
+```
+1. Policymakers regard it as obvious that sending more young people to university will boost economic growth and
+social mobility. ... But comparisons between countries provide little evidence of these links. Richer countries
+have more graduates, but that could be because there is more money to spare, and less urgency to start earning.
+
+效應評估問句：越多人上大學該國經濟表現越好？
+
+造成選擇性偏誤原因：「時間多錢多多」造成「越多人上大學」，「時間多錢多多」是「富有國家」常見現象，所以單純比較上大學
+比例高和低的國家，有可能只是在比誰的「時間多、錢多」。（這類的選擇性偏誤也稱為內生性偏誤。）
+```
+
+```
+2.The World Bank has produced estimates of this return for 139 economies. It varies from place to place, but is
+substantial everywhere. ... Most students know that a degree in mathematics or finance is likely to be more lucrative
+than one in music or social work.What fewer realise is that the graduate premium overstates the financial benefit of
+embarking on a degree if their school grades barely qualify them for entry, no matter what they study.
+
+效應評估問句：受大學教育是否讓學生獲得足夠多的教育報酬？
+
+造成選擇性偏誤原因：在大學教育中，學生的科系選擇很可能影響到其薪資，例如，數學或財金相關科系在就業市場上比音樂或社會
+工作更有利可圖；此外，如果不考量大學是否有明確的錄取標準（意味著大學教育存在品質差異），也可能高估大學帶來的教育報酬
+。兩者都犯了選擇性偏誤。
+```
+
+```
+3.In a new book, “The Case Against Education”, Bryan Caplan of George Mason University argues that the low graduation
+rates of marginal students, and the fact that, for a given level of qualification, cleverer people tend to earn more,
+mean that the return on a four-year degree in America ranges from 6.5% for excellent students to just 1% for the weakest
+ones. ...Part of that difference is because the weakest students attend the worst universities, where drop-out rates are
+highest.
+
+效應評估問句：受大學教育是否讓學生獲得足夠多的教育報酬？
+
+造成選擇性偏誤原因：聰明的人往往能力較強，透過大學教育獲得的教育報酬也高；能力比較差的人可能連學業也無法完成。所以，
+如果未控制能力差異，拿教育年限的差異推斷教育報酬，以許只是在比較「聰明人比能力較差的人多賺多少」。
+```
+
+```
+4.Overstating the graduate premium is not the only reason policymakers overestimate the wider benefits of increasing
+the share of young people who go to university. ... But degrees are in part a way to access a “positional good” that
+benefits one person at the expense of another. Part of the premium comes from gaining an advantage over others in the
+competition for a good job, rather than the acquisition of productivity-boosting skills and knowledge. A complete calculation
+would include not just gains to graduates, but losses to non-graduates.
+
+效應評估問句：拿生產力差異詮釋大學的教育報酬可能有問題？
+
+造成選擇性偏誤原因：大學教育也許沒有促成生產力提升，而是一種「位置財」，幫助應徵者在競爭工作時獲得優勢，進而獲得高報酬。
+因此，拿大學畢業生的報酬減去非大學畢業生的報酬，可能只代表大學的信號效果，並非兩群人的生產力差異。
+```
+
+```
