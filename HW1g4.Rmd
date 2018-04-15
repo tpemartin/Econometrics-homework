@@ -1,0 +1,204 @@
+---
+title: "作業1"
+output: html_notebook
+params:
+  name: ["陳柏銘","蔡沛吟"]
+  id: [410373092,310356001]
+  group: 4
+---
+請依狀況更改上面的name,id及group（分別代表組員姓名，學號及組號），但請勿更改下面三行的設定。  
+
+***
+姓名：`r params$name`  
+學號：`r params$id`  
+組號：`r params$group`  
+
+***
+
+請直接在本檔案作答，存檔時也無需另存新檔名。交作業時，只由「組長」送出pull request給我。
+
+作業除了讓同學檢視課堂所學程式外，有些題目只會給你未教過的函數建議（純為建議，你也可以不使用），你必需使用Help或網路查尋去了解函數的正確使用；搜詢正確程式函數使用的能力，也是程式設計的基本功。
+
+如果是程式的答案，請設立如下的chunk區塊並在裡面作答
+```{r}
+#你的程式答案
+```
+
+如果是文字答案，請設立沒有{r}的chunk區塊並在裡面作答。
+```
+你的文字答案。
+```
+
+# 教育與薪資 
+
+一開始請執行
+```{r}
+rm(list=ls())
+library(dplyr)
+library(psych)
+library(haven)
+wage1 <- read_dta("http://fmwww.bc.edu/ec-p/data/wooldridge/wage1.dta")
+```
+
+1. 請依據此[連結](http://fmwww.bc.edu/ec-p/data/wooldridge/wage1.des)說明wage1資料的來源及變數代表意義。[其中potential experience指得是推估工作經驗年資]
+
+我們想要問："教育年限增加一年對勞動薪資的影響有多少？"
+
+這份資料來自知名的計量經濟學教科書作者 Wooldridge所提供的資料集，共有526筆資料及24個變數，其中變數定義如下
+
+  1. wage                     數值變數        平均薪資 average hourly earnings
+  2. educ                     數值變數(整數)  教育年限 years of education
+  3. exper                    數值變數(整數)  推估工作經驗年資 years potential experience
+  4. tenure                   數值變數(整數)  現職年資 years with current employer
+  5. nonwhite                 類別變數  人種，其中非白人為1 =1 if nonwhite
+  6. female                   類別變數  性別  女性為1 =1 if female
+  7. married                  類別變數  婚姻狀況，其中已婚為1 =1 if married
+  8. numdep                   數值變數(整數)  撫養人數  number of dependents
+  9. smsa                     類別變數  是否居住在城市，其中居住在城市為1 =1 if live in SMSA
+ 10. northcen                 類別變數  是否居住在北部地區  =1 if live in north central U.S
+ 11. south                    類別變數  是否居住在南部地區  =1 if live in southern region
+ 12. west                     類別變數  是否居住在西部地區  =1 if live in western region
+ 
+  以下為一組產業別類別變數
+ 13. construc                 是否在營造業工作  =1 if work in construc. indus.
+ 14. ndurman                  是否在製造業工作  =1 if in nondur. manuf. indus.
+ 15. trcommpu                 是否在大眾運輸、公共設施產業工作  =1 if in trans, commun, pub ut
+ 16. trade                    是否在批發零售業工作  =1 if in wholesale or retail
+ 17. services                 是否在服務業工作  =1 if in services indus.
+ 18. profserv                 是否在專業服務業工作  =1 if in prof. serv. indus.
+
+  以下為一組職級類別變數
+ 19. profocc                  是否為專業職位  =1 if in profess. occupation
+ 20. clerocc                  是否為文書職位  =1 if in clerical occupation
+ 21. servocc                  是否為服務員職位  =1 if in service occupation
+ 
+ 
+ 22. lwage                    數值變數，為薪資取自然對數後的數值  log(wage)
+ 23. expersq                  數值變數  將工作年資取平方後的數值  exper^2
+ 24. tenursq                  數值變數  將現職年資取平方後的數值  tenure^2
+
+
+2. 請使用`psych::pairs.panels()`來描述教育年限(educ)與勞動薪資(wage)間的特質。在兩者的相關度上，有沒有那個變數取對數(log)會比較好？為什麼？
+
+```{r}
+wage1 %>%
+  select(wage,educ) %>%
+  psych::pairs.panels()
+```
+```
+從wage 對educ 的分布可以看出，隨著教育年限的增加，對薪資有正向的影響
+但在反應變數wage的直方圖可以看出其具有右偏分布，因此適合取對數log，使其較對稱、較接近常態分佈，較容易滿足常態性假設
+```
+
+3. 請使用OLS估計以下的迴歸模型：
+$$log(wage)=\beta_0+\beta_1 educ+\epsilon$$
+```{r 跑簡單迴歸}
+wage1 %>%
+  lm(formula = lwage~educ) #這邊因為formula有設定好。那data就會放到第二個參數，剛好是data，也就可以跑了。
+#迴歸式：lwage = 0.58377 + 0.08274educ + epislon
+```
+由估計結果可以得到 \beta_0 = 0.583773, \beta_1 = 0.082744
+代表教育年限每增加一年，薪資約增加為 exp(0.00823)倍
+
+4. 從資料裡選出兩個可能造成$\beta_1$OLS估計值帶有選擇性偏誤的變數，請說明理由並加以適當敍述統計量佐證。
+
+我們的初步估計使用教育年限來解釋薪資，但是教育年限可能同時受到其他變數影響，而導致未控制其他變數下，我們所估計得到的\beta_1 將有所偏誤
+其中，推測居住地區和性別這兩個類別變數對於教育年限本身就有解釋能力，而不控制這兩個變數將可能導致估計結果的偏誤
+
+我們以盒形圖可以觀察到，居住在市區的樣本(smsa==1)其教育年限資料呈現左偏分布，平均值較非居住在市區的樣本高了許多，或是採取educ 對 smsa進行迴歸可以看出，平均而言教育年限多了1.3857
+
+```{r}
+boxplot(wage1$educ ~ wage1$smsa, xlab="smsa", ylab="educ")
+
+wage1 %>% group_by(smsa) %>%
+  summarise(mean(educ,na.rm=T),sd(educ,na.rm=T))
+```
+
+另一個可能的變因是性別，從盒形圖及其迴歸分析果可以看出，女性平均而言較男性的教育年限少了0.471年，
+```{r}
+boxplot(wage1$educ ~ wage1$female, xlab="female", ylab="educ")
+wage1 %>% group_by(female) %>%
+  summarise(mean(educ,na.rm=T),sd(educ,na.rm=T))
+```
+
+5. 延續上題，請完成對應複迴歸模型的估計。
+```{r}
+summary(lm(log(wage1$wage)~ wage1$educ + wage1$female + wage1$smsa))
+```
+由複回歸的估計結果可以看出，在控制了性別及居住地點後，教育年限對於log(wage)的影響降為0.0719，而更多的解釋都由smsa及female給吸收了。
+
+6. 大致說來，教育年限12年表示高中畢業，大學畢業會有16年的教育，請問介於12年以上-16年以下的教育年限代表什麼？
+```
+教育年限於12年以上及16年以下的資料，有可能是大學輟學生，未完成大學學業,就進入職場
+```
+
+7. 取出教育年限介於12-16年（含上下限）的資料，分別計算以下三群教育年限勞動者的平均薪資：12年，13-15年，16年。
+[hint: dplyr::filter(), dplyr::group_by(), dplyr::summarise(), cut()]
+```{r}
+wage1 %>% 
+  filter(educ >= 12 & educ <= 16) %>% 
+  group_by(cut(educ, c(11, 12, 15, 16))) %>% 
+  summarise(avgwage = mean(wage)) -> wageforUniTreatment
+names(wageforUniTreatment)[1] <- "EducInterval"
+wageforUniTreatment
+# 不曉得有沒有更好的cut的表達方式？
+```
+
+8. 在下一部份的文章閱讀練習裡，文章提到: 
+
+> In a comparison of the earnings of people with degrees and people without them, those who start university but do not finish are lumped in with those who never started, even though they, too, will have paid fees and missed out on earnings. Their numbers are considerable. 
+
+在問題7中我們計算了三群人的平均薪資。請問若要避免文章所描述的問題，你會如何計算一位高中生若選擇上大學他會得到的預期薪資好處。[只使用問題7的數字及三群人人數]
+
+```{r}
+# wage1 %>% filter(educ==12) %>% nrow()
+# wage1 %>% filter(educ>=13 & educ <= 15) %>% nrow() 
+# wage1 %>% filter(educ==16) %>% nrow() 
+```
+
+高中畢業樣本量198
+大學肄業樣本量113
+大學畢業樣本量68
+
+在忽略這個人數來源的選擇性偏誤下，我們將人數比率作為機率計算
+則選擇上大學將有 68/(68+113) 的機率可以完成學業，使薪資期望值上升至8.041618，而有113/(68+113)的機率無法完成學業，薪資僅上升至6.03
+則選擇上大學的預期薪資好處為：1.414382/per hour 
+
+```{r}
+8.041618 * 68/(68+113) + 6.03 * 113/(68+113) - 5.371364 -> x
+x
+```
+
+# 文章閱讀
+[Going to university is more important than ever for young people.
+But the financial returns are falling.](https://www.economist.com/news/international/21736151-financial-returns-are-falling-going-university-more-important-ever)
+
+文章中有不少效應評估問句，及造成其無法直接進行簡單迴歸估計的選擇性偏誤原因，請將所有這樣的段落貼過來、寫下它的效應評估問句及造成選擇性偏誤的原因（文章中所提的，非自我發揮）。例如：
+
+```
+Seletion bias是指個體立足點會影響其是否接受試驗與否。
+
+1. Policymakers regard it as obvious that sending more young people to university will boost economic growth and social mobility. ... But comparisons between countries provide little evidence of these links. Richer countries have more graduates, but that could be because there is more money to spare, and less urgency to start earning.
+
+效應評估問句：越多人上大學該國經濟表現越好？
+
+造成選擇性偏誤原因：「時間多錢多多」造成「越多人上大學」，「時間多錢多多」是「富有國家」常見現象，所以單純比較上大學比例高和低的國家，有可能只是在比誰的「時間多、錢多」。（這類的選擇性偏誤也稱為內生性偏誤。）
+
+(以下為作答)
+
+2. The World Bank has produced estimates of this return for 139 economies. It varies from place to place, but is substantial everywhere. The Economist’s analysis of the data finds that returns are linked to the share of people with degrees, and the range of earnings. Returns in Britain and Germany are similar to those in America. In sub-Saharan Africa, where degrees are scarce and the least-educated workers earn little, they are around 21% a year. In Scandinavia, where wages are less unequal and two-fifths of adults have degrees, they are around 9%.
+
+效應評估問句：該地區越多人擁有大學學歷，學歷報酬越低？
+造成選擇性偏誤原因： 看起來，立足點是「該地區有較低人口比例有高學歷」，主要解釋變量為：是否為高人口比例有大學學歷的地區。其coefficient應該<0。這可能忽略了所屬地區的產業環境需要高學歷族群的多寡，理由是因為若產業環境不佳，人才供給過剩，越多人擁有大學學歷，那麼必定學歷貶值。但是若產業環境蓬勃發展，需要更多高端人才的比例提高，有可能越越多大學學歷者投入勞動市場，創造產值越多，市場餅越大，吸引更多人才進入，最後人人有分紅。
+單純迴歸分析，有可能只是在比誰的產業環境較佳，較有發展潛力。
+
+3. In a new book, “The Case Against Education”, Bryan Caplan of George Mason University argues that the low graduation rates of marginal students, and the fact that, for a given level of qualification, cleverer people tend to earn more, mean that the return on a four-year degree in America ranges from 6.5% for excellent students to just 1% for the weakest ones.
+
+效應評估問句：越聰明的人，其上大學的學歷報酬越高？
+造成選擇性偏誤原因：若單純只比較聰明與不聰明對學歷報酬的影響，是需要留意通常聰明人學習能力較好，成績表現也較優異，所以進入到好大學的機會比較高，所以最後只有可能在比較進入好學校對於學歷報酬的影響（也就是表面上立足點是不聰明的人，treatment是（是否為聰明人），但是實際上會測到的是立足點是進到普通大學，treatment是進入到好大學。
+
+4.  In a study published in 2014 Seth Zimmerman of the University of Chicago compared the earnings of school-leavers in Florida whose grades were close to the minimum for admission to a good state university. Those just above the cut-off were much more likely than those just below to start courses in good institutions. They graduated at a rate similar to that of the broader student population. They went on to earn considerably more than those just below the cut-off, and their return on investment was substantial.
+
+效應評估問句：榜上有名讀到好大學的人，其學歷報酬較高？
+造成選擇性偏誤原因：讀到好大學的同學和普通大學的同學，比較他們日後賺錢的多寡，需要留意好的私立學校（以美國為例）學費並不便宜，若單純只比較讀到好大學的同學和爛大學，有可能只是在比誰家庭環境較理想，有的環境較多，較有能力上好的私立大學。
+
