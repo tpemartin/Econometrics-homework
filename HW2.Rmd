@@ -1,7 +1,7 @@
 ---
 title: "作業2"
 params:
-  group: 11
+  group: 9
   id: [1234, 5678]
   name: ["王","李"]
 output:
