@@ -119,7 +119,8 @@ stargazer(ols1,ols2,type="html")
 在勞動市場中，產業別不同其對勞動力的需求也不一樣。另外，不同地點的勞動需求狀況也不同。使用文字邏輯說明「產業別」、勞動者「居住地」可能是合理工具變數的理由。
 
 ```
-
+不同的產業別，會對效應估計值“LWAGE“造成影響，各產業都有其薪資水準，並且可以解釋勞動力的需求，而產業別這個影響與其它“非薪資因素”較無關，故產業別可以是一個工具變數。
+勞動者的居住地，可能因為物價水準的不同，與薪資有很大的關聯性，並且居住地點不會去強力解釋到其他變數。
 ```
 
 ### (10)
@@ -150,8 +151,13 @@ tsls_2iv_tests
 將簡單迴歸、複迴歸、一個工具變數、二個工具變數的四種估算結果（含應有的檢定），用stargazer產生「一張」報表同時呈現（請設定type="html"）。
 
 ```{r}
-stargazer(ols1,ols2,tsls_1iv,tsls_2iv,type="html",
-          column.labels = c("ols1","ols2","one IV", "two IVs"))
+stargazer(ols1,ols2,tsls_1iv,tsls_2iv,type="text",
+          column.labels = c("ols1","ols2","one IV", "two IVs"),
+          add.lines = list(c("TSLS tests p-value","","","",""),
+                           c("Q1: Sargan","","","NA","NA"),
+                           c("Q2: Weak instruments","NA","NA","0.115","1.46e-09"),
+                           c("Q3: Wu-Hausman","NA","NA","0.682","0.787")
+                           ))
 ```
 
 
