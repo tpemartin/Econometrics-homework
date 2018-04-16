@@ -1,0 +1,269 @@
+---
+title: "學生作業答案集：HW1"
+output:
+  html_notebook:
+    df_print: paged
+---
+
+# 教育與薪資 
+
+一開始請執行
+```{r}
+rm(list=ls())
+library(dplyr)
+library(psych)
+library(haven)
+wage1 <- read_dta("http://fmwww.bc.edu/ec-p/data/wooldridge/wage1.dta")
+```
+
+## 檢查資料結構
+```{r}
+str(wage1)
+```
+
+## 定義變數屬性 
+```{r 重新定義變數屬性}
+wage1 %>%
+  mutate(nonwhite=as.factor(nonwhite),female=as.factor(female))
+```
+
+1. 請依據此[連結](http://fmwww.bc.edu/ec-p/data/wooldridge/wage1.des)說明wage1資料的來源及變數代表意義。[其中potential experience指得是推估工作經驗年資]
+
+```
+1. wage1的資料來自Faculty Microcomputer Resource Center，共包含了24個變數，以向量atomic的形式儲存。
+　 其中wage代表每人平均每小時的所得
+　  　 educ代表每人的教育程度，以受教育年限表示
+　     exper代表推估的工作經驗年資
+　     tenure代表確切的工作年資
+　     nonwhite代表膚色，0為白人，1為其他膚色人種
+　     female代表性別，0為男性，1為女性
+　     married代表已婚未婚，0為未婚，1為已婚
+　     numdep代表家庭人數
+　     smsa,northcen,south,west代表居住的地點，分別代表
+       居住於SMSA(smsa=1)、居住於美國北部、中部(northcen=1)、居住於美國南部(south=1)，與居住於美國西部(west=1)
+　     construc,ndurman,trcommpu,trade,services,profserv,profocc,clerocc,servocc代表職業，分別代表
+       建造業(construc=1)、非耐久財製造業(ndurman=1)、翻譯出版業(trcommpu=1)、貿易業(trade=1)、加工業(service=1)、
+       精工業(profserv=1)、教授(profocc=1)、牧師(clerocc=1) 與服務業(servocc=1)
+　     lwage代表wage取Log的數值
+　     expersq代表exper的平方項
+　     tenursq代表tenure的平方項
+```
+
+我們想要問："教育年限增加一年對勞動薪資的影響有多少？"
+
+2. 請使用`psych::pairs.panels()`來描述教育年限(educ)與勞動薪資(wage)間的特質。在兩者的相關度上，有沒有那個變數取對數(log)會比較好？為什麼？
+```{r q2-2}
+wage1 %>% 
+  select(educ,wage) %>%
+  pairs.panels
+```
+教育年資越久的人，薪水也越高。
+```{r}
+wage1 %>% 
+  select(educ,lwage) %>%
+  pairs.panels
+```
+```
+由於教育年資分配較集中，所以針對離群值較多的薪水取log，使其接近鐘型分佈。
+另外，如果對教育年資取log的話，可以發現反而更左偏。
+```
+
+3. 請使用OLS估計以下的迴歸模型：
+$$log(wage)=\beta_0+\beta_1 educ+\epsilon$$
+```{r 跑簡單迴歸}
+wage1 %>% 
+  lm(lwage~educ,data=.) -> model_1 
+```
+由估計結果可以得到 $\beta_0$ = `r model_1$coefficients["(Intercept)"]`, $\beta_1$ = `r model_1$coefficients["educ"]`
+代表教育年限每增加一年，薪資約增加為 `r model_1$coefficients["educ"]*100`%.
+
+4. 從資料裡選出兩個可能造成$\beta_1$OLS估計值帶有選擇性偏誤的變數，請說明理由並加以適當敍述統計量佐證。
+
+我們的初步估計使用教育年限來解釋薪資，但是教育年限可能同時受到其他<span style="color:tomato">影響薪資</span>變數的影響，而導致未控制其他變數下，我們所估計得到的$\beta_1$ 將有所偏誤。
+
+其中，推測「居住地區」和「性別」這兩個類別變數
+(1) 本身會影響薪資
+
+(2) 與教育年限有關聯
+
+而不控制這兩個變數將可能導致估計結果的偏誤。
+
+對於(1)
+```{r}
+par(mfrow=c(1,2))
+wage1 %>% 
+  boxplot(wage ~ smsa, data=., xlab="smsa", ylab="wage")
+wage1 %>% 
+  boxplot(wage ~ female, data=., xlab="female", ylab="wage")
+```
+
+對於(2)
+我們以盒形圖可以觀察到，居住在市區的樣本(smsa==1)其教育年限資料呈現左偏分布，平均值較非居住在市區的樣本高了許多，或是採取educ 對 smsa進行迴歸可以看出，平均而言教育年限多了1.3857 
+
+```{r}
+par(mfrow=c(1,2))
+wage1 %>% boxplot(educ ~ smsa, data=., xlab="smsa", ylab="educ")
+wage1 %>% boxplot(educ ~ female, data=., xlab="female", ylab="educ")
+```
+
+另一個可能的變因是性別，從盒形圖及其迴歸分析果可以看出，女性平均而言較男性的教育年限少了0.471年，
+```{r}
+wage1 %>% group_by(smsa) %>%
+  summarise(mean(educ,na.rm=T),sd(educ,na.rm=T))
+wage1 %>% group_by(female) %>%
+  summarise(mean(educ,na.rm=T),sd(educ,na.rm=T))
+```
+
+
+```{r}
+is_numeric<-function(x) all(is.numeric(x))
+corr<-function(x) cor(x,wage1$educ)
+
+wage1 %>%
+  select_if(is_numeric) %>%
+  summarise_all(corr)
+```
+
+```
+我們認為造成選擇性偏誤的變數，分別為exper和smsa。exper是因為，通常（給定一定年紀下）工作年數愈長的人，受教育年數愈短
+；這群人可能很早出社會，且從事低報酬工作。而smsa為較繁榮區域，或許能住smsa的人薪資本來就比較高，同時有誘因接受長年數
+教育。所以比較教育年數的差距，可能只是在比exper的差(是否從事低報酬工作)或是不是住在smsa (繁榮地區)。
+比對所有變數與educ的相關係數可知，exper、numdep、smsa、profserv、profocc和educ的相關性都超過20%，其中又以exper的-29.9%
+、smsa的22.4%和profocc的49.6%為最高。此題是討論哪些變數可能造成選擇性偏誤，在此問題中，職業是否為教授應非造成選擇性偏誤
+的原因（目的是比較教育效果，因此只探討職業是否為教授邏輯很怪）；profocc與educ相關係數高，也許是因教授通常要求學歷，教育
+年數較長。
+```
+
+5. 延續上題，請完成對應複迴歸模型的估計。
+
+```{r}
+wage1 %>%
+  lm(lwage~educ+exper+smsa,data=.) -> model_2
+
+library(sandwich)
+library(lmtest)
+library(stargazer)
+
+#使用vcovHC函數來計算HC1型的異質變異（即橫斷面資料下的線性迴歸模型）
+coeftest(model_1, vcov. = vcovHC, type="HC1") -> model_1_coeftest
+coeftest(model_2, vcov. = vcovHC, type="HC1") -> model_2_coeftest
+
+stargazer(model_1, model_2, 
+          se=list(model_1_coeftest[,"Std. Error"], model_2_coeftest[,2]),
+          type="text",
+          align=TRUE)
+```
+
+
+6. 大致說來，教育年限12年表示高中畢業，大學畢業會有16年的教育，請問介於12年以上-16年以下的教育年限代表什麼？
+
+```
+q6-2
+有高中學歷，並且選擇讀大學，但沒有畢業，為輟學生。
+```
+7. 取出教育年限介於12-16年（含上下限）的資料，分別計算以下三群教育年限勞動者的平均薪資：12年，13-15年，16年。
+[hint: dplyr::filter(), dplyr::group_by(), dplyr::summarise(), cut()]
+```{r q7-2}
+wage1 %>% 
+  mutate(educ_level=cut(educ,c(11.5,12,15,16))) %>%  # 創造三個教育水準類別：educ_level
+  group_by(educ_level) %>% #依不同類educ_level, ...
+  summarise(mean_wage=mean(wage),n=n()) -> mean_wage1
+mean_wage1
+```
+
+```
+由上得知，
+(1)教育12年限勞動者的平均薪資:5.37
+(2)教育13-15年限勞動者的平均薪資:6.03
+(3)教育16年限勞動者的平均薪資:8.04
+```
+8. 在下一部份的文章閱讀練習裡，文章提到: 
+
+> In a comparison of the earnings of people with degrees and people without them, those who start university but do not finish are lumped in with those who never started, even though they, too, will have paid fees and missed out on earnings. Their numbers are considerable. 
+
+在問題7中我們計算了三群人的平均薪資。請問若要避免文章所描述的問題，你會如何計算一位高中生若選擇上大學他會得到的預期薪資好處。[只使用問題7的數字及三群人人數]
+
+```{r q8-2}
+mean_wage1 %>% # 算各別的平均薪資(mean_wage),觀察個數(n)
+  filter(educ_level %in% c("(12,15]","(15,16]")) %>% #只留下高中以上的資料
+  summarise(weight_mean=weighted.mean(mean_wage,n)) #算薪資加權平均值，依觀察個數加權
+```
+
+
+# 文章閱讀
+[Going to university is more important than ever for young people.
+But the financial returns are falling.](https://www.economist.com/news/international/21736151-financial-returns-are-falling-going-university-more-important-ever)
+
+文章中有不少效應評估問句，及造成其無法直接進行簡單迴歸估計的選擇性偏誤原因，請將所有這樣的段落貼過來、寫下它的效應評估問句及造成選擇性偏誤的原因。例如：
+
+```
+1. Policymakers regard it as obvious that sending more young people to university will boost economic growth and social mobility. ... But comparisons between countries provide little evidence of these links. Richer countries have more graduates, but that could be because there is more money to spare, and less urgency to start earning.
+
+效應評估問句：越多人上大學該國經濟表現越好？
+
+造成選擇性偏誤原因：「時間多錢多多」造成「越多人上大學」，「時間多錢多多」是「富有國家」常見現象，所以單純比較上大學比例高和低的國家，有可能只是在比誰的「時間多、錢多」。（這類的選擇性偏誤也稱為內生性偏誤。）
+```
+```
+(1) But comparisons between countries provide little evidence of these links. Richer countries have more graduates, but that could be because there is more money to spare, and less urgency to start earning. Rich economies grow more slowly, but that is probably because they have fewer easy ways to raise productivity, not because education depresses their growth.
+
+許多教育多的國家經濟成長反而緩慢，如果以經濟成長看教育的影響，會有選擇偏誤的問題，它會低估教育所帶來的好處，高開發與教育的國家能夠發展的方法較少，國家已開發非常完整，經濟成長較有限。
+
+(2) The Economist’s analysis of the data finds that returns are linked to the share of people with degrees, and the range of earnings. Returns in Britain and Germany are similar to those in America. In sub-Saharan Africa, where degrees are scarce and the least-educated workers earn little, they are around 21% a year. In Scandinavia, where wages are less unequal and two-fifths of adults have degrees, they are around 9%.But as a guide to school-leavers considering going to university—and to policymakers considering expanding aess to higher education—the graduate premium is flawed. Even within countries the average conceals wide differences. Most students know that a degree in mathematics or finance is likely to be more lucrative than one in music or social work. What fewer realize  is that the graduate premium overstates the financial benefit of embarking on a degree if their school grades barely qualify them for entry, no matter what they study.
+
+graduate premium是不超過中學教育的學生與受超過中學教育學生的平均報酬差異，其中包括減去學費和因為就學而減少的工作收入，可以知道數學或金融相關科系比音樂或社會這類的工作更容易賺錢，所以會導致graduate premium出現選擇偏誤的問題，graduate premium會誇大獲得學位的經濟利益。
+
+(3)Including dropouts when calculating the returns to going to university makes a big difference. In a new book, “The Case Against Education”, Bryan Caplan of George Mason University argues that the low graduation rates of marginal students, and the fact that, for a given level of qualification, cleverer people tend to earn more, mean that the return on a four-year degree in America ranges from 6.5% for excellent students to just 1% for the weakest ones.
+
+效應評估問句：在討論讀大學的回報率時，聰明與否決定了回報率？
+造成選擇性偏誤原因：讀書較弱的學生會傾向讀較差的大學，而在這種差的讀書環境下將提高輟學率；但若較差的學生就讀較好的大學，回報率有可能變高。
+
+(4)The usual way to calculate the social returns of higher education is to sum up all the graduate premiums and subtract any public subsidies. 
+
+效應評估問句：獎學金減去補助金即等於高學歷者的社會回報？
+造成選擇性偏誤原因：有可能高學歷者在拚學歷時，並不是為了獎學金而努力讀書，有時反而是因為周遭同學競爭而促使努力，或是為了取得好的工作而努力讀書，應該包含機會成本（若不努力讀書會失去什麼）。
+```
+```
+Companies routinely require applicants to have degrees, even though only a minority of those already working in the role have them. This increases the graduate premium - but by punishing non-graduates rather than boosting the absolute returns to degrees.
+效應評估問句：graduate premium 增加使absolute returns to degrees增加？
+造成選擇性偏誤的原因:"companies routinely require applicants to have degrees"造成"graduate premium增加"，"companies routinely require applicants to have degrees"造成"returns to degrees 增加"，所以單純比較兩者會造成選擇性偏誤
+```
+
+```
+2. The World Bank has produced estimates of this return for 139 economies. It varies from place to place, but is substantial everywhere. The Economist’s analysis of the data finds that returns are linked to the share of people with degrees, and the range of earnings. Returns in Britain and Germany are similar to those in America. In sub-Saharan Africa, where degrees are scarce and the least-educated workers earn little, they are around 21% a year. In Scandinavia, where wages are less unequal and two-fifths of adults have degrees, they are around 9%.
+
+效應評估問句：該地區越多人擁有大學學歷，學歷報酬越低？
+造成選擇性偏誤原因： 看起來，立足點是「該地區有較低人口比例有高學歷」，主要解釋變量為：是否為高人口比例有大學學歷的地區。其coefficient應該<0。這可能忽略了所屬地區的產業環境需要高學歷族群的多寡，理由是因為若產業環境不佳，人才供給過剩，越多人擁有大學學歷，那麼必定學歷貶值。但是若產業環境蓬勃發展，需要更多高端人才的比例提高，有可能越越多大學學歷者投入勞動市場，創造產值越多，市場餅越大，吸引更多人才進入，最後人人有分紅。
+單純迴歸分析，有可能只是在比誰的產業環境較佳，較有發展潛力。
+
+3. In a new book, “The Case Against Education”, Bryan Caplan of George Mason University argues that the low graduation rates of marginal students, and the fact that, for a given level of qualification, cleverer people tend to earn more, mean that the return on a four-year degree in America ranges from 6.5% for excellent students to just 1% for the weakest ones.
+
+效應評估問句：越聰明的人，其上大學的學歷報酬越高？
+造成選擇性偏誤原因：若單純只比較聰明與不聰明對學歷報酬的影響，是需要留意通常聰明人學習能力較好，成績表現也較優異，所以進入到好大學的機會比較高，所以最後只有可能在比較進入好學校對於學歷報酬的影響（也就是表面上立足點是不聰明的人，treatment是（是否為聰明人），但是實際上會測到的是立足點是進到普通大學，treatment是進入到好大學。
+
+4.  In a study published in 2014 Seth Zimmerman of the University of Chicago compared the earnings of school-leavers in Florida whose grades were close to the minimum for admission to a good state university. Those just above the cut-off were much more likely than those just below to start courses in good institutions. They graduated at a rate similar to that of the broader student population. They went on to earn considerably more than those just below the cut-off, and their return on investment was substantial.
+
+效應評估問句：榜上有名讀到好大學的人，其學歷報酬較高？
+造成選擇性偏誤原因：讀到好大學的同學和普通大學的同學，比較他們日後賺錢的多寡，需要留意好的私立學校（以美國為例）學費並不便宜，若單純只比較讀到好大學的同學和爛大學，有可能只是在比誰家庭環境較理想，有的環境較多，較有能力上好的私立大學。
+```
+```
+1. The Economist’s analysis of the data finds that returns are linked to the share of people with degrees, and the range of earnings. .. Their numbers are considerable. In America 40% of college students fail to graduate with four-year degrees within six years of enrolling. Drop-out rates across the developed world average around 30%. It is the students admitted with the lowest grades who are least likely to graduate.
+
+效應評估問句：越多人上大學該國教育溢酬越高？
+
+造成選擇性偏誤原因：一部分的學生進入大學後，中途可能會放棄學業轉而工作，尤其以已開發國家中的比例較高，所以單純比較大學學歷比例高和低的國家，可能忽略被退學那群人對教育溢酬的影響，高估了已開發國家的教育溢酬。
+```
+```
+2. Part of that difference is because the weakest students attend the worst universities, where drop-out rates are highest. When they make it into better institutions, the returns may be higher. ...They graduated at a rate similar to that of the broader student population. They went on to earn considerably more than those just below the cut-off, and their return on investment was substantial.
+
+效應評估問句：對於成績差的學生，平均教育溢酬越高，上大學就越有利？
+
+造成選擇性偏誤原因：好學校比差學校輟學率低，所以上好學校的報酬率會高於上差學校的報酬率，因此雖然都是能力差不多的學生，一旦分別進入較好及較差的學校，此時立足點馬上不同。所以成績差的學生其教育報酬率低不單純是自身能力的問題，而是因為他進入比較差的學校，進而造成讀較差學校的學生對於教育溢酬的高估。
+```
+```
+3. This gap is often expressed as the “return on investment” in higher education, or the annualised boost to lifetime earnings from gaining a degree. ...The premium includes the income-boosting effects of personal characteristics that are more likely to be held by those with degrees, not because they acquired them at university, but because they possessed them on admission.
+
+效應評估問句：有上大學會導致教育溢酬較高？
+
+造成選擇性偏誤原因：擁有某些特質的人容易上大學，所以單純比較上大學對教育溢酬的影響，可能只是在比較哪些特質的人教育溢酬較高。
+```
+

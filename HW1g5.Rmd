@@ -1,0 +1,198 @@
+---
+title: "作業1"
+output: html_notebook
+params:
+  name: ["蔡朕寧","林宜臻"]
+  id: [710661121,710661125]
+  group:5
+---
+請依狀況更改上面的name,id及group（分別代表組員姓名，學號及組號），但請勿更改下面三行的設定。  
+
+***
+姓名：`r params$name`  
+學號：`r params$id`  
+組號：`r params$group`  
+***
+
+請直接在本檔案作答，存檔時也無需另存新檔名。交作業時，只由「組長」送出pull request給我。
+
+作業除了讓同學檢視課堂所學程式外，有些題目只會給你未教過的函數建議（純為建議，你也可以不使用），你必需使用Help或網路查尋去了解函數的正確使用；搜詢正確程式函數使用的能力，也是程式設計的基本功。
+
+如果是程式的答案，請設立如下的chunk區塊並在裡面作答
+```{r}
+#你的程式答案
+```
+
+如果是文字答案，請設立沒有{r}的chunk區塊並在裡面作答。
+```
+你的文字答案。
+```
+
+# 教育與薪資 
+
+一開始請執行
+```{r}
+rm(list=ls())
+library(dplyr)
+library(psych)
+library(haven)
+wage1 <- read_dta("http://fmwww.bc.edu/ec-p/data/wooldridge/wage1.dta")
+```
+
+1. 請依據此[連結](http://fmwww.bc.edu/ec-p/data/wooldridge/wage1.des)說明wage1資料的來源及變數代表意義。[其中potential experience指得是推估工作經驗年資]
+
+我們想要問："教育年限增加一年對勞動薪資的影響有多少？"
+```
+資料來源為波士頓大學的Faculty Micro Resource Center
+Wage=平均時薪
+educ=教育年限
+exper=推估工作總年資
+tenure=現職年資
+nonwhite=是否為白人(1代表非白人)
+female=是否為女性
+married=是否已婚
+numdep=撫養人數
+SMSA=居住地是否為大城市
+northcen=居住地是否為美國中部北部地區
+south=居住地是否為南部區域
+west=居住地是否為西部區域
+construc=工作是否為營建業
+ndurman=工作是否為消費品製造業
+trcommpu=工作是否為交通運輸業
+trade=工作是否為零售業
+services=工作是否為加工業
+profserv=工作是否精工業.
+profocc =工作是否為教育工作
+clerocc=工作是否為宗教相關
+servocc=工作是否為服務業
+lwage =log(wage)               
+expersq = exper^2
+tenursq=tenure^2
+```
+```{r}
+lm(wage~educ,data=wage1)
+```
+
+
+我們想要問："教育年限增加一年對勞動薪資的影響有多少？"
+```
+教育年限增加一年對時薪增加0.5414美元
+
+```
+2. 請使用`psych::pairs.panels()`來描述教育年限(educ)與勞動薪資(wage)間的特質。在兩者的相關度上，有沒有那個變數取對數(log)會比較好？為什麼？
+```{r}
+library(psych)
+wage1%>%
+select(educ,lwage) %>%
+pairs.panels()
+```
+```
+對變數取對數的意義在於研究數值間百分變動的關係
+因此對教育年限取對數本身意義不大，因其為階梯變數，單位為年故無百分比之變化
+故不會對educ取對數，而對wage取對數可以使其鍾型分佈更容易觀察，故對其取對數較佳。
+```
+3. 請使用OLS估計以下的迴歸模型：
+$$log(wage)=\beta_0+\beta_1 educ+\epsilon$$
+```{r}
+lm(lwage~educ,data=wage1)
+```
+4. 從資料裡選出兩個可能造成$\beta_1$OLS估計值帶有選擇性偏誤的變數，請說明理由並加以適當敍述統計量佐證。
+```{r}
+cor_educ<-function(x) cor(x,wage1$educ)
+is_numeric<-function(x) all(is.numeric(x))
+wage1 %>%  
+  select_if(is_numeric) %>%
+  summarise_all(cor_educ)
+
+```
+
+```{r}
+cor_wage<-function(x) cor(x,wage1$wage)
+is_numeric<-function(x) all(is.numeric(x))
+wage1 %>%  
+  select_if(is_numeric) %>%
+  summarise_all(cor_wage)
+```
+
+```
+由前兩式的相關係數可以發現 是否從事教育工作 以及SMSA=居住地是否為大城市 兩變數對於教育年限以及時薪都具有較高的相關係數
+從直覺上來解釋，居住地為大城市可能有較多的工作機會，因此也有可能有較高的機會獲得高薪或擁有更多的教育資源，而是否為
+教育工作，也會造成選擇性偏誤，教育工作者所需要的教育年限相比與其他職業而言較高，因此也會造成選擇性偏誤。
+
+```
+
+5. 延續上題，請完成對應複迴歸模型的估計。
+```{r}
+lm(lwage~educ+smsa+profocc,data=wage1)
+```
+6. 大致說來，教育年限12年表示高中畢業，大學畢業會有16年的教育，請問介於12年以上-16年以下的教育年限代表什麼？
+```
+大學肄業
+```
+7. 取出教育年限介於12-16年（含上下限）的資料，分別計算以下三群教育年限勞動者的平均薪資：12年，13-15年，16年。
+[hint: dplyr::filter(), dplyr::group_by(), dplyr::summarise(), cut()]
+```{r}
+wage1 %>%
+group_by(educ=cut(educ,c(11,12,15,16),labels = FALSE)) %>%
+  summarise(meanwage=mean(wage))
+```
+```
+由上表可以得出12年的平均薪資=5.371364
+            13-15年       =6.030000
+            16年          =8.041618
+```             
+8. 在下一部份的文章閱讀練習裡，文章提到: 
+
+> In a comparison of the earnings of people with degrees and people without them, those who start university but do not finish are lumped in with those who never started, even though they, too, will have paid fees and missed out on earnings. Their numbers are considerable. 
+
+在問題7中我們計算了三群人的平均薪資。請問若要避免文章所描述的問題，你會如何計算一位高中生若選擇上大學他會得到的預期薪資好處。[只使用問題7的數字及三群人人數]
+我們可以取出三群人的人數
+並按照大學輟學者 以及大學畢業者的比例來計算加權後的預期薪資
+
+```
+```{r}
+wage1 %>%
+group_by(educ=cut(educ,c(11,12,15,16),labels = FALSE)) %>%
+  summarise(number=n())
+```
+
+```{r}
+E=(113*6.03+68*8.041618)/(68+113)
+E
+```
+```
+6.785746即為高中生上大學可能獲得的預期薪資
+``` 
+# 文章閱讀
+[Going to university is more important than ever for young people.
+But the financial returns are falling.](https://www.economist.com/news/international/21736151-financial-returns-are-falling-going-university-more-important-ever)
+
+文章中有不少效應評估問句，及造成其無法直接進行簡單迴歸估計的選擇性偏誤原因，請將所有這樣的段落貼過來、寫下它的效應評估問句及造成選擇性偏誤的原因（文章中所提的，非自我發揮）。例如：
+
+```
+1. Policymakers regard it as obvious that sending more young people to university will boost economic growth and social mobility. ... But comparisons between countries provide little evidence of these links. Richer countries have more graduates, but that could be because there is more money to spare, and less urgency to start earning.
+
+效應評估問句：越多人上大學該國經濟表現越好？
+
+造成選擇性偏誤原因：「時間多錢多多」造成「越多人上大學」，「時間多錢多多」是「富有國家」常見現象，所以單純比較上大學比例高和低的國家，有可能只是在比誰的「時間多、錢多」。（這類的選擇性偏誤也稱為內生性偏誤。）
+```
+```
+2.Even within countries the average conceals wide differences. Most students know that a degree in mathematics or finance is likely to be more lucrative than one in music or social work. What fewer realise is that the graduate premium overstates the financial benefit of embarking on a degree if their school grades barely qualify them for entry, no matter what they study.
+效應評估問句：擁有數學或金融系學位會比音樂或社會工作的學位有較高的薪水?
+造成選擇性偏誤原因：造成數學或金融系學位比音樂或社會工作學位擁有較高薪水的原因可能在於入學前的成績篩選，數學或金融系學位的進入門檻較高，可能會造成畢業後的薪水較高。
+```
+```
+3.Degrees are also signalling devices. The premium includes the income-boosting effects of personal characteristics that are more likely to be held by those with degrees, not because they acquired them at university, but because they possessed them on admission.
+效應評估問句：有較好人格特質的人有較高的收入?
+造成選擇性偏誤原因：有大學學歷的人有較好的人格特質，但人格特質並非大學時所生成，而是入學前就有的。
+```
+```
+4.Analysis by The Economist of American census data finds that between 1970 and 2015 the share of workers aged 25-64 with at least a bachelor’s degree increased in 256 out of 265 occupations. Some of these are intellectually demanding jobs that changed a lot over that period, such as aerospace engineer or statistician. Others are non-graduate jobs such as waiting tables. Sixteen percent of waiters now have degrees—presumably, in most cases, because they could not find a graduate job. But other jobs that are mostly done by graduates, such as journalism, nursing and teaching in primary schools, used to require only shorter training, often received while working. Today, having a degree is usually an entry requirement.
+效應評估問句：大學畢業有學位者比沒有的人有更高的收入?
+造成選擇性偏誤原因：現今有許多工作有學歷要求，使得許多原本僅需要短暫培訓即可就職的職業無法被畢業者所選擇，因此造成大學畢業者有較高的收入。
+```
+```
+5.Part of that difference is because the weakest students attend the worst universities, where drop-out rates are highest. When they make it into better institutions, the returns may be higher.
+效應評估問句：進到較好的大學會有較高的收入回報?
+造成選擇性偏誤原因：成績較好的人才能進到較好的大學，成績較差的學生本來就比較容易被退學，所以如果單純比較學生退學率，有可能只是在比較學校的好壞。
+```
