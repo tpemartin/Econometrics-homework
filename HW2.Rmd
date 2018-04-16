@@ -140,7 +140,7 @@ tsls_1iv_tests
 
 ```{r}
 tsls_2iv <- ivreg(
-  WKS ~ LWAGE + IND  | IND + SMSA,
+  WKS ~ LWAGE  | IND + SMSA,
   data=labordata
   ) 
 summary(tsls_2iv, vcov = sandwich, diagnostics = TRUE, df=Inf) -> tsls_2iv_tests
@@ -154,9 +154,9 @@ tsls_2iv_tests
 stargazer(ols1,ols2,tsls_1iv,tsls_2iv,type="text",
           column.labels = c("ols1","ols2","one IV", "two IVs"),
           add.lines = list(c("TSLS tests p-value","","","",""),
-                           c("Q1: Sargan","","","NA","NA"),
-                           c("Q2: Weak instruments","NA","NA","0.115","1.46e-09"),
-                           c("Q3: Wu-Hausman","NA","NA","0.682","0.787")
+                           c("Q1: Sargan","","","NA","0.638"),
+                           c("Q2: Weak instruments","NA","NA","0.115","3.63e-09"),
+                           c("Q3: Wu-Hausman","NA","NA","0.682","0.870")
                            ))
 ```
 
