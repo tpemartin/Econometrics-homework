@@ -1,9 +1,9 @@
 ---
-title: "作業2"
+title: "作業1"
 params:
-  group: 11
-  id: [1234, 5678]
-  name: ["王","李"]
+  group: 2
+  id: [710661118, 710661105, 710661115, 710661112]
+  name: ["王聖曜","李冠緻","李岳駿","王威瀚"]
 output:
   html_notebook:
     df_print: paged
@@ -37,7 +37,10 @@ labordata <- read_csv("http://people.stern.nyu.edu/wgreene/Econometrics/cornwell
 將labordata只留下第7年的資料
 
 ```{r}
-
+library(dplyr)
+library(magrittr)
+library(AER)
+labordata %<>% dplyr::filter(YEAR == 7)
 ```
 
 ### (2) 
@@ -46,7 +49,7 @@ $$wks_{i}=\beta_0+\beta_1 lwage_{i}+\epsilon_i$$
 
 請使用plot()畫出橫軸為每週工時（WKS）與縱軸為取對數後薪資（LWAGE, 後往直接稱呼「薪資」）的離散圖。
 ```{r}
-
+plot(labordata$WKS,labordata$LWAGE)
 ```
 
 ### (3)
@@ -54,14 +57,21 @@ $$wks_{i}=\beta_0+\beta_1 lwage_{i}+\epsilon_i$$
 [請不要使用任何程式或數字計算，單純文字故事邏輯]
 
 ```
-
+在勞工參與和不參與勞工工會的不同情況下，會深深影響到勞工工時，在參與勞工工會並受到工會保護下，勞工工時會縮減較多，若缺少工會在背後支持，慣老闆會壓榨勞工並增加勞工工時，該變數明顯會影響到勞工工時。
+且UNION也可能影響薪資，若在討論工時時不加入	UNION去做解釋，則將造成薪資的效應估計偏誤，及遺漏的重要的變數。
+加入此擔心會提高工資係數，也就是說，在給予同樣的薪資下，若知道該觀察者有無加入，會提高薪資對工時的影響。
 ```
 
 ### (4)
 在不做迴歸下，請用union分組計算lwage與wks的平均，並用數字結果來支持你在(c)小題的擔心。
 
 ```{r}
-
+labordata %>%
+  group_by(UNION) %>%
+  summarise(mean_lwage=mean(LWAGE),mean_wks=mean(WKS))
+```
+```
+沒加入工會的勞工，其工資與加入勞工者差不多，但是工時較長。
 ```
 
 ### (5)
@@ -70,28 +80,34 @@ $$wks_{i}=\beta_0+\beta_1 lwage_{i} + \beta_2 ed_{i} +\beta_3 union_{i} +\beta_4
 請用『純文字說明』(不要寫程式，不要算任何數字)：為什麼要再放教育水準及性別二個控制變數？
 
 ```
-
+教育水準高低，也會影響勞動供給，教育水準高，通常是腦力活，不用長工時就可以賺夠錢；教育水準低，通常是勞力活，需要長工時才能賺取足夠錢。
+如果是女生，可能因為家庭負擔並非落在女性身上，故工時會較低；如果是男生，身為一家之主，工時會較長以賺取足夠的錢來養家。
+這兩個變數也是很重要，都會影響到薪資這個變數，為了讓僅有薪資變數的勞動供給簡迴歸的beta0與薪資變數獨立，故應該持續加入其他重要的解釋變數。
 ```
 
 ### (6)
 同時OLS估計簡單迴歸和複迴歸下的勞動供給，並用stargarzer呈現估計結果（請設定type="html"）。
 
 ```{r}
-
+model1 <- WKS ~ LWAGE
+model2 <- WKS ~ LWAGE + ED + UNION + FEM
+ols1 <- lm(model1,labordata)
+ols2 <- lm(model2,labordata)
+stargazer(ols1,ols2,type="html")
 ```
 
 ### (7)
 複迴歸模型估計下，LWAGE的係數要如何詮譯？顯不顯著？
 
 ```
-
+根據第六題的ols估計，以複迴歸為例，LWAGE的係數為0.538，也就是說當薪資每提高一單位，工時增加0.538單位，但是在簡迴歸與複迴歸的估計下，p-value大於t值，不拒絕H0(beta_1=0)，該變數並不顯著影響工時。
 ```
 
 ### (8)
 找出一個使複迴歸模型在控制變數下依然不符合條件性獨立的故事（必需牽扯到labordata資料不會有的變數，所以只能純文字故事）。
 
 ```
-
+試添加一變數為”工作態度“，工作態度能夠解釋效應評估變數LWAGE，工作態度好的人，其薪資通常比較高，態度不好者則相反，但是！工作態度與複迴歸的epsilon不滿足條件性獨立，工作態度可能與在此複迴歸中無法解釋的某變數有關，例如與變數MS有關，一個工作態度積極的人，可能因為結了婚有了家庭，產生責任感而努力賺錢養家。
 ```
 
 ## 內生性偏誤
@@ -110,21 +126,32 @@ $$wks_{i}=\beta_0+\beta_1 lwage_{i} + \beta_2 ed_{i} +\beta_3 union_{i} +\beta_4
 使用工具變數法及產業別（ind）當工具變數，估計複迴歸模型下的$\beta_1$係數，並進行工具變數合理性的相關檢定。
 
 ```{r}
-
+ttsls_1iv <- ivreg(
+  WKS ~ LWAGE  | IND,
+  data=labordata
+  ) 
+summary(tsls_1iv, vcov = sandwich, diagnostics = TRUE, df=Inf) -> tsls_1iv_tests
+tsls_1iv_tests
 ```
 
 ### (11) 
 使用工具變數法, 同時使用ind及smsa當工具變數，估計複迴歸模型下的$\beta_1$係數，並進行工具變數合理性的相關檢定。
 
 ```{r}
-
+tsls_2iv <- ivreg(
+  WKS ~ LWAGE + IND  | IND + SMSA,
+  data=labordata
+  ) 
+summary(tsls_2iv, vcov = sandwich, diagnostics = TRUE, df=Inf) -> tsls_2iv_tests
+tsls_2iv_tests
 ```
 
 ### (12)
 將簡單迴歸、複迴歸、一個工具變數、二個工具變數的四種估算結果（含應有的檢定），用stargazer產生「一張」報表同時呈現（請設定type="html"）。
 
 ```{r}
-
+stargazer(ols1,ols2,tsls_1iv,tsls_2iv,type="html",
+          column.labels = c("ols1","ols2","one IV", "two IVs"))
 ```
 
 
