@@ -53,7 +53,7 @@ $$wks_{i}=\beta_0+\beta_1 lwage_{i}+\epsilon_i$$
 
 請使用plot()畫出橫軸為每週工時（WKS）與縱軸為取對數後薪資（LWAGE, 後往直接稱呼「薪資」）的離散圖。
 ```{r}
-plot(labordata$LWAGE,labordata$WKS)
+labordata %>% plot(WKS ~ LWAGE, data=., xlab="WKS", ylab="LWAGE")
 ```
 
 ### (3)
