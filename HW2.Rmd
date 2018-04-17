@@ -37,7 +37,10 @@ labordata <- read_csv("http://people.stern.nyu.edu/wgreene/Econometrics/cornwell
 將labordata只留下第7年的資料
 
 ```{r}
-
+library("AER")
+library("dplyr")
+library("magrittr")
+labordata %<>% filter(YEAR==7)
 ```
 
 ### (2) 
@@ -46,7 +49,8 @@ $$wks_{i}=\beta_0+\beta_1 lwage_{i}+\epsilon_i$$
 
 請使用plot()畫出橫軸為每週工時（WKS）與縱軸為取對數後薪資（LWAGE, 後往直接稱呼「薪資」）的離散圖。
 ```{r}
-
+ols1 <- lm(WKS~LWAGE,data=labordata)
+plot(labordata$WKS, labordata$LWAGE, xlab="WKS", ylab="log(WAGE)")
 ```
 
 ### (3)
@@ -54,14 +58,26 @@ $$wks_{i}=\beta_0+\beta_1 lwage_{i}+\epsilon_i$$
 [請不要使用任何程式或數字計算，單純文字故事邏輯]
 
 ```
-
+勞工若屬於工會，則在工會的爭取與保護之下，該勞工可能擁有較低的工時以及較高的薪資。因此UNION與WKS存在著負相關，與LWAGE存在
+正相關，在此狀況下若不排除UNION的效果，則會導致迴歸式低估工資的係數
 ```
 
 ### (4)
 在不做迴歸下，請用union分組計算lwage與wks的平均，並用數字結果來支持你在(c)小題的擔心。
 
 ```{r}
+labordata0 <- labordata %>% filter(UNION==0)
+summary(labordata0$LWAGE)
+summary(labordata0$WKS)
 
+labordata1 <- labordata %>% filter(UNION==1)
+summary(labordata1$LWAGE)
+summary(labordata1$WKS)
+```
+```
+由結果可發現，在勞工未加入公會時(UNION==0)，lwage的平均為6.945，wks的平均為47.13
+             在勞工加入公會時(UNION==1)，lwage的平均為6.961，wks的平均為45.28
+確實，加入公會的勞工有著較高的薪資與較低的工時
 ```
 
 ### (5)
@@ -70,21 +86,27 @@ $$wks_{i}=\beta_0+\beta_1 lwage_{i} + \beta_2 ed_{i} +\beta_3 union_{i} +\beta_4
 請用『純文字說明』(不要寫程式，不要算任何數字)：為什麼要再放教育水準及性別二個控制變數？
 
 ```
-
+教育水準較高者，薪資通常會較高，且在工作選擇集合較大的狀況下，較可能選擇工時有彈性的工作，亦即工時應該更少。故教育水準(ED)
+將導致迴歸式低估工資係數
+另外，女性因為家庭因素，工時普遍較男性少，同時由於職場上的歧視，薪資普遍也比男性低，故性別為女性對lwage與wks皆存在著負相
+關，將造成估計偏誤
 ```
 
 ### (6)
 同時OLS估計簡單迴歸和複迴歸下的勞動供給，並用stargarzer呈現估計結果（請設定type="html"）。
 
 ```{r}
-
+ols2 <- lm(WKS~LWAGE+ED+UNION+FEM,data=labordata)
+library(stargazer)
+stargazer(ols1,ols2,type="html")
 ```
 
 ### (7)
 複迴歸模型估計下，LWAGE的係數要如何詮譯？顯不顯著？
 
 ```
-
+在兩個迴歸式中，LWAGE的係數皆為正，表示薪資對工時有正向的影響。但不管是簡單迴歸還是複迴歸，結果均顯示為不顯著，因此我們
+無法透過迴歸結果得到薪資能影響工時，或薪資與工時有正相關的結論
 ```
 
 ### (8)
