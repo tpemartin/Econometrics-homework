@@ -29,6 +29,9 @@ knitr::opts_chunk$set(echo = TRUE,warning=F,message=F)
 ```{r}
 library(readr)
 labordata <- read_csv("http://people.stern.nyu.edu/wgreene/Econometrics/cornwell&rupert.csv")
+library("AER")
+library("dplyr")
+library("magrittr")
 ```
 
 ## 勞動供給
@@ -37,7 +40,7 @@ labordata <- read_csv("http://people.stern.nyu.edu/wgreene/Econometrics/cornwell
 將labordata只留下第7年的資料
 
 ```{r}
-
+labordata %<>% filter(YEAR==7)
 ```
 
 ### (2) 
@@ -46,7 +49,9 @@ $$wks_{i}=\beta_0+\beta_1 lwage_{i}+\epsilon_i$$
 
 請使用plot()畫出橫軸為每週工時（WKS）與縱軸為取對數後薪資（LWAGE, 後往直接稱呼「薪資」）的離散圖。
 ```{r}
-
+labordata %>%
+  lm(WKS~LWAGE,data=.)
+plot(labordata$WKS, labordata$LWAGE, xlab="WKS", ylab="log(WAGE)")
 ```
 
 ### (3)
@@ -54,7 +59,8 @@ $$wks_{i}=\beta_0+\beta_1 lwage_{i}+\epsilon_i$$
 [請不要使用任何程式或數字計算，單純文字故事邏輯]
 
 ```
-
+勞工若屬於工會，則在工會的爭取與保護之下，該勞工可能擁有較低的工時以及較高的薪資。因此UNION與WKS存在著負相關，與LWAGE存在正相關，在此狀況下若不排
+除UNION的效果，則會導致迴歸式高估工資的係數
 ```
 
 ### (4)
