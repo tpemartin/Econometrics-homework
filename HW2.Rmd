@@ -59,15 +59,21 @@ plot(labordata$WKS, labordata$LWAGE, xlab="WKS", ylab="log(WAGE)")
 [請不要使用任何程式或數字計算，單純文字故事邏輯]
 
 ```
-勞工若屬於工會，則在工會的爭取與保護之下，該勞工可能擁有較低的工時以及較高的薪資。因此UNION與WKS存在著負相關，與LWAGE存在正相關，在此狀況下若不排
-除UNION的效果，則會導致迴歸式高估工資的係數
+勞工若屬於工會，則在工會的爭取與保護之下，該勞工可能擁有較低的工時以及較高的薪資。因此UNION與WKS存在著負相關，與LWAGE存在
+正相關，在此狀況下若不排除UNION的效果，則會導致迴歸式高估工資的係數
 ```
 
 ### (4)
 在不做迴歸下，請用union分組計算lwage與wks的平均，並用數字結果來支持你在(c)小題的擔心。
 
 ```{r}
+labordata0 <- labordata %>% filter(UNION==0)
+summary(labordata0$LWAGE)
+summary(labordata0$WKS)
 
+labordata1 <- labordata %>% filter(UNION==1)
+summary(labordata1$LWAGE)
+summary(labordata1$WKS)
 ```
 
 ### (5)
