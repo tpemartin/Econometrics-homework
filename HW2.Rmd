@@ -93,7 +93,7 @@ coeftest(model2, vcov. = vcovHC, type="HC1") -> model2_coeftest
 
 stargazer(model1, model2, 
           se=list(model1_coeftest[,"Std. Error"], model2_coeftest[,2]),
-          type="text",
+          type="html",
           align=TRUE)
 ```
 
@@ -134,7 +134,7 @@ coeftest(model3, vcov. = vcovHC, type="HC1") -> model3_coeftest
 
 stargazer(model3,
           se=list(model3_coeftest[,2]),
-          type="text",
+          type="html",
           align=TRUE)
 
 tsls_1 <- ivreg(
