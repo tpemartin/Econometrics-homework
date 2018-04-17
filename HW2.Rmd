@@ -59,7 +59,7 @@ plot(labordata$WKS, labordata$LWAGE, xlab="WKS", ylab="log(WAGE)")
 
 ```
 勞工若屬於工會，則在工會的爭取與保護之下，該勞工可能擁有較低的工時以及較高的薪資。因此UNION與WKS存在著負相關，與LWAGE存在
-正相關，在此狀況下若不排除UNION的效果，則會導致迴歸式高估工資的係數
+正相關，在此狀況下若不排除UNION的效果，則會導致迴歸式低估工資的係數
 ```
 
 ### (4)
@@ -73,6 +73,11 @@ summary(labordata0$WKS)
 labordata1 <- labordata %>% filter(UNION==1)
 summary(labordata1$LWAGE)
 summary(labordata1$WKS)
+```
+```
+由結果可發現，在勞工未加入公會時(UNION==0)，lwage的平均為6.945，wks的平均為47.13
+             在勞工加入公會時(UNION==1)，lwage的平均為6.961，wks的平均為45.28
+確實，加入公會的勞工有著較高的薪資與較低的工時
 ```
 
 ### (5)
