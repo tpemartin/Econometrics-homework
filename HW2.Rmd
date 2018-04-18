@@ -84,7 +84,7 @@ $$wks_{i}=\beta_0+\beta_1 lwage_{i} + \beta_2 ed_{i} +\beta_3 union_{i} +\beta_4
 ### (6)
 同時OLS估計簡單迴歸和複迴歸下的勞動供給，並用stargarzer呈現估計結果（請設定type="html"）。
 
-```{r}
+```{r,results='asis'}
 labordata %>% lm(WKS~LWAGE,data=.) -> model1
 labordata %>% lm(WKS~LWAGE+ED+UNION+FEM,data=.) -> model2
 
@@ -93,7 +93,7 @@ coeftest(model2, vcov. = vcovHC, type="HC1") -> model2_coeftest
 
 stargazer(model1, model2, 
           se=list(model1_coeftest[,"Std. Error"], model2_coeftest[,2]),
-          type="text",
+          type="html",
           align=TRUE)
 ```
 
@@ -101,7 +101,11 @@ stargazer(model1, model2,
 複迴歸模型估計下，LWAGE的係數要如何詮譯？顯不顯著？
 
 ```
+<<<<<<< HEAD
 簡單迴歸不顯著，複迴歸顯著。係數表示增加薪水對工時的誘因影響，又在複迴歸中係數比簡單迴歸係數更大，表示簡單迴歸中，我們低估了薪水對工時的誘惑力，其實工時變短可能是因為其它因素導致不會(想)工作那麼多。
+=======
+簡單迴歸不顯著，複迴歸顯著。係數表示增加薪水對工時的誘因影響，又在複迴歸中係數比簡單回歸係數更大，表示簡單迴歸中，我們低估了薪水對工時的誘惑力，其實工時變短可能是因為其它因素導致不會(想)工作那麼多。
+>>>>>>> 1bc2f31c29b9d2ca62e8b074d9c2b4cbc94cf118
 ```
 
 ### (8)
@@ -127,14 +131,14 @@ stargazer(model1, model2,
 ### (10)
 使用工具變數法及產業別（ind）當工具變數，估計複迴歸模型下的$\beta_1$係數，並進行工具變數合理性的相關檢定。
 
-```{r}
+```{r,results='asis'}
 labordata %>% lm(WKS~LWAGE+ED+UNION+FEM+IND,data=.) -> model3
 
 coeftest(model3, vcov. = vcovHC, type="HC1") -> model3_coeftest
 
 stargazer(model3,
           se=list(model3_coeftest[,2]),
-          type="text",
+          type="html",
           align=TRUE)
 
 tsls_1 <- ivreg(
@@ -167,7 +171,7 @@ summary(tsls_2, vcov = sandwich, diagnostics = TRUE, df=Inf)
 ### (12)
 將簡單迴歸、複迴歸、一個工具變數、二個工具變數的四種估算結果（含應有的檢定），用stargazer產生「一張」報表同時呈現（請設定type="html"）。
 
-```{r}
+```{r,results='asis'}
 stargazer(model1,model2,model3,model4,type="html",
           column.labels = c("simple", "mlti","one IV","two IV"),
           add.lines = list(c("TSLS tests p-value", "","","",""),
