@@ -1,0 +1,191 @@
+---
+title: "作業1"
+output: html_notebook
+params:
+  name: ["秦嘉偉","饒雲韶","吳婉如"]
+  id: [810432103,810632102,810632103]
+  group: 8
+---
+請依狀況更改上面的name,id及group（分別代表組員姓名，學號及組號），但請勿更改下面三行的設定。  
+
+***
+姓名：`r params$name`  
+學號：`r params$id`  
+組號：`r params$group`  
+
+***
+
+請直接在本檔案作答，存檔時也無需另存新檔名。交作業時，只由「組長」送出pull request給我。
+
+作業除了讓同學檢視課堂所學程式外，有些題目只會給你未教過的函數建議（純為建議，你也可以不使用），你必需使用Help或網路查尋去了解函數的正確使用；搜詢正確程式函數使用的能力，也是程式設計的基本功。
+
+如果是程式的答案，請設立如下的chunk區塊並在裡面作答
+```{r}
+#你的程式答案
+```
+
+如果是文字答案，請設立沒有{r}的chunk區塊並在裡面作答。
+```
+你的文字答案。
+```
+
+# 教育與薪資 
+
+一開始請執行
+```{r}
+rm(list=ls())
+library(dplyr)
+library(psych)
+library(haven)
+wage1 <- read_dta("http://fmwww.bc.edu/ec-p/data/wooldridge/wage1.dta")
+```
+
+1. 請依據此[連結](http://fmwww.bc.edu/ec-p/data/wooldridge/wage1.des)說明wage1資料的來源及變數代表意義。[其中potential experience指得是推估工作經驗年資]
++
++wage1資料係以美國民眾為樣本，主要探討教育年限是否與薪資有關，並考慮了其他會影響薪資的因素為控制變數，以減少樣本選擇性偏誤之問題。
++wage為薪資，educ為教育年限，exper為工作經驗，tenure為目前工作的任職期間，nonwhite為是否為非白人，female為是否為女性，married為是否已婚，numdep為扶養人數，smsa為是否住在都市，northcen為是否住在北部，south為是否住在南部，west為是否住在西部，construc為是否從事建造業，ndurman為是否從事製造業，trcommpu為是否從事公共運輸業，trade為是否為批發商或零售商，services為是否從事服務業，profserv為是否為專業人員(例如：律師及會計師等)，lwage為薪資取自然對數(係因薪資與教育年限數值差異過大，可能造成偏態的情形，而將薪資取自然對數)，expersq為工作經驗取平方值(係因工作經驗造成薪資增加的幅度在前期會比後期大，因而再設置此變數)，tenursq為目前工作的任職期間取平方值(係因目前工作的任職期間對於薪資增加的幅度，在前期會比後期大，因而設置此變數)。
++
+我們想要問："教育年限增加一年對勞動薪資的影響有多少？"
++```{r}
+wage1 %>% 
+  lm(wage~educ,data=.)
++```
++教育年限每增加一年，勞動薪資會增加0.54。
++
+2. 請使用`psych::pairs.panels()`來描述教育年限(educ)與勞動薪資(wage)間的特質。在兩者的相關度上，有沒有那個變數取對數(log)會比較好？為什麼？
++
++```{r}
+library(psych)
+wage1 %>% 
+  select(wage,educ) %>%
+  pairs.panels()
++```
++
++```{r}
++wage1 %>% 
++  dplyr::select(educ,wage) %>%
++  dplyr::mutate_all(log) %>%
++  pairs.panels()
++```
++
+3. 請使用OLS估計以下的迴歸模型：
+$$log(wage)=\beta_0+\beta_1 educ+\epsilon$$
++
++```{r}
++wage1 %>% 
+  lm(log(wage)~educ,data=.)
++```
++
+4. 從資料裡選出兩個可能造成$\beta_1$OLS估計值帶有選擇性偏誤的變數，請說明理由並加以適當敍述統計量佐證。
++經由因果問句分析，educ與smsa兩者的相關係數值達0.22，具顯著水準，顯示住在都市的人民可能會受比較高的教育，因而可能造成選擇性偏誤。
++```{r}
++wage1 %>% 
+  select(educ,smsa) %>%
+  pairs.panels()
++```
++經由因果問句分析，educ與exper兩者的相關係數值達-0.30，具顯著水準，顯示教育年限與工作經驗呈替代關係，亦即工作經驗越高，其受教育之年限可能越低，故可能造成選擇性偏誤。
++```{r}
++wage1 %>%
+  select(educ,exper) %>% 
+  pairs.panels()
+
++```
+5. 延續上題，請完成對應複迴歸模型的估計。
++
++```{r}
++model <- lm(wage~educ+exper,data=wage1)
+  summary(model)
+Call:
+lm(formula = wage ~ educ + exper, data = wage1)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-5.5532 -1.9801 -0.7071  1.2030 15.8370 
+
+Coefficients:
+            Estimate Std. Error t value Pr(>|t|)    
+(Intercept) -3.39054    0.76657  -4.423 1.18e-05 ***
+educ         0.64427    0.05381  11.974  < 2e-16 ***
+exper        0.07010    0.01098   6.385 3.78e-10 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 3.257 on 523 degrees of freedom
+Multiple R-squared:  0.2252,	Adjusted R-squared:  0.2222 
+F-statistic: 75.99 on 2 and 523 DF,  p-value: < 2.2e-16
+從上表可知，exper與wage相關係數的的p值呈顯著正相關，顯示工作經驗愈高，薪資也會愈高。
++
++```{r}
++model <- lm(wage~educ+smsa,data=wage1)
+  summary(model)
+Call:
+lm(formula = wage ~ educ + smsa, data = wage1)
+
+Residuals:
+   Min     1Q Median     3Q    Max 
+-5.400 -2.175 -1.030  1.429 16.384 
+
+Coefficients:
+            Estimate Std. Error t value Pr(>|t|)    
+(Intercept) -1.10547    0.68821  -1.606   0.1088    
+educ         0.51400    0.05443   9.443   <2e-16 ***
+smsa         0.75339    0.33627   2.240   0.0255 *  
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 3.366 on 523 degrees of freedom
+Multiple R-squared:  0.1727,	Adjusted R-squared:  0.1695 
+F-statistic: 54.59 on 2 and 523 DF,  p-value: < 2.2e-16
+從上表可知，smsa與wage相關係數的的p值呈顯著正相關，顯示居住在都市的人民，薪資會比較高。
++
+6. 大致說來，教育年限12年表示高中畢業，大學畢業會有16年的教育，請問介於12年以上-16年以下的教育年限代表什麼？
++```
++有高中學歷，並選擇繼續就讀大學，但沒有畢業，為中輟生。
++```
+7. 取出教育年限介於12-16年（含上下限）的資料，分別計算以下三群教育年限勞動者的平均薪資：12年，13-15年，16年。
+[hint: dplyr::filter(), dplyr::group_by(), dplyr::summarise(), cut()]
++```{r}
++filter(wage1) %>%
++group_by(educ=cut(wage1$educ,c(11,12,15,16),labels = FALSE)) %>%
++  summarise(meanwage=mean(wage))
++```
++```
++由上得知，
++教育年限在12年的勞動者其平均薪資為5.371364。
++教育年限在13-15的勞動者其平均薪資為6.030000。
++教育年限在16年的勞動者其平均薪資為10.936129。
++```
+
+8. 在下一部份的文章閱讀練習裡，文章提到: 
+
+> In a comparison of the earnings of people with degrees and people without them, those who start university but do not finish are lumped in with those who never started, even though they, too, will have paid fees and missed out on earnings. Their numbers are considerable. 
+
+在問題7中我們計算了三群人的平均薪資。請問若要避免文章所描述的問題，你會如何計算一位高中生若選擇上大學他會得到的預期薪資好處。[只使用問題7的數字及三群人人數]
++先計算教育年限介於13-15年的人數以及教育年限大於16年的人數後，再計算選擇讀大學的期望薪資。
++
+# 文章閱讀
+[Going to university is more important than ever for young people.
+But the financial returns are falling.](https://www.economist.com/news/international/21736151-financial-returns-are-falling-going-university-more-important-ever)
+
+文章中有不少效應評估問句，及造成其無法直接進行簡單迴歸估計的選擇性偏誤原因，請將所有這樣的段落貼過來、寫下它的效應評估問句及造成選擇性偏誤的原因。例如：
+
+```
+1. Policymakers regard it as obvious that sending more young people to university will boost economic growth and social mobility. ... But comparisons between countries provide little evidence of these links. Richer countries have more graduates, but that could be because there is more money to spare, and less urgency to start earning.
+
+效應評估問句：越多人上大學該國經濟表現越好？
+
+造成選擇性偏誤原因：「時間多錢多多」造成「越多人上大學」，「時間多錢多多」是「富有國家」常見現象，所以單純比較上大學比例高和低的國家，有可能只是在比誰的「時間多、錢多」。（這類的選擇性偏誤也稱為內生性偏誤。）
+```
++```
++
++...
++Clever people tend to earn more.
++效應評估問句：越聰明的人賺越多？
++造成選擇性偏誤的原因可能係因家庭所得越高，可用資源(例如：深造機會)越多，而使的其工作所賺得之所得較高"，但若僅單純比較兩者，可能會有選擇性偏誤之現象產生。
++...
++
++...
++Companies routinely require applicants to have degrees, even though only a minority of those already working in the role have them. This increases the graduate premium - but by punishing non-graduates rather than boosting the absolute returns to degrees.
++效應評估問句：The increasing in graduate premium cause absolute returns to degrees increased？
++造成選擇性偏誤的原因:companies routinely require applicants to have degrees cause graduate premium increased，"companies routinely require applicants to have degrees cause returns to degrees increased，故若僅單純比較兩者，可能會有選擇性偏誤之現象產生。
++...
