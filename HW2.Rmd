@@ -127,14 +127,26 @@ stargazer(ols1,ols2,type="html")
 在勞動市場中，產業別不同其對勞動力的需求也不一樣。另外，不同地點的勞動需求狀況也不同。使用文字邏輯說明「產業別」、勞動者「居住地」可能是合理工具變數的理由。
 
 ```
-
+產業別對於勞動力的需求不同，所以起薪不同
+居住地不同對勞動的需求可能也會影響產業別的不同
+當產業別及居住地影響勞動需求時，若需求高則給予薪水較高，若需求低則給薪較低
 ```
 
 ### (10)
 使用工具變數法及產業別（ind）當工具變數，估計複迴歸模型下的$\beta_1$係數，並進行工具變數合理性的相關檢定。
 
 ```{r}
+ols3 <- lm(WKS~IND+ED+UNION+FEM,data=labordata)
+ols3
 
+summary(labordata$IND, vcov = sandwich, diagnostics = TRUE, df=Inf) -> tsls_1iv_tests
+tsls_1iv_tests
+
+sandwich_HC1<-function(x,adjust=TRUE){
+  sandwich(x,adjust=adjust)
+}
+stargazer(ols2,ols3,type="html",
+          column.labels = c("NO IV", "IV:IED"))
 ```
 
 ### (11) 
