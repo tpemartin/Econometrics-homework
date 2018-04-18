@@ -2,13 +2,9 @@
 title: "作業2"
 params:
   group: 9
-<<<<<<< HEAD
   id: [710661113, 710661123, 710661124]
   name: ["陳宜榛","林云方","周緬緬"]
-=======
-  id: [710661123]
-  name: ["林云方"]
->>>>>>> pr/8
+
 output:
   html_notebook:
     df_print: paged
@@ -39,31 +35,28 @@ library(readr)
 labordata <- read_csv("http://people.stern.nyu.edu/wgreene/Econometrics/cornwell&rupert.csv")
 ```
 
-```{r}
-library("AER")
-library("ggplot2")
-library("dplyr")
-library("knitr")
-library(magrittr)
-```
-
-```{r}
+```{r 查看資料結構}
 str(labordata)
 ```
-```{r}
+
+```{r 重設資料屬性}
 labordata %<>%
- mutate(OCC=as.factor(OCC),IND=as.factor(IND),SOUTH=as.factor(SOUTH),SMSA=as.factor(SMSA),MS=as.factor(MS),FEM=as.factor(FEM),UNION=as.factor(UNION),BLK=as.factor(BLK))
+ mutate(OCC=as.factor(OCC),
+        IND=as.factor(IND),
+        SOUTH=as.factor(SOUTH),
+        SMSA=as.factor(SMSA),
+        MS=as.factor(MS),
+        FEM=as.factor(FEM),
+        UNION=as.factor(UNION),
+        BLK=as.factor(BLK))
 ```
+
 ## 勞動供給
 
 ### (1)
 將labordata只留下第7年的資料
 
-<<<<<<< HEAD
 ```{r 留下第7年的資料}
-=======
-```{r}
->>>>>>> pr/8
 labordata %<>% filter(YEAR=="7")
 ```
 
@@ -72,17 +65,11 @@ labordata %<>% filter(YEAR=="7")
 $$wks_{i}=\beta_0+\beta_1 lwage_{i}+\epsilon_i$$
 
 請使用plot()畫出橫軸為每週工時（WKS）與縱軸為取對數後薪資（LWAGE, 後往直接稱呼「薪資」）的離散圖。
-<<<<<<< HEAD
+
 ```{r 工時與薪資的離散圖}
-labordata$WKS %>% plot(labordata$LWAGE)
-=======
-```{r}
-plot(x=labordata$WKS,
-     y=labordata$LWAGE,
-     main = "WKS to LWAGE",
-     xlab = "WKS",
-     ylab = "LWAGE")
->>>>>>> pr/8
+labordata$WKS %>% plot(labordata$LWAGE,
+                       xlab = "WKS",
+                       ylab = "LWAGE")
 ```
 
 ### (3)
@@ -90,42 +77,16 @@ plot(x=labordata$WKS,
 [請不要使用任何程式或數字計算，單純文字故事邏輯]
 
 ```
-<<<<<<< HEAD
 因為工會的談判力量較強大，通常可以對雇主要求較高的薪資，所以加入工會的人其薪資通常會比沒加入工會的人高。另外工會也會向雇主談判超時工作的問題，所以加入工會的人比較不會超時工作，有加入工會的人其工時便會比沒加入公會的人少。所以勞工是否屬於工會，可能會造成選擇性偏誤，進而低估了工資係數。
-=======
-面向一：勞工正常工作時間每日不得超過8小時，每週不得超過40小時，若要延長工時，必須經過工會同意，必須符合相關法令規定，因此屬於工會和每週工時之間的關係推估為負相關。
-面向二：工會設立的最主要目的就是為了維護與提升勞工的勞動條件與經濟條件，勞工可以藉由工會的力量，來要求公平合理的待遇，因此屬於工會和薪資之間的關係推估為正相關。
-所以這遺漏變數的擔心會低估工資係數。
->>>>>>> pr/8
 ```
 
 ### (4)
 在不做迴歸下，請用union分組計算lwage與wks的平均，並用數字結果來支持你在(c)小題的擔心。
 
-<<<<<<< HEAD
 ```{r 用union分組計算lwage與wks的平均}
 labordata %>%
   group_by(UNION) %>%
   summarise(mean(LWAGE),mean(WKS))
-=======
-```{r}
-labordata%>%
-filter(UNION==1)->union1
-rbind(
-union1%>%
-summarise(avg=mean(LWAGE),N = n()),
-union1%>%
-summarise(avg=mean(WKS),N = n()))
-```
-```{r}
-labordata%>%
-filter(UNION==0)->union0
-rbind(
-union0%>%
-summarise(avg=mean(LWAGE),N = n()),
-union0%>%
-summarise(avg=mean(WKS),N = n()))
->>>>>>> pr/8
 ```
 
 ### (5)
@@ -134,25 +95,16 @@ $$wks_{i}=\beta_0+\beta_1 lwage_{i} + \beta_2 ed_{i} +\beta_3 union_{i} +\beta_4
 請用『純文字說明』(不要寫程式，不要算任何數字)：為什麼要再放教育水準及性別二個控制變數？
 
 ```
-<<<<<<< HEAD
 因為我們在同樣是否加入公會的人中，還是無法控制住「非薪資效應的勞動供給量」對薪資與工時關聯的干擾，所以再加入控制變數以改善此問題。
-1.教育水準：通常教育水準越高，其薪資也會較高，就像碩士、學士的起薪不同，另外教育水準高的人會從事知識比重高的工作，比起教育水準低的人從事勞力比重高的工作，教育水準高則會比教育水準低的人工作時數少。因此若沒有放入教育水準這個變數，可能造成工資係數的低估。
-2.性別：許多職場存在性別歧視，造成了男性平均薪資會比女性平均薪資高，另外社會風氣影響，女性普遍還是須要照顧家庭，使女性在工作上無法投入像男性一樣多的時間，男性的工作時數會比女性多。因此若沒有放入性別這個變數，可能造成工資係數的高估。
-=======
-教育水準：
-面向一：教育水準越高越有較好的工作機會，因此教育水準越高薪資水準越高。
-面向二：教育水準越高，薪資也越高，所以休閒的成本較高，因此工時較長。
-
-性別：
-面向一：因為女性會較顧慮於家庭，工作投入的心力較少，以至於晉升機會少，所以薪資相對低。
-面向二：因為女性會較顧慮於家庭，工作投入的時間較少，所以工時會相對短。
->>>>>>> pr/8
+1.教育水準：
+通常教育水準越高，其薪資也會較高，就像碩士、學士的起薪不同，另外教育水準高的人會從事知識比重高的工作，比起教育水準低的人從事勞力比重高的工作，教育水準高則會比教育水準低的人工作時數少。因此若沒有放入教育水準這個變數，可能造成工資係數的低估。
+2.性別：
+許多職場存在性別歧視，造成了男性平均薪資會比女性平均薪資高，另外社會風氣影響，女性普遍還是須要照顧家庭，使女性在工作上無法投入像男性一樣多的時間，男性的工作時數會比女性多。因此若沒有放入性別這個變數，可能造成工資係數的高估。
 ```
 
 ### (6)
 同時OLS估計簡單迴歸和複迴歸下的勞動供給，並用stargarzer呈現估計結果（請設定type="html"）。
 
-<<<<<<< HEAD
 ```{r 簡單迴歸、複迴歸結果,results='asis'}
 #建立model
 model1<-WKS ~ LWAGE
@@ -169,31 +121,16 @@ coeftest(ols1, vcov. = vcovHC, type="HC1") -> ols1_coeftest
 coeftest(ols2, vcov. = vcovHC, type="HC1") -> ols2_coeftest
 #OLS結果比較
 stargazer(ols1,ols2,
-          se=list(ols1_coeftest[,"Std. Error"],
+          se=list(ols1_coeftest[,2],
                   ols2_coeftest[,2]),
           type="html")
-=======
-```{r}
-library(sandwich)
-library(lmtest)
-library(stargazer)
-model1<-WKS ~ LWAGE
-model2<-WKS ~ LWAGE + ED + UNION + FEM
-ols1<-lm(model1,labordata)
-ols2<-lm(model2,labordata)
-coeftest(ols1, vcov. = vcovHC, type="HC1") -> ols1_coeftest
-coeftest(ols2, vcov. = vcovHC, type="HC1") -> ols2_coeftest
-stargazer(ols1,ols2,type ="html")
->>>>>>> pr/8
 ```
+
 ### (7)
 複迴歸模型估計下，LWAGE的係數要如何詮譯？顯不顯著？
+
 ```
-<<<<<<< HEAD
 當薪資增加1%時，工作時數會增加 0.538單位，但不顯著
-=======
-LWAGE的係數＝0.538，表示薪資增加百分之一，每週工時增加0.538小時。不顯著。
->>>>>>> pr/8
 ```
 
 ### (8)
@@ -213,79 +150,47 @@ LWAGE的係數＝0.538，表示薪資增加百分之一，每週工時增加0.53
 在勞動市場中，產業別不同其對勞動力的需求也不一樣。另外，不同地點的勞動需求狀況也不同。使用文字邏輯說明「產業別」、勞動者「居住地」可能是合理工具變數的理由。
 
 ```
-<<<<<<< HEAD
-1.產業別：產業的技術經濟特點影響工資水平，資本密集型產業工資較高，反之較低，也就是隨著產業別的不同薪資會有所差距，但如果假設在同樣的薪資水準下，勞工不會因為從事資本密集型產業就想多工作或少工作，也就是不管從事任何產業，在同樣的薪資下工作時數並不會受到影響，因此產業別可能是合理的工具變數。
-2.居住地：都市的消費水準比鄉下高，所以通常都市的薪資也會比鄉下高，也就是隨著居住地的不同薪資會有所差距，但如果假設在同樣的薪資水準下，勞工不會因為住在都市就想多工作或少工作，也就是不管在都市或鄉下，在同樣的薪資下工作時數並不會受到影響，因此居住地可能是合理的工具變數。
-=======
-產業別和薪資相關，因為油電業和金融業薪資相對優渥，餐飲業薪資相對低，因此符合相關性條件;產業別和每週工時不相關，因為不管哪一個產業別，每週工時必須符合法令在40小時，因此符合排除條件。
-居住地和薪資相關，因為薪資高者有能力買房在黃金地段及高級住宅區，因此符合相關性條件;居住地和每週工時不相關，因為不管居住地在哪，每週工時必須符合法令在40小時，因此符合排除條件。
->>>>>>> pr/8
+1.產業別：
+產業的技術經濟特點影響工資水平，資本密集型產業工資較高，反之較低，也就是隨著產業別的不同薪資會有所差距。但如果假設在同樣的薪資水準下，勞工不會因為從事資本密集型產業就想多工作或少工作，也就是不管從事任何產業，在同樣的薪資下工作時數並不會受到影響。所以產業別可能是合理的工具變數。
+2.居住地：
+都市的消費水準比鄉下高，所以通常都市的薪資也會比鄉下高，也就是隨著居住地的不同薪資會有所差距。但如果假設在同樣的薪資水準下，勞工不會因為住在都市就想多工作或少工作，也就是不管在都市或鄉下，在同樣的薪資下工作時數並不會受到影響。所以居住地可能是合理的工具變數。
 ```
 
 ### (10)
 使用工具變數法及產業別（ind）當工具變數，估計複迴歸模型下的$\beta_1$係數，並進行工具變數合理性的相關檢定。
 
-<<<<<<< HEAD
 ```{r 加入一個工具變數}
 tsls_1iv <- ivreg(
   WKS ~ LWAGE + ED + UNION + FEM | ED + UNION + FEM + IND ,
   data=labordata
   ) 
 summary(tsls_1iv, vcov = sandwich, diagnostics = TRUE, df=Inf)
-=======
-```{r}
-tsls_1_iv <- ivreg(
-  WKS ~ LWAGE + ED + UNION + FEM | ED + UNION + FEM + IND,
-  data=labordata)
-coeftest(tsls_1_iv, vcov. = vcovHC, type="HC1") -> tsls_1_iv_coeftest
-summary(tsls_1_iv, vcov = sandwich, diagnostics = TRUE, df=Inf) -> tsls_1_iv_tests
->>>>>>> pr/8
 ```
 
 ### (11) 
 使用工具變數法, 同時使用ind及smsa當工具變數，估計複迴歸模型下的$\beta_1$係數，並進行工具變數合理性的相關檢定。
 
-<<<<<<< HEAD
 ```{r 加入兩個工具變數}
 tsls_2iv <- ivreg(
   WKS ~ LWAGE + ED + UNION + FEM | ED + UNION + FEM + IND + SMSA,
   data=labordata
   )
 summary(tsls_2iv, vcov = sandwich, diagnostics = TRUE, df=Inf)
-=======
-```{r}
-tsls_2_iv <- ivreg(
-  WKS ~ LWAGE + ED + UNION + FEM | ED + UNION + FEM + IND + SMSA,
-  data=labordata)
-coeftest(tsls_2_iv, vcov. = vcovHC, type="HC1") -> tsls_2_iv_coeftest
-summary(tsls_2_iv, vcov = sandwich, diagnostics = TRUE, df=Inf) -> tsls_2_iv_tests
->>>>>>> pr/8
 ```
 
 ### (12)
 將簡單迴歸、複迴歸、一個工具變數、二個工具變數的四種估算結果（含應有的檢定），用stargazer產生「一張」報表同時呈現（請設定type="html"）。
 
-<<<<<<< HEAD
 ```{r 比較四種結果,results='asis'}
 stargazer(ols1,ols2,tsls_1iv,tsls_2iv,
-          type="html")
-=======
-```{r}
-tsls_1_iv_tests
-tsls_2_iv_tests
-```
-
-```{r}
-stargazer(ols1,ols2,tsls_1_iv,tsls_2_iv,type="html",
+          type="html",
           column.labels = c("simple","multiple","one IV", "two IVs"),
           add.lines = list(c("TSLS tests p-value", "","",""),
                           
                            c("Q1: Sargan","NA","NA","NA","0.363"),
                            c("Q2: Weak instruments","NA","NA","0.000569","8.92e-11"),
                            c("Q3: Wu-Hausman","NA","NA","0.598699","0.565")))
->>>>>>> pr/8
 ```
-
 
 # 文章閱讀
 以下問題請依《經濟學人》文章來回答：
@@ -297,25 +202,12 @@ stargazer(ols1,ols2,tsls_1_iv,tsls_2_iv,type="html",
 文章問的因果效應問句是什麼？（盡量一言以敝之）
 
 ```
-<<<<<<< HEAD
 是否因為性別差異造成職場上的機會(薪資水準)不同
-=======
-男女薪資差異是否受性別歧視的影響？
->>>>>>> pr/8
 ```
 
 ### (14)
 找出文章中所列舉可造成OVB（omitted variable bias）的應控制變數，並說明它會造成OVB的「兩」面向原因（缺一不可）。
 
 ```
-<<<<<<< HEAD
 職位：以航空業為例，飛行員比較多是男性，而機組人員比較多是女性，所以性別和職位有一定的相關性，而且飛行員的薪水本來就高於機組人員，所以職位也會影響到薪水。如果單純比較男性跟女性的的薪資，可能只是在比較不同職位間的薪資差距。
-=======
-1.男女生的職業類別不同
-面向一：性別歧視會造成男女所進入的職業不同
-面向二：不同的職業，會有不同的工作內容，因此會有薪資差異
-2.男女晉升機會不同
-面向一：性別歧視會造成分派的工作內容不同，因此工作上表現不同，進而影響到晉升的機會。
-面向二：晉升機會不同，所以職等高低不同，以至於有薪資差異
->>>>>>> pr/8
 ```
