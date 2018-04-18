@@ -1,7 +1,7 @@
 ---
 title: "作業2"
 params:
-  group: 11
+  group: 9
   id: [710661113, 710661123, 710661124]
   name: ["陳宜榛","林云方","周緬緬"]
 output:
@@ -83,7 +83,7 @@ $$wks_{i}=\beta_0+\beta_1 lwage_{i} + \beta_2 ed_{i} +\beta_3 union_{i} +\beta_4
 ### (6)
 同時OLS估計簡單迴歸和複迴歸下的勞動供給，並用stargarzer呈現估計結果（請設定type="html"）。
 
-```{r 簡單迴歸、複迴歸結果}
+```{r 簡單迴歸、複迴歸結果,results='asis'}
 #建立model
 model1<-WKS ~ LWAGE
 model2<-WKS ~ LWAGE+ED+UNION+FEM
@@ -156,22 +156,8 @@ summary(tsls_2iv, vcov = sandwich, diagnostics = TRUE, df=Inf)
 ### (12)
 將簡單迴歸、複迴歸、一個工具變數、二個工具變數的四種估算結果（含應有的檢定），用stargazer產生「一張」報表同時呈現（請設定type="html"）。
 
-```{r 比較四種結果}
-#建立model
-model2%>%update.formula(~.+ IND ) ->model3
-model2%>%update.formula(~.+ IND+ SMSA ) ->model4
-#跑OLS
-tsls1iv1<-lm(model3,labordata)
-tsls1iv2<-lm(model4,labordata)
-#使用vcovHC函數來計算HC1型的異質變異（即橫斷面資料下的線性迴歸模型
-coeftest(tsls1iv1, vcov. = vcovHC, type="HC1") -> tsls1iv_coeftest
-coeftest(tsls1iv2, vcov. = vcovHC, type="HC1") -> tsls2iv_coeftest
-#比較結果
+```{r 比較四種結果,results='asis'}
 stargazer(ols1,ols2,tsls_1iv,tsls_2iv,
-         se=list(ols1_coeftest[,"Std. Error"],
-                 ols2_coeftest[,2],
-                 tsls1iv_coeftest[,2],
-                 tsls2iv_coeftest[,2]),
           type="html")
 ```
 
