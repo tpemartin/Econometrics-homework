@@ -6,7 +6,7 @@ params:
   name: ["陳建宇","陳彤","鄭向吾","彭楷雯"]
 output:
   html_notebook:
-    df_print: paged
+    df_print: paged 
 ---
 請依狀況更改上面的name,id及group（分別代表組員姓名，學號及組號），但請「勿」更改下面姓名、學號、組號三行的設定。  
 
@@ -48,8 +48,16 @@ labordata %<>% filter(YEAR==7)
 $$wks_{i}=\beta_0+\beta_1 lwage_{i}+\epsilon_i$$
 
 請使用plot()畫出橫軸為每週工時（WKS）與縱軸為取對數後薪資（LWAGE, 後往直接稱呼「薪資」）的離散圖。
-```{r}
+```{r,results='asis'}
 ols1 <- lm(WKS~LWAGE,data=labordata)
+
+coeftest(ols1, vcov. = vcovHC, type="HC1") -> ols1_coeftest
+
+stargazer(ols1, 
+          se=list(ols1_coeftest[,"Std. Error"]),
+          type="html",
+          align=TRUE)
+
 plot(labordata$WKS, labordata$LWAGE, xlab="WKS", ylab="log(WAGE)")
 ```
 
@@ -97,8 +105,14 @@ $$wks_{i}=\beta_0+\beta_1 lwage_{i} + \beta_2 ed_{i} +\beta_3 union_{i} +\beta_4
 
 ```{r,results='asis'}
 ols2 <- lm(WKS~LWAGE+ED+UNION+FEM,data=labordata)
+coeftest(ols2, vcov. = vcovHC, type="HC1") -> ols2_coeftest
+
 library(stargazer)
-stargazer(ols1,ols2,type="html")
+
+stargazer(ols2, 
+          se=list(ols2_coeftest[,"Std. Error"]),
+          type="html",
+          align=TRUE)
 ```
 
 ### (7)
@@ -128,45 +142,60 @@ stargazer(ols1,ols2,type="html")
 在勞動市場中，產業別不同其對勞動力的需求也不一樣。另外，不同地點的勞動需求狀況也不同。使用文字邏輯說明「產業別」、勞動者「居住地」可能是合理工具變數的理由。
 
 ```
-1.產業別和薪資有關。產業別不同，則個別產業的勞動供需狀況不同。熱門產業或替代性低
-的產業薪資較高，低技術或替代性高的產業薪資較低。
-  產業別和誤差項無關，因為各產業平均而言，都有特性不一的勞動人口
-  (例如:大學學歷也可能從事低技術行業)。可滿足排除性條件。
-2.居住地和薪資有關。居住地反映一地的生活條件，通常能負擔較好的居住條件，可能隱含
+1.產業別和薪資有關。產業別=1代表製造業；製造業與非製造業的勞動供需不同。因此有薪資差異。
+產業別和誤差項無關，因為製造業與非製造業平均而言，都有特性不一的勞動人口
+  (例如:大學和國中學歷都可能從事製造業)。可滿足排除性條件。
+2.居住地和薪資有關。SMSA=1代表住在城市，而居住地反映一地的生活條件，城市的居住條件較好，可能隱含
 他有較高的薪資。
-  居住地和誤差項無關。因為各居住地平均而言，都有特性不一的勞動人口。
-  (例如:新竹市既有工作年資高的人，也有新鮮人)，可滿足排除性條件。
+居住地和誤差項無關。因為城市與非城市平均而言，都有特性不一的勞動人口。
+ (例如:新竹市既有工作年資高的人，也有新鮮人)，可滿足排除性條件。
 ```
 
 ### (10)
 使用工具變數法及產業別（ind）當工具變數，估計複迴歸模型下的$\beta_1$係數，並進行工具變數合理性的相關檢定。
 
-```{r}
-ols3 <- lm(WKS~IND+ED+UNION+FEM,data=labordata)
-ols3
+```{r results='asis'}
+tsls_1iv <- ivreg(
+  WKS ~ LWAGE + ED + UNION + FEM | IND + ED + UNION + FEM,
+  data=labordata
+  )
+tsls_1iv
 
-summary(labordata$IND, vcov = sandwich, diagnostics = TRUE, df=Inf) -> tsls_1iv_tests
+summary(tsls_1iv, vcov = sandwich, diagnostics = TRUE, df=Inf) -> tsls_1iv_tests
 tsls_1iv_tests
 
-sandwich_HC1<-function(x,adjust=TRUE){
-  sandwich(x,adjust=adjust)
-}
-stargazer(ols2,ols3,type="html",
-          column.labels = c("NO IV", "IV:IED"))
+stargazer(ols2,tsls_1iv,type="html",
+          column.labels = c("NO IV", "IV:IND"))
 ```
 
 ### (11) 
 使用工具變數法, 同時使用ind及smsa當工具變數，估計複迴歸模型下的$\beta_1$係數，並進行工具變數合理性的相關檢定。
 
-```{r}
+```{r results='asis'}
+tsls_2iv <- ivreg(
+  WKS ~ LWAGE + ED + UNION + FEM | IND + SMSA + ED + UNION + FEM,
+  data=labordata
+  )
+tsls_2iv
 
+summary(tsls_2iv, vcov = sandwich, diagnostics = TRUE, df=Inf) -> tsls_2iv_tests
+tsls_2iv_tests
+
+stargazer(tsls_1iv,tsls_2iv,type="html",
+          column.labels = c("one IV", "two IVs"))
 ```
 
 ### (12)
 將簡單迴歸、複迴歸、一個工具變數、二個工具變數的四種估算結果（含應有的檢定），用stargazer產生「一張」報表同時呈現（請設定type="html"）。
 
-```{r}
-
+```{r results='asis'}
+stargazer(ols1,ols2,tsls_1iv,tsls_2iv,type="html",
+          column.labels = c("sim ols", "multi ols", "one IV", "two IVs"),
+          add.lines = list(c("TSLS tests p-value", "",""),
+                           c("Q1: Sargan","NA","NA","NA","0.363"),
+                           c("Q2: Weak instruments","NA","NA","0.000569 ***","8.92e-11 ***"),
+                           c("Q3: Wu-Hausman","NA","NA","0.598699","0.565")
+                           ))
 ```
 
 
