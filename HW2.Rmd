@@ -95,7 +95,7 @@ $$wks_{i}=\beta_0+\beta_1 lwage_{i} + \beta_2 ed_{i} +\beta_3 union_{i} +\beta_4
 ### (6)
 同時OLS估計簡單迴歸和複迴歸下的勞動供給，並用stargarzer呈現估計結果（請設定type="html"）。
 
-```{r}
+```{r,results='asis'}
 ols2 <- lm(WKS~LWAGE+ED+UNION+FEM,data=labordata)
 library(stargazer)
 stargazer(ols1,ols2,type="html")
