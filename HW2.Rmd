@@ -53,6 +53,7 @@ ols1 <- lm(WKS~LWAGE,data=labordata)
 
 coeftest(ols1, vcov. = vcovHC, type="HC1") -> ols1_coeftest
 
+library(stargazer)
 stargazer(ols1, 
           se=list(ols1_coeftest[,"Std. Error"]),
           type="html",
@@ -106,8 +107,6 @@ $$wks_{i}=\beta_0+\beta_1 lwage_{i} + \beta_2 ed_{i} +\beta_3 union_{i} +\beta_4
 ```{r,results='asis'}
 ols2 <- lm(WKS~LWAGE+ED+UNION+FEM,data=labordata)
 coeftest(ols2, vcov. = vcovHC, type="HC1") -> ols2_coeftest
-
-library(stargazer)
 
 stargazer(ols2, 
           se=list(ols2_coeftest[,"Std. Error"]),
@@ -209,12 +208,19 @@ stargazer(ols1,ols2,tsls_1iv,tsls_2iv,type="html",
 文章問的因果效應問句是什麼？（盡量一言以敝之）
 
 ```
-效應評估問句：性別是導致平均薪資有落差的原因？
+效應評估問句：性別不同導致了薪資差距？
 ```
 
 ### (14)
 找出文章中所列舉可造成OVB（omitted variable bias）的應控制變數，並說明它會造成OVB的「兩」面向原因（缺一不可）。
 
 ```
+(1)	花多少時間照顧家人
+造成選擇性偏誤原因：花多少時間照顧家人和性別有關，因為多數情況下，女性更多地承擔家內照顧的角色；花多少時間照顧家人同時和薪資有關，因為工時會相應減少，影響了員工的職涯發展，進而影響薪資。
 
+(2) 全職或兼職 
+造成選擇性偏誤原因：全職或兼職和性別有關，因為女性兼職工作率高於男性(基於家內照顧責任，產業特性，等等)；全職或兼職也和薪資有關，因為同類型的兼職工作，工時往往不如全職，薪資自然也低於全職。
+
+(3) 職業別
+造成選擇性偏誤原因：職業別和性別有關，因為男女性不是平均分布在各職業和職級中，例如文章提到機長薪資和空服員薪資有明顯落差，而後者以女性居多。職業別也和薪資有關，因為不同職業有不同的勞動供需。熱門產業和替代性低的產業往往薪資較高，低技術和替代性高的產業往往薪資較低。
 ```
