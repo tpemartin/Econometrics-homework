@@ -147,14 +147,14 @@ summary(tsls_1, vcov = sandwich, diagnostics = TRUE, df=Inf)
 ### (11) 
 使用工具變數法, 同時使用ind及smsa當工具變數，估計複迴歸模型下的$\beta_1$係數，並進行工具變數合理性的相關檢定。
 
-```{r}
+```{r,results='asis'}
 labordata %>% lm(WKS~LWAGE+ED+UNION+FEM+IND+SMSA,data=.) -> model4
 
 coeftest(model4, vcov. = vcovHC, type="HC1") -> model4_coeftest
 
 stargazer(model4,
           se=list(model4_coeftest[,2]),
-          type="text",
+          type="html",
           align=TRUE)
 
 tsls_2 <- ivreg(
