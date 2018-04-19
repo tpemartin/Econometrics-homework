@@ -1,9 +1,9 @@
 ---
 title: "作業2"
 params:
-  group: 11
+  group: 7
   id: [1234, 5678]
-  name: ["王","李"]
+  name: ["簡明亮","徐誠德","黃柏元","施孝澐"]
 output:
   html_notebook:
     df_print: paged
@@ -26,10 +26,21 @@ knitr::opts_chunk$set(echo = TRUE,warning=F,message=F)
 
 執行以下程式引入勞動市場資料labordata，資料說明請見連結[Cornwell and Rupert Returns to Schooling Data, 595 Individuals, 7 Years.](http://people.stern.nyu.edu/wgreene/Econometrics/PanelDataSets.htm)
 
+
+
 ```{r}
-library(readr)
+#執行PACKAGE 
+library(readr)  #資料來源
+library(dplyr)   #資料分析
+library(magrittr) # 串接
+library(AER)       #TSLS的套件
+library(sandwich)  #異質變異
+library(lmtest)     #檢定
+library(stargazer)  #模型比較
+#資料庫
 labordata <- read_csv("http://people.stern.nyu.edu/wgreene/Econometrics/cornwell&rupert.csv")
 ```
+
 
 ## 勞動供給
 
@@ -37,7 +48,13 @@ labordata <- read_csv("http://people.stern.nyu.edu/wgreene/Econometrics/cornwell
 將labordata只留下第7年的資料
 
 ```{r}
+#時間篩選
+labordata%<>%filter(labordata$YEAR==7)  
+```
 
+####資料結構
+```{r}
+str(labordata)   ##資料結構
 ```
 
 ### (2) 
@@ -46,14 +63,30 @@ $$wks_{i}=\beta_0+\beta_1 lwage_{i}+\epsilon_i$$
 
 請使用plot()畫出橫軸為每週工時（WKS）與縱軸為取對數後薪資（LWAGE, 後往直接稱呼「薪資」）的離散圖。
 ```{r}
+plot(
+  log(labordata$LWAGE)~labordata$WKS
+  )
 
+abline(
+  lm(log(labordata$LWAGE)~labordata$WKS)
+  )  ##回歸線
 ```
 
+```
+#資料的迴歸線不太具有代表性
+```
+
+
+
 ### (3)
+
+
 我們擔心「勞工屬於工會」這個變數(union, 為1若屬於工會, 反之為0)遺漏的話會造成勞動供給的工資係數估計偏誤。請用文字故事說明為什麼會有這層擔心？[記得要有兩個面向故事] 這擔心應該會高估或低估工資係數？
 [請不要使用任何程式或數字計算，單純文字故事邏輯]
 
 ```
+#若勞工屬於公會那勞工對公司的協商能力上升,那麼可能使得薪資
+#上升和責任制下的超額工時下降．
 
 ```
 
@@ -61,8 +94,16 @@ $$wks_{i}=\beta_0+\beta_1 lwage_{i}+\epsilon_i$$
 在不做迴歸下，請用union分組計算lwage與wks的平均，並用數字結果來支持你在(c)小題的擔心。
 
 ```{r}
-
+labordata %>% 
+  group_by(UNION) %>%
+  summarise(mean(LWAGE),sd(LWAGE),mean(WKS)) 
 ```
+```
+#薪資和工時在加入工會後的改變跟上述故事預測方向差不多,
+#問題在於加入工會後薪資的變化看起來沒這麼大,
+#我認為這跟當初契約得擬定和員工自身會打聽應該有關
+```
+
 
 ### (5)
 我們最後考慮如下的複迴歸勞動供給函數
@@ -70,13 +111,29 @@ $$wks_{i}=\beta_0+\beta_1 lwage_{i} + \beta_2 ed_{i} +\beta_3 union_{i} +\beta_4
 請用『純文字說明』(不要寫程式，不要算任何數字)：為什麼要再放教育水準及性別二個控制變數？
 
 ```
+#教育水準越高,可能的薪資水準較高,使得不同教育水準群體的薪資是不同的,另外教育水準越高,
+ 工時可能較為彈性
+#性別歧視的可能使得薪資水準較低,使得男女之間的薪資是有差異的,另外男性對於高工時的忍耐力較高
 
 ```
 
 ### (6)
 同時OLS估計簡單迴歸和複迴歸下的勞動供給，並用stargarzer呈現估計結果（請設定type="html"）。
 
-```{r}
+```{r,results='asis'}
+
+lm(data=labordata,WKS~log(LWAGE))->model_1    
+##薪資(wage)對WKS(工時)簡單回歸
+lm(data=labordata,WKS~log(LWAGE)+UNION+FEM+ED)->model_2
+##薪資(wage)對WKS(工時)複回歸  
+coeftest(model_1, vcov. = vcovHC, type="HC1") -> model_1_coeftest
+#model1異質變異設定
+coeftest(model_2, vcov. = vcovHC, type="HC1") -> model_2_coeftest
+#model2異質變異設定
+stargazer(model_1, model_2, 
+          se=list(model_1_coeftest[,"Std. Error"], model_2_coeftest[,2]),
+          type="html",
+          align=TRUE)
 
 ```
 
@@ -84,13 +141,18 @@ $$wks_{i}=\beta_0+\beta_1 lwage_{i} + \beta_2 ed_{i} +\beta_3 union_{i} +\beta_4
 複迴歸模型估計下，LWAGE的係數要如何詮譯？顯不顯著？
 
 ```
-
+#H0:無法拒絕虛無假設LWAGE係數為0  不容易觀察Lwage對工時的影響
 ```
+
 
 ### (8)
 找出一個使複迴歸模型在控制變數下依然不符合條件性獨立的故事（必需牽扯到labordata資料不會有的變數，所以只能純文字故事）。
 
 ```
+#給定教育性別工會等條件控制下,
+#可能通勤時間會影響薪資,時間越長員工可能會以平均時薪乘上通勤時間做比較,
+#對於要求薪資越高,通勤時間也可能影響工時,通勤時間太長的話,員工可能
+#不會考慮加班之類的可能
 
 ```
 
@@ -103,27 +165,74 @@ $$wks_{i}=\beta_0+\beta_1 lwage_{i} + \beta_2 ed_{i} +\beta_3 union_{i} +\beta_4
 在勞動市場中，產業別不同其對勞動力的需求也不一樣。另外，不同地點的勞動需求狀況也不同。使用文字邏輯說明「產業別」、勞動者「居住地」可能是合理工具變數的理由。
 
 ```
+#1.不同產業對於員工的技能要求不同,使得薪資水平不同,滿足相關性條件;
+#不同產業的員工中的特質並沒有一定的關連,滿足排除性條件
 
+#2.居住地離工作地點越遠,通勤時間越長,要求薪資越高,滿足相關性條件;
+#  而居住地離工作地點遠近和勞工人格特質無太大關聯
 ```
 
 ### (10)
 使用工具變數法及產業別（ind）當工具變數，估計複迴歸模型下的$\beta_1$係數，並進行工具變數合理性的相關檢定。
 
 ```{r}
+##工具變數複回歸模型1
+tsls_1iv <- ivreg(
+  WKS ~  log(LWAGE)+UNION+FEM+ED|UNION+FEM+ED+IND,
+  data=labordata
+  ) 
 
+coeftest(tsls_1iv, vcov. = vcovHC, type="HC1") -> tsls_1iv_coeftest
+##工具變數複回歸模型1異質變異
+```
+
+```{r}
+summary(tsls_1iv, vcov = sandwich, diagnostics = TRUE,
+        df=Inf)-> tsls_1iv_tests
+tsls_1iv_tests
+##工具變數複回歸模型1檢定
+##Sargan  p-value=0.589903    無法檢定工具變數個數不足
+##Weak instruments 12.710>10   OK 
+##Wu-Hausman   p-value大  大樣本下OLS和工具變數法的效應係數應該差不多
 ```
 
 ### (11) 
 使用工具變數法, 同時使用ind及smsa當工具變數，估計複迴歸模型下的$\beta_1$係數，並進行工具變數合理性的相關檢定。
 
 ```{r}
+##工具變數複回歸模型2
+tsls_1iv2 <- ivreg(
+  WKS ~  log(LWAGE)+UNION+FEM+ED |UNION+FEM+ED+SMSA+IND,
+  data=labordata
+  ) 
+
+coeftest(tsls_1iv2, vcov. = vcovHC, type="HC1") -> tsls_1iv2_coeftest
+##工具變數複回歸模型2異質變異
+```
+
+```{r}
+summary(tsls_1iv2, vcov = sandwich, diagnostics = TRUE,
+        df=Inf)-> tsls_1iv2_tests
+tsls_1iv2_tests
+##工具變數模型2檢定
+##Sargan 傾向接受H0  排除條件成立
+##Weak instruments   24.377>10  相關性強
+##W-Hausman   大樣本下OLS和工具變數法的效應係數應該差不多
 
 ```
+
 
 ### (12)
 將簡單迴歸、複迴歸、一個工具變數、二個工具變數的四種估算結果（含應有的檢定），用stargazer產生「一張」報表同時呈現（請設定type="html"）。
 
-```{r}
+```{r,results='asis'}
+
+
+stargazer(model_1, model_2,tsls_1iv,tsls_1iv2,  #四個模型
+          type="html",
+           column.labels = c("ols1","ols2","one IV", "two IVs"),
+          se=list(model_1_coeftest[,"Std. Error"], model_2_coeftest[,2],tsls_1iv_coeftest[,3],tsls_1iv2_coeftest[,4]),
+          align=TRUE)
 
 ```
 
@@ -138,7 +247,7 @@ $$wks_{i}=\beta_0+\beta_1 lwage_{i} + \beta_2 ed_{i} +\beta_3 union_{i} +\beta_4
 文章問的因果效應問句是什麼？（盡量一言以敝之）
 
 ```
-
+不同的性別下,工時和薪資的關連是否不同
 ```
 
 ### (14)
