@@ -2,9 +2,19 @@
 title: "作業1"
 params:
   group: 2
-  id: [710661118, 710661105, 710661115, 710661112]
-  name: ["王聖曜","李冠緻","李岳駿","王威瀚"]
+  id:
+  - 710661118
+  - 710661105
+  - 710661115
+  - 710661112
+  name:
+  - 王聖曜
+  - 李冠緻
+  - 李岳駿
+  - 王威瀚
 output:
+  html_document:
+    df_print: paged
   html_notebook:
     df_print: paged
 ---
@@ -40,6 +50,7 @@ labordata <- read_csv("http://people.stern.nyu.edu/wgreene/Econometrics/cornwell
 library(dplyr)
 library(magrittr)
 library(AER)
+library(stargazer)
 labordata %<>% dplyr::filter(YEAR == 7)
 ```
 
@@ -86,7 +97,7 @@ $$wks_{i}=\beta_0+\beta_1 lwage_{i} + \beta_2 ed_{i} +\beta_3 union_{i} +\beta_4
 ### (6)
 同時OLS估計簡單迴歸和複迴歸下的勞動供給，並用stargarzer呈現估計結果（請設定type="html"）。
 
-```{r}
+```{r, results='asis'}
 model1 <- WKS ~ LWAGE
 model2 <- WKS ~ LWAGE + ED + UNION + FEM
 ols1 <- lm(model1,labordata)
@@ -125,7 +136,7 @@ stargazer(ols1,ols2,type="html")
 使用工具變數法及產業別（ind）當工具變數，估計複迴歸模型下的$\beta_1$係數，並進行工具變數合理性的相關檢定。
 
 ```{r}
-ttsls_1iv <- ivreg(
+tsls_1iv <- ivreg(
   WKS ~ LWAGE  | IND,
   data=labordata
   ) 
@@ -148,7 +159,7 @@ tsls_2iv_tests
 ### (12)
 將簡單迴歸、複迴歸、一個工具變數、二個工具變數的四種估算結果（含應有的檢定），用stargazer產生「一張」報表同時呈現（請設定type="html"）。
 
-```{r}
+```{r, results="asis"}
 stargazer(ols1,ols2,tsls_1iv,tsls_2iv,type="html",
           column.labels = c("ols1","ols2","one IV", "two IVs"),
           add.lines = list(c("TSLS tests p-value","","","",""),
