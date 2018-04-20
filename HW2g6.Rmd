@@ -1,9 +1,22 @@
 ---
 title: "作業2"
+params:
+  group: 6
+  id: [710661120,710661106,710661103,710661111]
+  name: ["陳建宇","陳彤","鄭向吾","彭楷雯"]
 output:
-  html_document:
-    df_print: paged
+  html_notebook:
+    df_print: paged 
 ---
+請依狀況更改上面的name,id及group（分別代表組員姓名，學號及組號），但請「勿」更改下面姓名、學號、組號三行的設定。  
+
+***
+
+姓名：`r params$name`  
+學號：`r params$id`  
+組號：`r params$group`  
+
+***
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE,warning=F,message=F)
@@ -24,20 +37,29 @@ labordata <- read_csv("http://people.stern.nyu.edu/wgreene/Econometrics/cornwell
 將labordata只留下第7年的資料
 
 ```{r}
-library(dplyr)
-library(magrittr)
-library(AER)
-library(stargazer)
-labordata %<>% dplyr::filter(YEAR == 7)
+library("AER")
+library("dplyr")
+library("magrittr")
+labordata %<>% filter(YEAR==7)
 ```
 
-### (2)
+### (2) 
 我們想要估計薪資對工時的影響（即勞動供給），考慮如下的勞動供給函數
 $$wks_{i}=\beta_0+\beta_1 lwage_{i}+\epsilon_i$$
 
 請使用plot()畫出橫軸為每週工時（WKS）與縱軸為取對數後薪資（LWAGE, 後往直接稱呼「薪資」）的離散圖。
-```{r}
-plot(labordata$WKS,labordata$LWAGE)
+```{r,results='asis'}
+ols1 <- lm(WKS~LWAGE,data=labordata)
+
+coeftest(ols1, vcov. = vcovHC, type="HC1") -> ols1_coeftest
+
+library(stargazer)
+stargazer(ols1, 
+          se=list(ols1_coeftest[,"Std. Error"]),
+          type="html",
+          align=TRUE)
+
+plot(labordata$WKS, labordata$LWAGE, xlab="WKS", ylab="log(WAGE)")
 ```
 
 ### (3)
@@ -53,9 +75,18 @@ plot(labordata$WKS,labordata$LWAGE)
 在不做迴歸下，請用union分組計算lwage與wks的平均，並用數字結果來支持你在(c)小題的擔心。
 
 ```{r}
-labordata %>%
-  group_by(UNION) %>%
-  summarise(mean_lwage=mean(LWAGE),mean_wks=mean(WKS))
+labordata0 <- labordata %>% filter(UNION==0)
+summary(labordata0$LWAGE)
+summary(labordata0$WKS)
+
+labordata1 <- labordata %>% filter(UNION==1)
+summary(labordata1$LWAGE)
+summary(labordata1$WKS)
+```
+```
+由結果可發現，在勞工未加入工會時(UNION==0)，lwage的平均為6.945，wks的平均為47.13
+             在勞工加入工會時(UNION==1)，lwage的平均為6.961，wks的平均為45.28
+確實，加入工會的勞工有著較高的薪資與較低的工時
 ```
 
 ### (5)
@@ -74,19 +105,22 @@ $$wks_{i}=\beta_0+\beta_1 lwage_{i} + \beta_2 ed_{i} +\beta_3 union_{i} +\beta_4
 同時OLS估計簡單迴歸和複迴歸下的勞動供給，並用stargarzer呈現估計結果（請設定type="html"）。
 
 ```{r,results='asis'}
-ols1 <- lm(WKS~LWAGE,data=labordata)
+ols2 <- lm(WKS~LWAGE+ED+UNION+FEM,data=labordata)
+coeftest(ols2, vcov. = vcovHC, type="HC1") -> ols2_coeftest
 
-coeftest(ols1, vcov. = vcovHC, type="HC1") -> ols1_coeftest
-
-library(stargazer)
-stargazer(ols1, 
-          se=list(ols1_coeftest[,"Std. Error"]),
+stargazer(ols2, 
+          se=list(ols2_coeftest[,"Std. Error"]),
           type="html",
           align=TRUE)
 ```
 
 ### (7)
 複迴歸模型估計下，LWAGE的係數要如何詮譯？顯不顯著？
+
+```
+在兩個迴歸式中，LWAGE的係數皆為正，表示薪資對工時有正向的影響。但不管是簡單迴歸還是複迴歸，結果均顯示為不顯著，因此我們
+無法透過迴歸結果得到薪資能影響工時，或薪資與工時有正相關的結論
+```
 
 ### (8)
 找出一個使複迴歸模型在控制變數下依然不符合條件性獨立的故事（必需牽扯到labordata資料不會有的變數，所以只能純文字故事）。
@@ -110,13 +144,16 @@ stargazer(ols1,
 1.產業別和薪資有關。產業別=1代表製造業；製造業與非製造業的勞動供需不同。因此有薪資差異。
 產業別和誤差項無關，因為製造業與非製造業平均而言，都有特性不一的勞動人口
   (例如:大學和國中學歷都可能從事製造業)。可滿足排除性條件。
+2.居住地和薪資有關。SMSA=1代表住在城市，而居住地反映一地的生活條件，城市的居住條件較好，可能隱含
+他有較高的薪資。
+居住地和誤差項無關。因為城市與非城市平均而言，都有特性不一的勞動人口。
+ (例如:新竹市既有工作年資高的人，也有新鮮人)，可滿足排除性條件。
 ```
 
 ### (10)
 使用工具變數法及產業別（ind）當工具變數，估計複迴歸模型下的$\beta_1$係數，並進行工具變數合理性的相關檢定。
 
-
-```{r, results='asis'}
+```{r results='asis'}
 tsls_1iv <- ivreg(
   WKS ~ LWAGE + ED + UNION + FEM | IND + ED + UNION + FEM,
   data=labordata
@@ -130,11 +167,10 @@ stargazer(ols2,tsls_1iv,type="html",
           column.labels = c("NO IV", "IV:IND"))
 ```
 
-### (11)
+### (11) 
 使用工具變數法, 同時使用ind及smsa當工具變數，估計複迴歸模型下的$\beta_1$係數，並進行工具變數合理性的相關檢定。
 
-
-```{r, results='asis'}
+```{r results='asis'}
 tsls_2iv <- ivreg(
   WKS ~ LWAGE + ED + UNION + FEM | IND + SMSA + ED + UNION + FEM,
   data=labordata
@@ -151,8 +187,7 @@ stargazer(tsls_1iv,tsls_2iv,type="html",
 ### (12)
 將簡單迴歸、複迴歸、一個工具變數、二個工具變數的四種估算結果（含應有的檢定），用stargazer產生「一張」報表同時呈現（請設定type="html"）。
 
-
-```{r, results='asis'}
+```{r results='asis'}
 stargazer(ols1,ols2,tsls_1iv,tsls_2iv,type="html",
           column.labels = c("sim ols", "multi ols", "one IV", "two IVs"),
           add.lines = list(c("TSLS tests p-value", "",""),
@@ -169,11 +204,11 @@ stargazer(ols1,ols2,tsls_1iv,tsls_2iv,type="html",
 
 ## 效應結構式
 
-### (13) 
+### (13)
 文章問的因果效應問句是什麼？（盡量一言以敝之）
 
 ```
-性別是否真的是造成薪資差異的變數。
+效應評估問句：性別不同導致了薪資差距？
 ```
 
 ### (14)
