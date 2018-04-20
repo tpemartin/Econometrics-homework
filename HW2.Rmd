@@ -3,7 +3,7 @@ title: "作業2"
 params:
   group: 7
   id: [710661102,710661131,710661122,710661110]
-  name: ["簡明亮","徐誠德","黃柏元","施孝澐"]
+  name: ["施孝澐","黃柏元","簡明亮","徐誠德"]
 output:
   html_notebook:
     df_print: paged
