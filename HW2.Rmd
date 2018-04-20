@@ -49,12 +49,13 @@ labordata <- read_csv("http://people.stern.nyu.edu/wgreene/Econometrics/cornwell
 
 ```{r}
 #時間篩選
-labordata%<>%filter(labordata$YEAR==7)  
+labordata%<>%
+filter(labordata$YEAR==7)  
 ```
 
 ####資料結構
 ```{r}
-str(labordata)   ##資料結構
+str(labordata)   ##資料結構 
 ```
 
 ### (2) 
@@ -141,7 +142,7 @@ stargazer(model_1, model_2,
 複迴歸模型估計下，LWAGE的係數要如何詮譯？顯不顯著？
 
 ```
-#H0:無法拒絕虛無假設LWAGE係數為0  不容易觀察Lwage對工時的影響
+#H0:無法拒絕虛無假設LWAGE係數為0  不好評估Lwage對工時的影響
 ```
 
 
@@ -256,5 +257,5 @@ stargazer(model_1, model_2,tsls_1iv,tsls_1iv2,  #四個模型
 ```
 #1.產業別:不同產業的薪資條件不同,因為有勞力型的產業,這類會對於男性員工有較高的需求
 #2.職階:不同職階薪水不同,而越高職階男女比例越懸殊
-
+#3.公司別:不同公司待遇不同,有些公司男女比例有差有的沒差
 ```
