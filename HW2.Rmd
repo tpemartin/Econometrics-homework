@@ -1,9 +1,9 @@
 ---
 title: "作業2"
 params:
-  group: 11
-  id: [1234, 5678]
-  name: ["王","李"]
+  group: 5
+  id: [710661121, 710661125]
+  name: ["蔡朕寧","林宜臻"]
 output:
   html_notebook:
     df_print: paged
@@ -37,7 +37,11 @@ labordata <- read_csv("http://people.stern.nyu.edu/wgreene/Econometrics/cornwell
 將labordata只留下第7年的資料
 
 ```{r}
-
+library(dplyr)
+library(magrittr)
+library(AER)
+labordata %<>%
+filter(YEAR == 7)
 ```
 
 ### (2) 
@@ -46,7 +50,7 @@ $$wks_{i}=\beta_0+\beta_1 lwage_{i}+\epsilon_i$$
 
 請使用plot()畫出橫軸為每週工時（WKS）與縱軸為取對數後薪資（LWAGE, 後往直接稱呼「薪資」）的離散圖。
 ```{r}
-
+plot(labordata$WKS,labordata$LWAGE)
 ```
 
 ### (3)
@@ -54,14 +58,19 @@ $$wks_{i}=\beta_0+\beta_1 lwage_{i}+\epsilon_i$$
 [請不要使用任何程式或數字計算，單純文字故事邏輯]
 
 ```
-
+工會為勞工自行組成之利益團體，可與僱主集體談判工資薪水、工作時限和工作條件等並保障勞工權利。因此若勞工屬於工會的話可獲得較多的工資保障，有較高的薪資，可能造成工資係數的低估。相反的，若勞工不屬於工會的話，可能會因缺乏保障而拿到不合理的薪資，會造成工資係數的高估。
 ```
 
 ### (4)
 在不做迴歸下，請用union分組計算lwage與wks的平均，並用數字結果來支持你在(c)小題的擔心。
 
 ```{r}
-
+labordata %>%
+group_by(UNION) %>%
+  summarise(mean_lwage=mean(LWAGE),mean_wks=mean(WKS))
+  
+  由數字結果發現沒參加工會的勞工 平均薪資較低 每週工時較高
+  有參加工會的勞工則相反，由此可以支持前述之結果
 ```
 
 ### (5)
@@ -70,27 +79,31 @@ $$wks_{i}=\beta_0+\beta_1 lwage_{i} + \beta_2 ed_{i} +\beta_3 union_{i} +\beta_4
 請用『純文字說明』(不要寫程式，不要算任何數字)：為什麼要再放教育水準及性別二個控制變數？
 
 ```
-
+因為教育水準也可能會影響工資係數，一般來講教育程度較高者會有較高的薪資；普遍來說目前職場上仍存在有性別歧視，因此性別也可能會影響工資係數，男性可能會比女性有較高的薪資。
 ```
 
 ### (6)
 同時OLS估計簡單迴歸和複迴歸下的勞動供給，並用stargarzer呈現估計結果（請設定type="html"）。
 
-```{r}
-
+```{r, results='asis'}
+ols1 <- lm(WKS ~ LWAGE,labordata)
+ols2 <- lm(WKS ~LWAGE + ED + UNION + FEM,labordata)
+stargazer(ols1,ols2,type="html")
 ```
 
 ### (7)
 複迴歸模型估計下，LWAGE的係數要如何詮譯？顯不顯著？
 
 ```
-
+在模型估計底下，我們發現薪資每增加1%會導致每週工時增加0.538小時，
+並且由p-value <0.05可以說明其顯著。
 ```
 
 ### (8)
 找出一個使複迴歸模型在控制變數下依然不符合條件性獨立的故事（必需牽扯到labordata資料不會有的變數，所以只能純文字故事）。
 
 ```
+在其他條件不變的狀況下我們加入一個變數kids代表家中撫養小孩的個數，一般來說家中小孩數越高需要花額外時間照護，因此會與每周工時有負相關，但是這個變數可能會與FEM變數有相關性(因目前社會中照護小孩的工作多是女性所擔任)因此會不符合條件性獨立。
 
 ```
 
@@ -103,28 +116,44 @@ $$wks_{i}=\beta_0+\beta_1 lwage_{i} + \beta_2 ed_{i} +\beta_3 union_{i} +\beta_4
 在勞動市場中，產業別不同其對勞動力的需求也不一樣。另外，不同地點的勞動需求狀況也不同。使用文字邏輯說明「產業別」、勞動者「居住地」可能是合理工具變數的理由。
 
 ```
+產業別會影響薪資高低 舉例來說高科技產業的薪資就會較一般傳統產業的薪資來高因此滿足合理工具變數的相關性條件,
+然而勞動工時的不同並不會改變該產業的產業別因此也會滿足與殘差獨立的排除條件。
 
+而勞動者的居住地也可能會影響薪資的高低，以台灣為例若居住地為台北的薪資則會較中南部高，因此滿足相關性條件，
+然而勞動工時並不會影響居住地為何地，因此滿足與殘差獨立的排除條件。
 ```
 
 ### (10)
 使用工具變數法及產業別（ind）當工具變數，估計複迴歸模型下的$\beta_1$係數，並進行工具變數合理性的相關檢定。
 
 ```{r}
-
+tsls_1iv <- ivreg(
+  WKS ~LWAGE + ED + UNION + FEM | ED + UNION + FEM + IND,
+  data=labordata )
+summary(tsls_1iv, vcov = sandwich, diagnostics = TRUE, df=Inf) -> tsls_1iv_tests
 ```
 
 ### (11) 
 使用工具變數法, 同時使用ind及smsa當工具變數，估計複迴歸模型下的$\beta_1$係數，並進行工具變數合理性的相關檢定。
 
 ```{r}
-
+tsls_2iv <- ivreg(
+  WKS ~LWAGE + ED + UNION + FEM | ED + UNION + FEM + IND+SMSA,
+  data=labordata )
+summary(tsls_2iv, vcov = sandwich, diagnostics = TRUE, df=Inf) -> tsls_2iv_tests
 ```
 
 ### (12)
 將簡單迴歸、複迴歸、一個工具變數、二個工具變數的四種估算結果（含應有的檢定），用stargazer產生「一張」報表同時呈現（請設定type="html"）。
 
-```{r}
-
+```{r, results='asis'}
+stargazer(ols1,ols2,tsls_1iv,tsls_2iv,type="html",
+          column.labels = c("ols1","ols2","one IV", "two IVs"),
+          add.lines = list(c("TSLS tests p-value","","","",""),
+                           c("Q1: Sargan","NA","NA","NA","0.363"),
+                           c("Q2: Weak instruments","NA","NA","0.000569","8.92e-11"),
+                           c("Q3: Wu-Hausman","NA","NA","0.598699","0.565")
+                           ))
 ```
 
 
