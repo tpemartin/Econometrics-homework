@@ -102,7 +102,7 @@ stargazer(model1, model2,
 複迴歸模型估計下，LWAGE的係數要如何詮譯？顯不顯著？
 
 ```
-簡單迴歸不顯著，複迴歸顯著。係數表示增加薪水對工時的誘因影響，又在複迴歸中係數比簡單迴歸係數更大，表示簡單迴歸中，我們低估了薪水對工時的誘惑力，其實工時變短可能是因為其它因素導致不會(想)工作那麼多。
+簡單迴歸不顯著，複迴歸不顯著。係數表示增加薪水對工時的誘因影響，又在複迴歸中係數比簡單迴歸係數更大，表示簡單迴歸中，我們低估了薪水對工時的誘惑力，其實工時變短可能是因為其它因素導致不會(想)工作那麼多。
 ```
 ### (8)
 找出一個使複迴歸模型在控制變數下依然不符合條件性獨立的故事（必需牽扯到labordata資料不會有的變數，所以只能純文字故事）。
@@ -127,14 +127,14 @@ stargazer(model1, model2,
 ### (10)
 使用工具變數法及產業別（ind）當工具變數，估計複迴歸模型下的$\beta_1$係數，並進行工具變數合理性的相關檢定。
 
-```{r,results='asis'}
+```{r}
 labordata %>% lm(WKS~LWAGE+ED+UNION+FEM+IND,data=.) -> model3
 
 coeftest(model3, vcov. = vcovHC, type="HC1") -> model3_coeftest
 
 stargazer(model3,
           se=list(model3_coeftest[,2]),
-          type="html",
+          type="text",
           align=TRUE)
 
 tsls_1 <- ivreg(
@@ -147,14 +147,14 @@ summary(tsls_1, vcov = sandwich, diagnostics = TRUE, df=Inf)
 ### (11) 
 使用工具變數法, 同時使用ind及smsa當工具變數，估計複迴歸模型下的$\beta_1$係數，並進行工具變數合理性的相關檢定。
 
-```{r,results='asis'}
+```{r}
 labordata %>% lm(WKS~LWAGE+ED+UNION+FEM+IND+SMSA,data=.) -> model4
 
 coeftest(model4, vcov. = vcovHC, type="HC1") -> model4_coeftest
 
 stargazer(model4,
           se=list(model4_coeftest[,2]),
-          type="html",
+          type="text",
           align=TRUE)
 
 tsls_2 <- ivreg(
