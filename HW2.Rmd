@@ -1,9 +1,9 @@
 ---
 title: "作業2"
 params:
-  group: 11
-  id: [1234, 5678]
-  name: ["王","李"]
+  group: 3
+  id: [710661126,710661114,710661116,710661127]
+  name: ["林昭芳","林盈涵","郭家瑄","林妤洵"]
 output:
   html_notebook:
     df_print: paged
@@ -34,24 +34,6 @@ labordata <- read_csv("http://people.stern.nyu.edu/wgreene/Econometrics/cornwell
 ## 勞動供給
 
 
-### (1)
-將labordata只留下第7年的資料
-
-
-```{r}
-library(dplyr)
-library(magrittr)
-library(AER)
-
-labordata %<>% filter(YEAR==7)
-
-```
-
-
-```{r}
-labordata %<>% as_tibble
-labordata
-```
 
 ### (1)
 將labordata只留下第7年的資料
@@ -74,10 +56,7 @@ plot(labordata$WKS,labordata$LWAGE)
 我們擔心「勞工屬於工會」這個變數(union, 為1若屬於工會, 反之為0)遺漏的話會造成勞動供給的工資係數估計偏誤。請用文字故事說明為什麼會有這層擔心？[記得要有兩個面向故事] 這擔心應該會高估或低估工資係數？
 [請不要使用任何程式或數字計算，單純文字故事邏輯]
 
-```
 
-假如我們沒有控制住union這個變數，可能會產生遺漏變數的問題。通常來說，會加入公會的都是那些高薪資的老師、醫生所組成的工會，就像我們常常看到的教師工會，因此我們可以知道加入工會的人通常與薪資成正相關，造成高估工資係數。
-不過有些不同的國家，大部分是因為權益受損所組成的工會，例如之前鬧得沸沸揚揚的華航所組成的工會，組成自救式的臨時工會，產生低估工資系數。
 ```
 
 
@@ -92,14 +71,9 @@ plot(labordata$WKS,labordata$LWAGE)
 
 ```{r}
 
-labordata %>%
-  group_by(UNION) %>%
-  summarise(mean_lwage=mean(LWAGE),mean_wks=mean(WKS))
-
 labordata%>%
   group_by(UNION)%>%
   summarise(mean_lwage=mean(LWAGE),mean_wks=mean(WKS))
-
 
 ```
 
@@ -109,11 +83,10 @@ $$wks_{i}=\beta_0+\beta_1 lwage_{i} + \beta_2 ed_{i} +\beta_3 union_{i} +\beta_4
 請用『純文字說明』(不要寫程式，不要算任何數字)：為什麼要再放教育水準及性別二個控制變數？
 
 ```
-
-因"薪資"與"非薪資所影響工時"存在相關性，教育水準會與薪資呈現正相關，教育水準越高通常薪資也會越高；而大部分國家存在著性別歧視的觀念，男生的薪水會比女生來得高，而工具變數的個數必須要大於2，因此必須再放入教育水準及性別兩個控制變數。
-
 台灣歷經了多年的經濟發展，已快速轉型成現代化社會，在物質條件上與西方國家相比幾無差異。但傳統觀念「男主外，女主內」卻仍是根深柢固的，此一觀念反映在工時上，則是負擔家計的男性，其工作時間要比女性來得長。
 台灣產業轉以服務業為重心，由於不依靠體力工作，而是可規律化、固定化的文書、助理等專業性工作，因此工時隨教育程度愈高而增加。
+
+因"薪資"與"非薪資所影響工時"存在相關性，教育水準會與薪資呈現正相關，教育水準越高通常薪資也會越高；而大部分國家存在著性別歧視的觀念，男生的薪水會比女生來得高，而工具變數的個數必須要大於2，因此必須再放入教育水準及性別兩個控制變數。
 
 
 ```
@@ -122,19 +95,6 @@ $$wks_{i}=\beta_0+\beta_1 lwage_{i} + \beta_2 ed_{i} +\beta_3 union_{i} +\beta_4
 同時OLS估計簡單迴歸和複迴歸下的勞動供給，並用stargarzer呈現估計結果（請設定type="html"）。
 
 
-```{r,results='asis'}
-model1<- WKS ~ LWAGE 
-model2<- WKS ~ LWAGE + ED + UNION + FEM
-ols1<-lm(model1,labordata)
-ols2<-lm(model2,labordata)
-stargazer(ols1,ols2,type="html")
-
-```{r}
-library(sandwich)
-library(lmtest)
-library(stargazer)
-library(psych)
-```
 
 ```{r}
 model1<- WKS ~ LWAGE
@@ -154,14 +114,6 @@ stargazer(ols1,ols2,type="html")
 ```
 在其他條件不變下，每增加1%的薪資會增加0.538的每周工時，且p-value=0.584，為不顯著的。
 
-
-```{r}
-library(stargazer)
-stargazer(ols1,ols2,type="text")
-```
-
-LWAGE 顯示每增加百分之一的工資則會增加0.538的工時,不顯著p>0.1
-
 ```
 
 ### (8)
@@ -170,9 +122,6 @@ LWAGE 顯示每增加百分之一的工資則會增加0.538的工時,不顯著p>
 ```
 
 如果加入了一個工具變數tenure表示最近從事的該份工作年資，通常來說，從事該份工作的工作年資越長薪資也會越高，所以兩個互為相關，依然不符合條件獨立性。
-
-
-是否懷孕,與性別不符合獨立
 
 ```
 
@@ -196,55 +145,18 @@ LWAGE 顯示每增加百分之一的工資則會增加0.538的工時,不顯著p>
 又或是居住於竹科附近的人較偏向工程師,故工作時數比一般人多很多.
 ```
 
-```
-```{r}
-library(magrittr)
-library(AER)
-library(ggplot2)
-library(dplyr)
-library(knitr)
-library(psych)
-library(haven)
-library(sandwich)
-library(lmtest)
-library(stargazer)
 
-```
 
 ### (10)
 使用工具變數法及產業別（ind）當工具變數，估計複迴歸模型下的$\beta_1$係數，並進行工具變數合理性的相關檢定。
 
-
 ```{r}
 tsls_1iv <- ivreg(
-  WKS ~ LWAGE | IND,
+  WKS ~ LWAGE + ED +UNION | IND,
   data=labordata
   ) 
-
 summary(tsls_1iv, vcov = sandwich, diagnostics = TRUE, df=Inf) -> tsls_1iv_tests
 tsls_1iv_tests
-```
-
-### (11) 
-使用工具變數法, 同時使用ind及smsa當工具變數，估計複迴歸模型下的$\beta_1$係數，並進行工具變數合理性的相關檢定。
-
-```{r}
-tsls_2iv <- ivreg(
-  WKS ~ LWAGE | IND + SMSA,
-  data=labordata
-  ) 
-
-summary(tsls_2iv, vcov = sandwich, diagnostics = TRUE, df=Inf) -> tsls_2iv_tests
-tsls_2iv_tests
-
-```{r}
-tsls_1iv <- ivreg(
-  WKS ~ LWAGE + ED + UNION + FEM | IND,
-  data=labordata
- )
-
- summary(tsls_1iv, vcov = sandwich, diagnostics = TRUE, df=Inf) -> tsls_1iv_tests
- tsls_1iv_tests
 ```
 
 
