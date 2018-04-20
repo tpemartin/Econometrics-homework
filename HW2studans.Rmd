@@ -80,18 +80,29 @@ $$wks_{i}=\beta_0+\beta_1 lwage_{i} + \beta_2 ed_{i} +\beta_3 union_{i} +\beta_4
 同時OLS估計簡單迴歸和複迴歸下的勞動供給，並用stargarzer呈現估計結果（請設定type="html"）。
 
 ```{r,results='asis'}
-labordata %>% lm(WKS~LWAGE,data=.) -> model1
-labordata %>% lm(WKS~LWAGE+ED+UNION+FEM,data=.) -> model2
 
-coeftest(model1, vcov. = vcovHC, type="HC1") -> model1_coeftest
-coeftest(model2, vcov. = vcovHC, type="HC1") -> model2_coeftest
+lm(data=labordata,WKS~log(LWAGE))->model_1    
+##薪資(wage)對WKS(工時)簡單回歸
+lm(data=labordata,WKS~log(LWAGE)+UNION+FEM+ED)->model_2
+##薪資(wage)對WKS(工時)複回歸  
+coeftest(model_1, vcov. = vcovHC, type="HC1") -> model_1_coeftest
+#model1異質變異設定
+coeftest(model_2, vcov. = vcovHC, type="HC1") -> model_2_coeftest
+#model2異質變異設定
+stargazer(model_1, model_2, 
+          se=list(model_1_coeftest[,"Std. Error"], model_2_coeftest[,2]),
+          type="html",
+          align=TRUE)
 
-stargazer(model1, model2,
-          se=list(model1_coeftest[,"Std. Error"], model2_coeftest[,2]),
 ```
+
 
 ### (7)
 複迴歸模型估計下，LWAGE的係數要如何詮譯？顯不顯著？
+
+```
+#H0:無法拒絕虛無假設LWAGE係數為0  不好評估Lwage對工時的影響
+```
 
 ### (8)
 找出一個使複迴歸模型在控制變數下依然不符合條件性獨立的故事（必需牽扯到labordata資料不會有的變數，所以只能純文字故事）。
@@ -120,8 +131,52 @@ stargazer(model1, model2,
 ### (10)
 使用工具變數法及產業別（ind）當工具變數，估計複迴歸模型下的$\beta_1$係數，並進行工具變數合理性的相關檢定。
 
+```{r}
+##工具變數複回歸模型1
+tsls_1iv <- ivreg(
+  WKS ~  log(LWAGE)+UNION+FEM+ED|UNION+FEM+ED+IND,
+  data=labordata
+  ) 
+
+coeftest(tsls_1iv, vcov. = vcovHC, type="HC1") -> tsls_1iv_coeftest
+##工具變數複回歸模型1異質變異
+```
+
+```{r}
+summary(tsls_1iv, vcov = sandwich, diagnostics = TRUE,
+        df=Inf)-> tsls_1iv_tests
+tsls_1iv_tests
+##工具變數複回歸模型1檢定
+##Sargan  p-value=0.589903    無法檢定工具變數個數不足
+##Weak instruments 12.710>10   OK 
+##Wu-Hausman   p-value大  大樣本下OLS和工具變數法的效應係數應該差不多
+```
+
 ### (11)
 使用工具變數法, 同時使用ind及smsa當工具變數，估計複迴歸模型下的$\beta_1$係數，並進行工具變數合理性的相關檢定。
+
+```{r}
+##工具變數複回歸模型2
+tsls_1iv2 <- ivreg(
+  WKS ~  log(LWAGE)+UNION+FEM+ED |UNION+FEM+ED+SMSA+IND,
+  data=labordata
+  ) 
+
+coeftest(tsls_1iv2, vcov. = vcovHC, type="HC1") -> tsls_1iv2_coeftest
+##工具變數複回歸模型2異質變異
+```
+
+```{r}
+summary(tsls_1iv2, vcov = sandwich, diagnostics = TRUE,
+        df=Inf)-> tsls_1iv2_tests
+tsls_1iv2_tests
+##工具變數模型2檢定
+##Sargan 傾向接受H0  排除條件成立
+##Weak instruments   24.377>10  相關性強
+##W-Hausman   大樣本下OLS和工具變數法的效應係數應該差不多
+
+```
+
 
 ### (12)
 將簡單迴歸、複迴歸、一個工具變數、二個工具變數的四種估算結果（含應有的檢定），用stargazer產生「一張」報表同時呈現（請設定type="html"）。
