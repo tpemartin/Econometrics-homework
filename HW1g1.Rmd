@@ -35,8 +35,7 @@ params:
 ```{r}
 rm(list=ls())
 library(dplyr)
-library(psych)
-library(haven)
+library(AER)
 wage1 <- read_dta("http://fmwww.bc.edu/ec-p/data/wooldridge/wage1.dta")
 ```
 
@@ -157,7 +156,7 @@ wage1 %>%
 wage1 %>%
    mutate(type=cut(wage1$educ,breaks=c(0,13,16,100),labels=c("low","med","high"),right = FALSE))->wage1
   group_by(wage1,type) %>%
-  summarise(mean(wage)
+  summarise(mean(wage))
 ```
 
 
@@ -190,6 +189,7 @@ $$E[lwage|C=1,G=1]=\beta_0+\beta_1+\beta_2\ -(3) $$
 依 (3) - (2) ,可得\ $\beta2$\ =2.917989 <br />  
 依 (2) - (1) ,可得\ $\beta1$\ =1.144299
 <br /> 
+
 
 # 文章閱讀
 [Going to university is more important than ever for young people.
