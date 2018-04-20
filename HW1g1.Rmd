@@ -1,0 +1,239 @@
+---
+title: "作業1"
+output: html_notebook
+params:
+  name: ["蔡宗翰","吳泓叡","苗瑋中","廖柏誠"]
+  id: [710661104,710661119,710661117,710661130]
+  group: 1
+---
+請依狀況更改上面的name,id及group（分別代表組員姓名，學號及組號），但請勿更改下面三行的設定。  
+
+***
+姓名：`r params$name`  
+學號：`r params$id`  
+組號：`r params$group`  
+
+***
+
+請直接在本檔案作答，存檔時也無需另存新檔名。交作業時，只由「組長」送出pull request給我。
+
+作業除了讓同學檢視課堂所學程式外，有些題目只會給你未教過的函數建議（純為建議，你也可以不使用），你必需使用Help或網路查尋去了解函數的正確使用；搜詢正確程式函數使用的能力，也是程式設計的基本功。
+
+如果是程式的答案，請設立如下的chunk區塊並在裡面作答
+```{r}
+#你的程式答案
+```
+
+如果是文字答案，請設立沒有{r}的chunk區塊並在裡面作答。
+```
+你的文字答案。
+```
+
+# 教育與薪資 
+
+一開始請執行
+```{r}
+rm(list=ls())
+library(dplyr)
+library(AER)
+wage1 <- read_dta("http://fmwww.bc.edu/ec-p/data/wooldridge/wage1.dta")
+```
+
+1. 請依據此[連結](http://fmwww.bc.edu/ec-p/data/wooldridge/wage1.des)說明wage1資料的來源及變數代表意義。[其中potential experience指得是推估工作經驗年資]
+
+```
+資料來源為Jeffrey M. Wooldridge
+
+  1. wage                     平均時薪
+  2. educ                     受教育年數
+  3. exper                    推估工作經驗年資
+  4. tenure                   最近從事的該份工作年資
+  5. nonwhite                 判斷是否為白人
+  6. female                   判斷是否為女性
+  7. married                  判斷是否已婚
+  8. numdep                   撫養人數
+  9. smsa                     是否住在標準大都會
+ 10. northcen                 是否住在北美中心
+ 11. south                    是否住在美國南部
+ 12. west                     是否住在美國西部
+ 13. construc                 是否從事建築業
+ 14. ndurman                  是否從事非耐久財製造業
+ 15. trcommpu                 是否從事公共交通運輸業
+ 16. trade                    是否從事批發或零售業
+ 17. services                 是否從事加工製造業
+ 18. profserv                 是否從事專業加工製造
+ 19. profocc                  是否為教授
+ 20. clerocc                  是否為白領階級
+ 21. servocc                  是否從事服務業
+
+
+
+```
+
+
+
+
+我們想要問："教育年限增加一年對勞動薪資的影響有多少？"
+
+2. 請使用`psych::pairs.panels()`來描述教育年限(educ)與勞動薪資(wage)間的特質。在兩者的相關度上，有沒有那個變數取對數(log)會比較好？為什麼？
+
+```{r}
+wage1 %>% 
+  select(educ,wage) %>%
+  psych::pairs.panels()
+```
+```{r}
+wage1 %>% mutate(ledu=log(educ))-> wage1
+wage1 %>% 
+  select(ledu,wage) %>%
+  pairs.panels()          
+```
+
+```{r}
+wage1 %>% mutate(ledu=log(educ))-> wage1
+wage1 %>% 
+  select(educ,lwage) %>%
+  pairs.panels()          
+```
+```{r}
+wage1 %>% mutate(ledu=log(educ))-> wage1
+wage1 %>% 
+  select(ledu,lwage) %>%
+  pairs.panels()   
+```
+
+
+```
+wage再取完對數後，相關係數變高(其他則會出現NaN)，故我們可以拿lwage來分析。
+
+```
+
+
+3. 請使用OLS估計以下的迴歸模型：
+$$log(wage)=\beta_0+\beta_1 educ+\epsilon$$
+
+```{r}
+
+wage1 %>% lm(lwage~educ,data=.)
+
+```
+
+
+4. 從資料裡選出兩個可能造成$\beta_1$OLS估計值帶有選擇性偏誤的變數，請說明理由並加以適當敍述統計量佐證。
+
+```{r}
+corr <- function(x) cor(x,wage1$educ)
+wage1 %>%  
+  summarise_all(corr)
+```
+
+```
+從結果中，我們挑了兩個與教育相關係數較大者來探討。
+其中教授本身，本來就與受教育程度呈現相當正向的關係。
+另外我們發現，另外，若工作經驗年資較高表示，較為提早進入職場，故與教育程度有相當的負向關係。
+
+```
+
+5. 延續上題，請完成對應複迴歸模型的估計。
+
+```{r}
+wage1 %>%
+  lm(lwage~educ+exper+profocc,data=.)
+```
+
+
+6. 大致說來，教育年限12年表示高中畢業，大學畢業會有16年的教育，請問介於12年以上-16年以下的教育年限代表什麼？
+
+```
+表示就讀大學期間中突然休學，進入職場者。其可能主要原因可能為無法應付課業壓力。
+```
+
+
+7. 取出教育年限介於12-16年（含上下限）的資料，分別計算以下三群教育年限勞動者的平均薪資：12年，13-15年，16年。
+[hint: dplyr::filter(), dplyr::group_by(), dplyr::summarise(), cut()]
+
+```{r}
+wage1 %>%
+   mutate(type=cut(wage1$educ,breaks=c(0,13,16,100),labels=c("low","med","high"),right = FALSE))->wage1
+  group_by(wage1,type) %>%
+  summarise(mean(wage))
+```
+
+
+
+
+
+
+8. 在下一部份的文章閱讀練習裡，文章提到: 
+
+> In a comparison of the earnings of people with degrees and people without them, those who start university but do not finish are lumped in with those who never started, even though they, too, will have paid fees and missed out on earnings. Their numbers are considerable. 
+
+在問題7中我們計算了三群人的平均薪資。請問若要避免文章所描述的問題，你會如何計算一位高中生若選擇上大學他會得到的預期薪資好處。[只使用問題7的數字及三群人人數]
+
+$$log(wage)=\beta_0+\beta_1 C+\beta_2 G+\epsilon$$
+
+令<br /> 
+C =  0 為未進入大學 ,C=1 為進入大學
+     
+   G = 0 為大學沒有畢業,G= 1 為大學有畢業 
+
+其中,<br />
+
+\ $\beta_1$為進入大學對薪資的效果 <br /> 
+    \ $\beta_2$為大學畢業對薪資的效果
+<br /> 
+$$E[lwage|C=0,G=0]=\beta_0 \ -(1) $$
+$$E[lwage|C=1,G=0]=\beta_0+\beta_1\ -(2) $$
+$$E[lwage|C=1,G=1]=\beta_0+\beta_1+\beta_2\ -(3) $$
+
+依 (3) - (2) ,可得\ $\beta2$\ =2.917989 <br />  
+依 (2) - (1) ,可得\ $\beta1$\ =1.144299
+<br /> 
+
+
+# 文章閱讀
+[Going to university is more important than ever for young people.
+But the financial returns are falling.](https://www.economist.com/news/international/21736151-financial-returns-are-falling-going-university-more-important-ever)
+
+文章中有不少效應評估問句，及造成其無法直接進行簡單迴歸估計的選擇性偏誤原因，請將所有這樣的段落貼過來、寫下它的效應評估問句及造成選擇性偏誤的原因。例如：
+
+```
+Policymakers regard it as obvious that sending more young people to university will boost economic growth and social mobility. ... But comparisons between countries provide little evidence of these links. Richer countries have more graduates, but that could be because there is more money to spare, and less urgency to start earning.
+
+效應評估問句：越多人上大學該國經濟表現越好？
+
+造成選擇性偏誤原因：「時間多錢多多」造成「越多人上大學」，「時間多錢多多」是「富有國家」常見現象，所以單純比較上大學比例高和低的國家，有可能只是在比誰的「時間多、錢多」。（這類的選擇性偏誤也稱為內生性偏誤。）
+
+```
+
+```
+"Policymakers regard it as obvious that sending more young people to university will boost economic growth and social mobility."
+
+評估問句：
+國民越多人去念大學，經濟越好？
+
+偏誤原因：
+有錢的國家，有更多人去念大學，單單可能只是因為有"多餘"的錢或較少經濟壓力。
+```
+
+
+
+```
+"The main piece of evidence cited by policymakers is the “graduate premium”—the difference between the average earnings of someone with a degree and someone with no more than a secondary-school education, after accounting for fees and the income forgone while studying.This gap is often expressed as the “return on investment” in higher education, or the annualised boost to lifetime earnings from gaining a degree."
+
+評估問句：
+學歷越高，終身平均薪水變高？
+
+偏誤原因：
+平均的概念，會掩蓋不同產業之間薪水的差異。
+```
+
+
+```
+Better-educated people should surely be more likely to come up with productivity-boosting innovations. As technological change makes new demands of workers, it seems plausible that more will need to be well-educated. And a degree is an obvious way for bright youngsters from poor families to prove their abilities.
+效應評估問句: 受過良好教育的人應該更有可能提出促進生產力的創新？隨著技術變革提出了對工人的新要求，似乎有理由認為更多人需要接受良好的教育?
+
+造成選擇性偏誤的原因: 但在國家之間的比較幾乎沒有提供這些聯繫的證據。更富有的國家有更多的畢業生，但這可能是因為有更多的錢可以騰出來，而且開始賺錢的迫切性不大。富裕經濟增長速度較慢，但這可能是因為他們提高生產力的簡單方法較少，並不是因為教育抑制了其增長。
+
+
+```

@@ -1,0 +1,239 @@
+---
+title: "作業2"
+params:
+  group: 8
+  id: [810432103,810632102,810632103]
+  name: ["秦嘉偉","饒雲韶","吳婉如"]
+output:
+  html_notebook:
+    df_print: paged
+---
+請依狀況更改上面的name,id及group（分別代表組員姓名，學號及組號），但請「勿」更改下面姓名、學號、組號三行的設定。  
+
+***
+
+姓名：`r params$name`  
+學號：`r params$id`  
+組號：`r params$group`  
+
+***
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,warning=F,message=F)
+```
+
+# 勞動市場
+
+執行以下程式引入勞動市場資料labordata，資料說明請見連結[Cornwell and Rupert Returns to Schooling Data, 595 Individuals, 7 Years.](http://people.stern.nyu.edu/wgreene/Econometrics/PanelDataSets.htm)
+
+```{r}
+library(readr)
+labordata <- read_csv("http://people.stern.nyu.edu/wgreene/Econometrics/cornwell&rupert.csv")
+```
+
+## 勞動供給
+
+### (1)
+將labordata只留下第7年的資料
+
+```{r}
+library(dplyr)
+library(magrittr)
+library(AER)
+data("labordata")
+filter(labordata, YEAR==7)
+labordata %<>% as_tibble
+labordata
+labordata %<>% filter(YEAR=="7")
+```
+
+### (2) 
+我們想要估計薪資對工時的影響（即勞動供給），考慮如下的勞動供給函數
+$$wks_{i}=\beta_0+\beta_1 lwage_{i}+\epsilon_i$$
+
+請使用plot()畫出橫軸為每週工時（WKS）與縱軸為取對數後薪資（LWAGE, 後往直接稱呼「薪資」）的離散圖。
+```{r}
+model <- lm(formula = WKS ~ LWAGE , data = labordata)
+  summary(model)
+plot(labordata$WKS,labordata$LWAGE)
+```
+
+### (3)
+我們擔心「勞工屬於工會」這個變數(union, 為1若屬於工會, 反之為0)遺漏的話會造成勞動供給的工資係數估計偏誤。請用文字故事說明為什麼會有這層擔心？[記得要有兩個面向故事] 這擔心應該會高估或低估工資係數？
+[請不要使用任何程式或數字計算，單純文字故事邏輯]
+
+```
+「勞工屬於工會」這個變數可區分為兩種不同群組，這樣的特性表示該變數可以是自變數或干擾變數，參加工會者相較於沒參加工會者，薪水比較高，由此資料可以證明，如不控制工會這個變數，將會導致估計有所偏誤，因為此變數可以具有干擾效果，如同性別的人口統計變數一樣。根據前人文獻，工會之組織受到法令之保護，因此參與工會之成員也受到法令之保護，但是沒參加工會之勞工，雖然也會受到政府法令之保護，但其差別在於工會擁有政府賦予之權利，可以與資方議價談判。例如:歐洲的交通運輸業往往是由工會發起所謂的合法罷工來與資方進行工資與工時的談判。所以沒參加工會之勞工因個人力量薄弱，對於資方而言不具有議價能力。
+```
+
+### (4)
+在不做迴歸下，請用union分組計算lwage與wks的平均，並用數字結果來支持你在(c)小題的擔心。
+
+```{r}
+labordata %>%
+  group_by(UNION) %>%
+  summarise(mean_lwage=mean(LWAGE),mean_wks=mean(WKS))
+```
+```
+```
+勞工屬於工會者，其平均薪資較高，且平均工作時數較低，支持了上述勞工有加入工會者，會影響其薪資及工作時數之結論。
+```
+
+### (5)
+我們最後考慮如下的複迴歸勞動供給函數
+$$wks_{i}=\beta_0+\beta_1 lwage_{i} + \beta_2 ed_{i} +\beta_3 union_{i} +\beta_4 fem_{i}+\epsilon_{i}$$
+請用『純文字說明』(不要寫程式，不要算任何數字)：為什麼要再放教育水準及性別二個控制變數？
+
+```
+教育與性別可區分為不同群組，因此可產生所謂的干擾效果，教育與性別原本就屬於人口統計變數，為了純化研究中之因果關係，我們必須去控制所有可能產生干擾效果之變數。此外站在個人與工作契合度理論來說，較高學歷者可選擇的工作內容與薪資原本就相較於低學歷者較多及較大，因此為了不讓差異去干擾因果之直接關係，所以必續把教育變數列為控制變數。就性別變數而言，根據社會角色理論，男性與女性在工作上，原本就有所謂的差異性存在，例如:玻璃天花板與工作性別論。如同教育變數一樣，會去干擾因果之直接關係，所以必需把性別變數列為控制變數。而根據前人的文獻，大部分的人口統計變數，如不屬於研究模型之架構，都應予以控制。
+
+```
+
+### (6)
+同時OLS估計簡單迴歸和複迴歸下的勞動供給，並用stargarzer呈現估計結果（請設定type="html"）。
+
+```{r}
+model1<-WKS ~ LWAGE 
+model2<-WKS ~ LWAGE + ED + UNION + FEM
+ols1<-lm(model1,labordata)
+ols2<-lm(model2,labordata)
+
+library(sandwich)
+library(lmtest)
+library(stargazer)
+stargazer(ols1,ols2,type="html")
+
+
+```
+
+### (7)
+複迴歸模型估計下，LWAGE的係數要如何詮譯？顯不顯著？
+
+```
+在其他條件不變的情況下，每增加1%的薪資，會增加其工作時數0.538小時，根據P值而不拒絕係數為0之虛無假設。
+```
+
+### (8)
+找出一個使複迴歸模型在控制變數下依然不符合條件性獨立的故事（必需牽扯到labordata資料不會有的變數，所以只能純文字故事）。
+
+```
+在原本薪資對工作時數的關聯性的複迴歸模型中，可能再加入員工的年齡作為控制變數，因為員工年齡愈高，其工作時數有可能會愈低，兩者呈負相關，但其薪資是否會愈高就要端賴其職務內容及工作年資，故此結果為不獨立及違反排除條件。
+```
+
+## 內生性偏誤
+在(2)小題，圖形看不出明顯正斜率的勞動供給線，一個主要原因是薪資與工時是勞動供需決定的結果，因此任何影響勞動供給的因素都會影響薪資，也就是供給線的誤差項不你放多少的變數，最後誤差項還是會改變供給線，也因此一定會影響薪資——誤差項一定會和薪資變數相關。使用複迴歸不管加多少控制變數永遠不會得到薪資係數的一致性估計，這樣的狀況我們稱為內生性偏誤（endogeneity bias）。
+
+然而內生性偏誤卻是相當容易使用工具變數解決，解決方式就是從勞動「需求」函數下手——任何影響勞動需求線的因素都會是合理的工具變數。
+
+### (9)
+在勞動市場中，產業別不同其對勞動力的需求也不一樣。另外，不同地點的勞動需求狀況也不同。使用文字邏輯說明「產業別」、勞動者「居住地」可能是合理工具變數的理由。
+
+```
+在勞動市場中，產業別的不同確實可能會影響廠商對勞動力的需求，例如相較於服務業而言，製造業廠商可能會有較多的勞動力需求，但其對薪資的影響則未有一定的結論，也許製造業其需投入較多的勞力而可能獲取較高的報酬，但服務業可能因投入較多的技能而亦獲取相等或更高的報酬。
+另一方面，城鄉差距確實也可能造成勞動需求狀況的不同，例如城市地區工作機會多，其勞動力需求較高，且物價水準可能也比較高，因此其薪資可能會比較高，但相對的，若大多數人都往城市就業，坐落在比較鄉下的廠商也可能會出現高勞動力需求的問題，但因其物價水準可能較城市低，因此相對的可能給予員工較低的薪資。綜上所述，產業別及居住地兩者皆可能影響薪資水準的高低，因此其可能為合理的工具變數。
+```
+
+### (10)
+使用工具變數法及產業別（ind）當工具變數，估計複迴歸模型下的$\beta_1$係數，並進行工具變數合理性的相關檢定。
+
+```{r}
+library(AER)
+tsls_1iv <- ivreg(
+  WKS ~ LWAGE | IND ,
+  data=labordata
+  )
+summary(tsls_1iv, vcov = sandwich, diagnostics = TRUE, df=Inf) -> tsls_1iv_tests
+tsls_1iv_tests
+```
+Call:
+ivreg(formula = WKS ~ LWAGE | IND, data = labordata)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-41.8572  -0.3843   1.5009   2.9313   7.9128 
+
+Coefficients:
+            Estimate Std. Error z value Pr(>|z|)
+(Intercept)   65.579     56.600   1.159    0.247
+LWAGE         -2.752      8.145  -0.338    0.735
+
+Diagnostic tests:
+                 df1 df2 statistic p-value
+Weak instruments   1 593     2.488   0.115
+Wu-Hausman         1 592     0.168   0.682
+Sargan             0  NA        NA      NA
+
+Residual standard error: 5.375 on Inf degrees of freedom
+Multiple R-Squared: -0.07288,	Adjusted R-squared: -0.07469 
+Wald test: 0.1141 on 1 DF,  p-value: 0.7355 
+
+
+### (11) 
+使用工具變數法, 同時使用ind及smsa當工具變數，估計複迴歸模型下的$\beta_1$係數，並進行工具變數合理性的相關檢定。
+
+```{r}
+library(AER)
+tsls_2iv <- ivreg(
+  WKS ~ LWAGE | IND + SMSA ,
+  data=labordata
+  )
+summary(tsls_2iv, vcov = sandwich, diagnostics = TRUE, df=Inf) -> tsls_2iv_tests
+tsls_2iv_tests
+```
+Call:
+ivreg(formula = WKS ~ LWAGE | IND + SMSA, data = labordata)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-41.3349  -0.5305   1.4757   2.8448   6.5069 
+
+Coefficients:
+            Estimate Std. Error z value Pr(>|z|)   
+(Intercept)  40.9180    13.9428   2.935  0.00334 **
+LWAGE         0.7962     2.0038   0.397  0.69111   
+
+Diagnostic tests:
+                 df1 df2 statistic  p-value    
+Weak instruments   2 592    20.086 3.63e-09 ***
+Wu-Hausman         1 592     0.027    0.870    
+Sargan             1  NA     0.222    0.638    
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 5.187 on Inf degrees of freedom
+Multiple R-Squared: 0.0008916,	Adjusted R-squared: -0.0007933 
+Wald test: 0.1579 on 1 DF,  p-value: 0.6911 
+
+### (12)
+將簡單迴歸、複迴歸、一個工具變數、二個工具變數的四種估算結果（含應有的檢定），用stargazer產生「一張」報表同時呈現（請設定type="html"）。
+
+```{r}
+stargazer(ols1,ols2,tsls_1iv,tsls_2iv,type="html",
+          column.labels = c("ols1","ols2","one IV", "two IVs"),
+          add.lines = list(c("TSLS tests p-value","","","",""),
+                           c("Q1: Sargan","","","NA","0.638"),
+                           c("Q2: Weak instruments","NA","NA","0.115","3.63e-09"),
+                           c("Q3: Wu-Hausman","NA","NA","0.682","0.870")
+                           ))
+```
+
+
+# 文章閱讀
+以下問題請依《經濟學人》文章來回答：
+  [Forcing employers to reveal their gender pay gaps is making them think](https://www.economist.com/news/britain/21739993-despite-its-flaws-new-obligation-could-spark-change-employment-practices-forcing)
+
+## 效應結構式
+
+### (13)
+文章問的因果效應問句是什麼？（盡量一言以敝之）
+
+```
+性別是否會對薪資對工作時數關聯性之研究造成影響。
+```
+
+### (14)
+找出文章中所列舉可造成OVB（omitted variable bias）的應控制變數，並說明它會造成OVB的「兩」面向原因（缺一不可）。
+
+```
+本篇文章標題雖為不同性別決定不同薪資，但其並非直接表明因不同性別而有不同薪資兩者直接之因果關係，而是不同性別造成許多影響薪資決定的不同因素，例如：若女性已婚則可能會有產假的問題，其這段期間的工作一定會由其代理人來代理，一方面會增加原代理人的工作負擔，同時有些工作細項可能還是原承辦人比較清楚緣由，此乃廠商在僱用員工決定其薪資時可能會考量到的因素，而間接成為因性別不同造成薪資不同之現象。
+```
