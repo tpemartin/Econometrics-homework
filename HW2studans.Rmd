@@ -7,6 +7,12 @@ output:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE,warning=F,message=F)
+library(dplyr)
+library(AER)
+library(magrittr)
+library(sandwich)
+library(lmtest)
+library(stargazer)
 ```
 
 # 勞動市場
@@ -74,15 +80,14 @@ $$wks_{i}=\beta_0+\beta_1 lwage_{i} + \beta_2 ed_{i} +\beta_3 union_{i} +\beta_4
 同時OLS估計簡單迴歸和複迴歸下的勞動供給，並用stargarzer呈現估計結果（請設定type="html"）。
 
 ```{r,results='asis'}
-ols1 <- lm(WKS~LWAGE,data=labordata)
+labordata %>% lm(WKS~LWAGE,data=.) -> model1
+labordata %>% lm(WKS~LWAGE+ED+UNION+FEM,data=.) -> model2
 
-coeftest(ols1, vcov. = vcovHC, type="HC1") -> ols1_coeftest
+coeftest(model1, vcov. = vcovHC, type="HC1") -> model1_coeftest
+coeftest(model2, vcov. = vcovHC, type="HC1") -> model2_coeftest
 
-library(stargazer)
-stargazer(ols1, 
-          se=list(ols1_coeftest[,"Std. Error"]),
-          type="html",
-          align=TRUE)
+stargazer(model1, model2,
+          se=list(model1_coeftest[,"Std. Error"], model2_coeftest[,2]),
 ```
 
 ### (7)
@@ -115,52 +120,11 @@ stargazer(ols1,
 ### (10)
 使用工具變數法及產業別（ind）當工具變數，估計複迴歸模型下的$\beta_1$係數，並進行工具變數合理性的相關檢定。
 
-
-```{r, results='asis'}
-tsls_1iv <- ivreg(
-  WKS ~ LWAGE + ED + UNION + FEM | IND + ED + UNION + FEM,
-  data=labordata
-  )
-tsls_1iv
-
-summary(tsls_1iv, vcov = sandwich, diagnostics = TRUE, df=Inf) -> tsls_1iv_tests
-tsls_1iv_tests
-
-stargazer(ols2,tsls_1iv,type="html",
-          column.labels = c("NO IV", "IV:IND"))
-```
-
 ### (11)
 使用工具變數法, 同時使用ind及smsa當工具變數，估計複迴歸模型下的$\beta_1$係數，並進行工具變數合理性的相關檢定。
 
-
-```{r, results='asis'}
-tsls_2iv <- ivreg(
-  WKS ~ LWAGE + ED + UNION + FEM | IND + SMSA + ED + UNION + FEM,
-  data=labordata
-  )
-tsls_2iv
-
-summary(tsls_2iv, vcov = sandwich, diagnostics = TRUE, df=Inf) -> tsls_2iv_tests
-tsls_2iv_tests
-
-stargazer(tsls_1iv,tsls_2iv,type="html",
-          column.labels = c("one IV", "two IVs"))
-```
-
 ### (12)
 將簡單迴歸、複迴歸、一個工具變數、二個工具變數的四種估算結果（含應有的檢定），用stargazer產生「一張」報表同時呈現（請設定type="html"）。
-
-
-```{r, results='asis'}
-stargazer(ols1,ols2,tsls_1iv,tsls_2iv,type="html",
-          column.labels = c("sim ols", "multi ols", "one IV", "two IVs"),
-          add.lines = list(c("TSLS tests p-value", "",""),
-                           c("Q1: Sargan","NA","NA","NA","0.363"),
-                           c("Q2: Weak instruments","NA","NA","0.000569 ***","8.92e-11 ***"),
-                           c("Q3: Wu-Hausman","NA","NA","0.598699","0.565")
-                           ))
-```
 
 
 # 文章閱讀
@@ -169,14 +133,14 @@ stargazer(ols1,ols2,tsls_1iv,tsls_2iv,type="html",
 
 ## 效應結構式
 
-### (13) 
+### (13)
 文章問的因果效應問句是什麼？（盡量一言以敝之）
 
 ```
 性別是否真的是造成薪資差異的變數。
 ```
 
-### (14)
+### (14) 
 找出文章中所列舉可造成OVB（omitted variable bias）的應控制變數，並說明它會造成OVB的「兩」面向原因（缺一不可）。
 
 ```
@@ -185,7 +149,7 @@ stargazer(ols1,ols2,tsls_1iv,tsls_2iv,type="html",
 家內照顧的角色；花多少時間照顧家人同時和薪資有關，因為工時會相應減少，影響了員工
 的職涯發展，進而影響薪資。
 
-(2) 全職或兼職 
+(2) 全職或兼職
 造成選擇性偏誤原因：全職或兼職和性別有關，因為女性兼職工作率高於男性(基於家內照顧
 責任，產業特性，等等)；全職或兼職也和薪資有關，因為同類型的兼職工作，工時往往不如
 全職，薪資自然也低於全職。
