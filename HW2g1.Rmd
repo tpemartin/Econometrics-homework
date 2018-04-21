@@ -1,0 +1,202 @@
+---
+title: "作業2"
+params:
+  group: 11
+  id: [710661104,710661119,710661117,710661130]
+  name: ["蔡宗翰","吳泓叡","苗瑋中","廖柏誠"]
+output:
+  html_notebook:
+    df_print: paged
+---
+請依狀況更改上面的name,id及group（分別代表組員姓名，學號及組號），但請「勿」更改下面姓名、學號、組號三行的設定。  
+
+***
+
+姓名：`r params$name`  
+學號：`r params$id`  
+組號：`r params$group`  
+
+***
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,warning=F,message=F)
+library(dplyr)
+library(AER)
+library(magrittr)
+library(sandwich)
+library(lmtest)
+library(stargazer)
+```
+
+# 勞動市場
+
+執行以下程式引入勞動市場資料labordata，資料說明請見連結[Cornwell and Rupert Returns to Schooling Data, 595 Individuals, 7 Years.](http://people.stern.nyu.edu/wgreene/Econometrics/PanelDataSets.htm)
+
+```{r}
+library(readr)
+labordata <- read_csv("http://people.stern.nyu.edu/wgreene/Econometrics/cornwell&rupert.csv")
+```
+
+## 勞動供給
+
+### (1)
+將labordata只留下第7年的資料
+
+```{r}
+labordata %<>%
+  dplyr::filter(YEAR==7)
+```
+
+### (2) 
+我們想要估計薪資對工時的影響（即勞動供給），考慮如下的勞動供給函數
+$$wks_{i}=\beta_0+\beta_1 lwage_{i}+\epsilon_i$$
+
+請使用plot()畫出橫軸為每週工時（WKS）與縱軸為取對數後薪資（LWAGE, 後往直接稱呼「薪資」）的離散圖。
+
+```{r}
+plot(labordata$WKS,labordata$LWAGE)
+```
+
+### (3)
+我們擔心「勞工屬於工會」這個變數(union, 為1若屬於工會, 反之為0)遺漏的話會造成勞動供給的工資係數估計偏誤。請用文字故事說明為什麼會有這層擔心？[記得要有兩個面向故事] 這擔心應該會高估或低估工資係數？
+[請不要使用任何程式或數字計算，單純文字故事邏輯]
+
+```
+加入工會者，受到工會保護，工時應該較短，同時工會具有勞動供給的談判力，故工會成員薪資應該較高。因此我們會擔心會低估係數。表示事實上薪水高我們應該很樂意工作，但加上了工會保護，我們反而可能工時更短。
+```
+
+### (4)
+在不做迴歸下，請用union分組計算lwage與wks的平均，並用數字結果來支持你在(c)小題的擔心。
+
+```{r}
+labordata %>% group_by(UNION) %>% summarise(mean(LWAGE),mean(WKS))
+```
+
+### (5)
+我們最後考慮如下的複迴歸勞動供給函數
+$$wks_{i}=\beta_0+\beta_1 lwage_{i} + \beta_2 ed_{i} +\beta_3 union_{i} +\beta_4 fem_{i}+\epsilon_{i}$$
+請用『純文字說明』(不要寫程式，不要算任何數字)：為什麼要再放教育水準及性別二個控制變數？
+
+```
+教育水準高，表示從事較為專業(替代性低)的職業，故薪水較高，且較可能從事較於工時彈性(相對少)的行業。
+又在男女依舊不平等的社會，身為女性可能因此薪水較低，又背負著家庭責任，工時可能只能較短。
+```
+
+### (6)
+同時OLS估計簡單迴歸和複迴歸下的勞動供給，並用stargarzer呈現估計結果（請設定type="html"）。
+
+```{r,results='asis'}
+labordata %>% lm(WKS~LWAGE,data=.) -> model1
+labordata %>% lm(WKS~LWAGE+ED+UNION+FEM,data=.) -> model2
+
+coeftest(model1, vcov. = vcovHC, type="HC1") -> model1_coeftest
+coeftest(model2, vcov. = vcovHC, type="HC1") -> model2_coeftest
+
+stargazer(model1, model2, 
+          se=list(model1_coeftest[,"Std. Error"], model2_coeftest[,2]),
+          type="html",
+          align=TRUE)
+```
+
+### (7)
+複迴歸模型估計下，LWAGE的係數要如何詮譯？顯不顯著？
+
+```
+簡單迴歸不顯著，複迴歸不顯著。係數表示增加薪水對工時的誘因影響，又在複迴歸中係數比簡單迴歸係數更大，表示簡單迴歸中，我們低估了薪水對工時的誘惑力，其實工時變短可能是因為其它因素導致不會(想)工作那麼多。
+```
+### (8)
+找出一個使複迴歸模型在控制變數下依然不符合條件性獨立的故事（必需牽扯到labordata資料不會有的變數，所以只能純文字故事）。
+
+```
+在控制變數下，表示有一群性別相同、教育相同、工會偏好相同。
+舉例： 一群加入工會且都大學畢業的男生，可能工作地點在不同的區域(北部與南部)，要求的工時長度不一(因為法律管束較少，越接近行政區或大都會，越遵守法規)
+```
+
+## 內生性偏誤
+在(2)小題，圖形看不出明顯正斜率的勞動供給線，一個主要原因是薪資與工時是勞動供需決定的結果，因此任何影響勞動供給的因素都會影響薪資，也就是供給線的誤差項不你放多少的變數，最後誤差項還是會改變供給線，也因此一定會影響薪資——誤差項一定會和薪資變數相關。使用複迴歸不管加多少控制變數永遠不會得到薪資係數的一致性估計，這樣的狀況我們稱為內生性偏誤（endogeneity bias）。
+
+然而內生性偏誤卻是相當容易使用工具變數解決，解決方式就是從勞動「需求」函數下手——任何影響勞動需求線的因素都會是合理的工具變數。
+
+### (9)
+在勞動市場中，產業別不同其對勞動力的需求也不一樣。另外，不同地點的勞動需求狀況也不同。使用文字邏輯說明「產業別」、勞動者「居住地」可能是合理工具變數的理由。
+
+```
+不同產業有不同的起薪，但基本上工作時數都基本上都是法定規定最長時間(除非要付加班費，但在修法後此舉動成本過大)；居住地此為應該同時也為工作地點(至少相差不遠)，則明顯知道都市內的起薪較郊區高，而工作時數基本上同上解釋。
+```
+
+### (10)
+使用工具變數法及產業別（ind）當工具變數，估計複迴歸模型下的$\beta_1$係數，並進行工具變數合理性的相關檢定。
+
+```{r}
+labordata %>% lm(WKS~LWAGE+ED+UNION+FEM+IND,data=.) -> model3
+
+coeftest(model3, vcov. = vcovHC, type="HC1") -> model3_coeftest
+
+stargazer(model3,
+          se=list(model3_coeftest[,2]),
+          type="text",
+          align=TRUE)
+
+tsls_1 <- ivreg(
+  WKS~ LWAGE + ED + UNION + FEM|  ED + UNION + FEM + IND,
+  data=labordata) 
+
+summary(tsls_1, vcov = sandwich, diagnostics = TRUE, df=Inf) 
+```
+
+### (11) 
+使用工具變數法, 同時使用ind及smsa當工具變數，估計複迴歸模型下的$\beta_1$係數，並進行工具變數合理性的相關檢定。
+
+```{r}
+labordata %>% lm(WKS~LWAGE+ED+UNION+FEM+IND+SMSA,data=.) -> model4
+
+coeftest(model4, vcov. = vcovHC, type="HC1") -> model4_coeftest
+
+stargazer(model4,
+          se=list(model4_coeftest[,2]),
+          type="text",
+          align=TRUE)
+
+tsls_2 <- ivreg(
+  WKS~ LWAGE + ED + UNION + FEM|  ED + UNION + FEM + IND + SMSA,
+  data=labordata) 
+
+summary(tsls_2, vcov = sandwich, diagnostics = TRUE, df=Inf) 
+```
+
+### (12)
+將簡單迴歸、複迴歸、一個工具變數、二個工具變數的四種估算結果（含應有的檢定），用stargazer產生「一張」報表同時呈現（請設定type="html"）。
+
+```{r,results='asis'}
+stargazer(model1,model2,model3,model4,type="html",
+          column.labels = c("simple", "mlti","one IV","two IV"),
+          add.lines = list(c("TSLS tests p-value", "","","",""),
+                           c("Q1: Sargan","","","NA","0.363"),
+                           c("Q2: Weak instruments","","","0.000569","8.92e-11"),
+                           c("Q3: Wu-Hausman","","","0.598699","0.565")
+                           ))
+```
+
+
+# 文章閱讀
+以下問題請依《經濟學人》文章來回答：
+[Forcing employers to reveal their gender pay gaps is making them think](https://www.economist.com/news/britain/21739993-despite-its-flaws-new-obligation-could-spark-change-employment-practices-forcing)
+
+## 效應結構式
+
+### (13)
+文章問的因果效應問句是什麼？（盡量一言以敝之）
+
+```
+性別會不會影響薪資
+```
+
+### (14)
+找出文章中所列舉可造成OVB（omitted variable bias）的應控制變數，並說明它會造成OVB的「兩」面向原因（缺一不可）。
+
+```
+1. 職業。如航空、金融...，每個職業中男女比例本來就不同，又每種職業的平均薪資也不同
+2. 職位。在同公司中，高階主管男生的比率較高，又高階主管的薪水也較高。
+3. 公司文化。公司文化若為較為性別歧視，會影響該公司的男女比率，又公司文化也會造成其公司獲益，間接影響薪資。
+
+```
