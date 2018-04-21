@@ -1,0 +1,283 @@
+---
+title: "作業2"
+params:
+  group: 4
+  id:
+  - 410373092
+  - 310356001
+  name:
+  - 陳柏銘
+  - 蔡沛吟
+output:
+  html_notebook:
+    df_print: paged
+  html_document:
+    df_print: paged
+---
+請依狀況更改上面的name,id及group（分別代表組員姓名，學號及組號），但請「勿」更改下面姓名、學號、組號三行的設定。  
+
+***
+
+姓名：`r params$name`  
+學號：`r params$id`  
+組號：`r params$group`  
+
+***
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,warning=F,message=F)
+```
+
+# 勞動市場
+
+執行以下程式引入勞動市場資料labordata，資料說明請見連結[Cornwell and Rupert Returns to Schooling Data, 595 Individuals, 7 Years.](http://people.stern.nyu.edu/wgreene/Econometrics/PanelDataSets.htm)
+
+```{r}
+library(readr)
+labordata <- read_csv("http://people.stern.nyu.edu/wgreene/Econometrics/cornwell&rupert.csv")
+# EXP = work experience 
+# WKS = weeks worked
+# OCC = occupation, 1 if blue collar, 
+# IND = 1 if manufacturing industry
+# SOUTH = 1 if resides in south
+# SMSA = 1 if resides in a city (SMSA)
+# MS = 1 if married
+# FEM = 1 if female
+# UNION = 1 if wage set by unioin contract
+# ED = years of education
+# BLK = 1 if individual is black
+# LWAGE = log of wage
+```
+
+## 勞動供給
+
+### (1)
+將labordata只留下第7年的資料
+
+```{r}
+library(dplyr)
+library(magrittr)
+labordata %<>% filter(YEAR==7)
+labordata
+```
+
+### (2) 
+我們想要估計薪資對工時的影響（即勞動供給），考慮如下的勞動供給函數
+$$wks_{i}=\beta_0+\beta_1 lwage_{i}+\epsilon_i$$
+
+請使用plot()畫出橫軸為每週工時（WKS）與縱軸為取對數後薪資（LWAGE, 後往直接稱呼「薪資」）的離散圖。
+```{r}
+#plot(labordata$WKS, labordata$LWAGE, xlab = "WKS", ylab = "LWAGE")
+plot(labordata$LWAGE, labordata$WKS, xlab = "LWAGE", ylab = "WKS")
+```
+
+### (3)
+我們擔心「勞工屬於工會」這個變數(union, 為1若屬於工會, 反之為0)遺漏的話會造成勞動供給的工資係數估計偏誤。請用文字故事說明為什麼會有這層擔心？[記得要有兩個面向故事] 這擔心應該會高估或低估工資係數？
+[請不要使用任何程式或數字計算，單純文字故事邏輯]
+
+```
+擔心「勞工屬於公會」這個變數遺漏的話會造成工資係數的估計偏誤，也就是選擇偏誤中的遺漏變數偏誤。理由是因為，「是否隸屬公會」與「薪資」「每週工時」皆有關聯。
+
+就現實生活中的常理推論，參與工會的勞工可藉由工會力量向雇主爭取較佳的勞動條件，因而可能的影響有
+1.在相同的工資給付下，可以有較低的工作時數。或是 2.相同的工作時數下，有較高的工資
+就前者而言，參加工會與否與工作時數為負相關，就後者而言，造成參加工會與否與工資為正相關
+
+忽視「是否隸屬工會」這個變數，可能會造成工資係數被低估。理由是因為，在控制「是否隸屬工會」這個變數下，勞工可以專心工作，比較不需要去擔心基本工作權益等等。面對「薪水增加」這個誘因的反應，能夠更真實呈現。而薪水基本上都是一般人是否願意工作的主要考量，係數理應提升。
+```
+
+### (4)
+在不做迴歸下，請用union分組計算lwage與wks的平均，並用數字結果來支持你在(c)小題的擔心。
+
+```{r}
+# 這邊的union是指工會，不是指取聯集的function。
+# 從分組平均可以看出，參加工會的勞工平均薪資（6.961293）	與未參加工會的勞工（6.944645）幾乎沒有差異(差距約3%)。但平均每周工時則低了近2小時，可以看出參加工會與否是明顯影響每週工時的因素之一，並且在控制工會這個變數後(dummy 0/1)，薪資對於工時影響程度非常小。
+
+labordata %>% group_by(UNION) %>%
+  summarise("Average LWAGE"=mean(LWAGE), "Average WKS"=mean(WKS))
+```
+
+### (5)
+我們最後考慮如下的複迴歸勞動供給函數
+$$wks_{i}=\beta_0+\beta_1 lwage_{i} + \beta_2 ed_{i} +\beta_3 union_{i} +\beta_4 fem_{i}+\epsilon_{i}$$
+請用『純文字說明』(不要寫程式，不要算任何數字)：為什麼要再放教育水準及性別二個控制變數？
+
+```
+結構式是「是否當薪資越高，投入勞動意願會越高」。勞工更願意工作，每週工時越高，因此勞動供給會越高。
+
+先討論需要放入教育水準的原因。
+
+教育水準越高的人，理論上起薪越高且升遷機會較多，意思是教育水準和薪資有關聯。同時，教育水準越高的人，可能自我實現的意願和能力較高，可能積極投入創業，幾乎是工作狂；也有可能效率工作，其餘都在享受人生。總之，教育水準與每週工時也有相關。「教育程度」會同時影響效應變數與被解釋變數，若不控制，工資的係數會有偏誤，甚至可能變成在比「教育程度對每週工時（投入勞動）的影響力」。
+
+再來是需要放入性別的原因。
+
+女性在職場上較容易存在「天花板」的狀況，因此性別會影響工資（雖然有點遺憾）。同時也被賦予較多照顧家庭的責任，因此性別也會影響每週工時（要照顧家庭就不太可能每週工作100hr以上），「性別」會同時影響效應變數與被解釋變數，若不控制，工資的係數會有偏誤，甚至可能變成在比「性別對每週工時（投入勞動）的影響力」。
+```
+
+### (6)
+同時OLS估計簡單迴歸和複迴歸下的勞動供給，並用stargarzer呈現估計結果（請設定type="html"）。
+
+```{r results='asis'}
+library(sandwich)
+library(lmtest)
+library(stargazer)
+
+BaseModel1 <- WKS ~ LWAGE
+BaseModel2 <- WKS ~ LWAGE + ED + UNION + FEM
+BaseOls1 <- lm(BaseModel1, data = labordata)
+BaseOls2 <- lm(BaseModel2, data = labordata)
+
+coeftest(BaseOls1, vcov. = vcovHC, type = "HC1") -> Simple_Ols_coeftest
+coeftest(BaseOls2, vcov. = vcovHC, type = "HC1") -> Multi_Ols_coeftest
+
+stargazer(Simple_Ols_coeftest, Multi_Ols_coeftest, type = "html")
+```
+
+### (7)
+複迴歸模型估計下，LWAGE的係數要如何詮譯？顯不顯著？
+
+```
+在複迴歸模型中，係數是0.538，個別檢定是不顯著的。此估計並不可靠。
+
+LWAGE的詮釋是「每當工資變動（增加）1%，每週工時會增加多少小時」，在複回歸底下是0.538小時。
+```
+
+### (8)
+找出一個使複迴歸模型在控制變數下依然不符合條件性獨立的故事（必需牽扯到labordata資料不會有的變數，所以只能純文字故事）。
+
+```
+在我們的複迴歸模型中，已經控制了教育、性別、工會三個變數，以討論薪資對於工時的效應，則在最小平方法的架構下，截距項應該已經扣除這四個變數的效果，而僅有固定的截距性質。但是在這個模型中，由於每個資料點是由特定的供給與需求所決定的，因此即便是控制了薪資，想要估計的反應變數(工時供給)仍然會受到薪資的影響
+
+例如在不同的總體環境下，受到景氣的影響，廠商願意購買的勞動量即願意給付的薪資會形成不同的需求線，這使得複回歸模型中，即使控制了這些變數，仍然無法使截距項與我們要探討的效應變數獨立。
+```
+
+## 內生性偏誤
+在(2)小題，圖形看不出明顯正斜率的勞動供給線，一個主要原因是薪資（LWAGE）與工時（WKS）是勞動供需決定的結果，因此任何影響勞動供給的因素都會影響薪資，也就是供給線的誤差項不論你放多少的變數，最後誤差項還是會改變供給線，也因此一定會影響薪資——誤差項一定會和薪資變數相關。使用複迴歸不管加多少控制變數永遠不會得到薪資係數的一致性估計，這樣的狀況我們稱為內生性偏誤（endogeneity bias）。
+
+然而內生性偏誤卻是相當容易使用工具變數解決，解決方式就是從勞動「需求」函數下手——任何影響勞動需求線的因素都會是合理的工具變數。
+
+### (9)
+在勞動市場中，產業別不同其對勞動力的需求也不一樣。另外，不同地點的勞動需求狀況也不同。使用文字邏輯說明「產業別」、勞動者「居住地」可能是合理工具變數的理由。
+
+```
+
+工具變數需要留意他的相關條件與排除條件。
+
+「產業別」與「薪資」具有相關性，因為產業的榮枯前景不同，自然會影響從業人員的薪水。同時，他也與「非薪資效應之每週工時」無關，理由是因為產業別，橫跨農業、製造業、服務業，不同行業的每週工時，都有長有短，並不因今天是第三級產業或某某產業就一定特別短（或長），而且也會受到淡旺季影響。
+
+「居住地」與「薪資」具有相關性，因為待在大城市機會比較多，產業群聚也可能較佳，自然薪水是水漲船高。同時，他也與「非薪資效應之每週工時」無關，理由是因為我住哪裡，都有可能工作時間長，也有可能工作時間短，兩者應該沒有關係。
+
+```
+
+### (10)
+使用工具變數法及產業別（ind）當工具變數，估計複迴歸模型下的$\beta_1$係數，並進行工具變數合理性的相關檢定。
+
+```{r results='asis'}
+stargazer(Simple_Ols_coeftest, Multi_Ols_coeftest, type = "html")
+```
+
+```{r 建立第一個IV模型}
+library(AER)
+tsls_1iv <- ivreg(
+  WKS ~ LWAGE + ED + UNION + FEM | ED + UNION + FEM + IND,
+  data=labordata
+  )
+tsls_1iv
+```
+
+```{r one IV合理性檢定}
+#從檢定結果的p-value可以看出:
+# Sargan檢定則因為變數不足而沒有進行（工具變數個數要大於效應變數個數才可以）
+# Weak Instrument檢定中是拒絕弱IV，表示此工具變數的關聯性是足夠的。
+# Hausman 檢定也不拒絕H0，表示用OLS或TSLS，是差不多的。 
+summary(tsls_1iv, vcov = sandwich, diagnostics = TRUE, df=Inf) -> tsls_1iv_tests
+tsls_1iv_tests
+```
+
+### (11) 
+使用工具變數法, 同時使用ind及smsa當工具變數，估計複迴歸模型下的$\beta_1$係數，並進行工具變數合理性的相關檢定。
+
+```{r 建立第二個IV模型}
+tsls_2iv <- ivreg(
+  WKS ~ LWAGE + ED + UNION + FEM | ED + UNION + FEM + IND + SMSA ,
+  data=labordata
+  )
+tsls_2iv
+```
+
+```{r two IV合理性檢定}
+# Sargan檢定是不拒絕H0，表示滿足排除性條件
+# Weak Instrument檢定中是拒絕弱IV，表示此工具變數的關聯性是足夠的。
+# Hausman 檢定也不拒絕H0，表示用OLS或TSLS，是差不多的。
+summary(tsls_2iv, vcov = sandwich, diagnostics = TRUE, df = Inf) -> tsls_2iv_tests
+tsls_2iv_tests
+```
+
+### (12)
+將簡單迴歸、複迴歸、一個工具變數、二個工具變數的四種估算結果（含應有的檢定），用stargazer產生「一張」報表同時呈現（請設定type="html"）。
+
+```{r results='asis'}
+stargazer(Simple_Ols_coeftest, Multi_Ols_coeftest, tsls_1iv, tsls_2iv, type = "html",
+          column.labels = c("Simple OLS", "Multi OLS", "one IV", "two IV"),
+          add.lines = list(c("TSLS tests pvalue","","","",""),
+                           c("Q1: Sargan","","", "NA", "0.363"),
+                           c("Q2: Weak instruments","","","0.000569","8.92e-11"),
+                           c("Q3: Wu-Hausman","","","0.598699","0.565")
+          ))
+          
+```
+
+
+# 文章閱讀
+以下問題請依《經濟學人》文章來回答：
+[Forcing employers to reveal their gender pay gaps is making them think](https://www.economist.com/news/britain/21739993-despite-its-flaws-new-obligation-could-spark-change-employment-practices-forcing)
+
+## 效應結構式
+
+### (13)
+文章問的因果效應問句是什麼？（盡量一言以敝之）
+
+```
+「性別」是否會影響「勞動者在職場上的長期發展機會」
+
+What companies really need to find out is whether they are hiring equitably, paying equitably and are offering equitable opportunities to advance.
+```
+
+### (14)
+找出文章中所列舉可造成OVB（omitted variable bias）的應控制變數，並說明它會造成OVB的「兩」面向原因（缺一不可）。
+
+```
+the new report is not about the pay discrimination in same job. It is about the problem that fail to promote enough women (or in a equal way)
+
+1. 不同工作職稱（the different roles of employees)
+
+在這份報導中，CEO和行政秘書是一起比較的，同理也是跟業務經理一起比。
+
+「不同工作職稱」和「勞動者在職場上的長期發展機會」有關聯，因為CEO人脈與專業經歷是比較廣的，擁有較多資源可以運用，甚至機會會自己找上門。而行政職的秘書比較算是小螺絲釘，需要努力讓別人看見才會有機會。職位高階與長期發展機會應為正相關。
+
+「不同工作職稱」與「性別」有關係，理由是因為男性與女性，基於演化而根深蒂固的基因，男性普遍較有追求冒險衝刺的精神，女性則是較具有細心、耐心的特質。因此不同的的工作職稱（內容）有些是男性天生就比較容易適應良好，可能像業務，因此他變成業務經理。有些女性天生就比較容易上手，像是人資或者心理諮商輔導，因此他變成人資長(CHO)。
+
+所以「不同工作職稱（the different roles of employees)」需要被列為應控制變數，以避免估計偏誤，甚至反而在測量「擔任什麼樣的職位對長期的發展機會較多」
+
+2. 所屬產業環境 (Industry)
+
+在這份報導中提到航空業女性空服員（cabin crew）佔了69%，薪水平均25000英鎊。而機艙駕駛有94%是男性，平均薪水92400英鎊。
+這需要考量到產業特性以及產業環境，不能單純說這有pay discrimination
+
+「所屬產業環境」和「性別」會有關聯，因為有些高危險產業，基本上比較不會有女性願意投入。
+
+「所屬產業環境」也和「勞動者在職場上的長期發展機會」有關聯，產業大環境的榮枯會影響勞動者在這個產業的發展是無庸置疑的，舉裡來說，一個高危險產業（好比台電修電工），隨著機器人技術的成熟，可能之後都是機器人來做維修，自然修電工就會失業。
+
+因此需要將「所屬產業環境（Industry）」納入控制，不然嚴重的話，反而會是在觀察「哪個產業的前景較佳，長期發展機會較多」
+
+3. 養育小孩個數（childbearing)
+
+報導中提到男性和女性在到了適合養育小孩的年齡階段，薪水會開始產生落差，到了50歲可能高達16%。又被稱為"motherhood penalty"。畢竟母親經過懷孕到分娩，對於小孩子的牽絆和情感，相對於父親，是很可能比較高的。
+
+「養育孩子個數」與「性別」會產生關聯，理由是基於演化而根深蒂固的基因，男性會傾向以提高子嗣的個數來提高繁衍後代的成功率，女性則是傾向把單一子嗣照顧好來提高繁衍後代的成功率。
+
+「養育孩子個數」與「勞動者在職場上的長期發展機會」會產生關聯，是因為若有了孩子，就比較不容易接受外派的工作，面對一些職場機會必須要捨棄。但是也可能有了孩子，定居在某個地區後，上司覺得他比較穩定不會跑走，願意投入資源栽培他，反而步步高升。兩者有關聯，但是強度與正負相關可能要case by case。
+
+因此需要將「養育小孩個數（childbearing)」納入控制，否則嚴重的話，反而會是在觀察「養育孩子對勞動者長期發展的機會影響」
+（此變數本身為dummy variable : 0 1 2 3 4  代表有養育幾個孩子）
+
+```
