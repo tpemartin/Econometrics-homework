@@ -51,17 +51,24 @@ plot(labordata$WKS,labordata$LWAGE)
 [請不要使用任何程式或數字計算，單純文字故事邏輯]
 
 ```
-勞工若屬於工會，則在工會的爭取與保護之下，該勞工可能擁有較低的工時以及較高的薪資。因此UNION與WKS存在著負相關，與LWAGE存在
-正相關，在此狀況下若不排除UNION的效果，則會導致迴歸式低估工資的係數
+擔心「勞工屬於公會」這個變數遺漏的話會造成工資係數的估計偏誤，也就是選擇偏誤中的遺漏變數偏誤。理由是因為，「是否隸屬公會」與「薪資」「每週工時」皆有關聯。
+
+就現實生活中的常理推論，參與工會的勞工可藉由工會力量向雇主爭取較佳的勞動條件，因而可能的影響有
+1.在相同的工資給付下，可以有較低的工作時數。或是 2.相同的工作時數下，有較高的工資
+就前者而言，參加工會與否與工作時數為負相關，就後者而言，造成參加工會與否與工資為正相關
+
+忽視「是否隸屬工會」這個變數，可能會造成工資係數被低估。理由是因為，在控制「是否隸屬工會」這個變數下，勞工可以專心工作，比較不需要去擔心基本工作權益等等。面對「薪水增加」這個誘因的反應，能夠更真實呈現。而薪水基本上都是一般人是否願意工作的主要考量，係數理應提升。
 ```
 
 ### (4)
 在不做迴歸下，請用union分組計算lwage與wks的平均，並用數字結果來支持你在(c)小題的擔心。
 
 ```{r}
-labordata %>%
-  group_by(UNION) %>%
-  summarise(mean_lwage=mean(LWAGE),mean_wks=mean(WKS))
+# 這邊的union是指工會，不是指取聯集的function。
+# 從分組平均可以看出，參加工會的勞工平均薪資（6.961293）	與未參加工會的勞工（6.944645）幾乎沒有差異(差距約3%)。但平均每周工時則低了近2小時，可以看出參加工會與否是明顯影響每週工時的因素之一，並且在控制工會這個變數後(dummy 0/1)，薪資對於工時影響程度非常小。
+
+labordata %>% group_by(UNION) %>%
+  summarise("Average LWAGE"=mean(LWAGE), "Average WKS"=mean(WKS))
 ```
 
 ### (5)
@@ -70,30 +77,34 @@ $$wks_{i}=\beta_0+\beta_1 lwage_{i} + \beta_2 ed_{i} +\beta_3 union_{i} +\beta_4
 請用『純文字說明』(不要寫程式，不要算任何數字)：為什麼要再放教育水準及性別二個控制變數？
 
 ```
-教育水準較高者，薪資通常會較高，且在工作選擇集合較大的狀況下，較可能選擇工時有彈性的工作，亦即工時應該更少。故教育水準(ED)
-將導致迴歸式低估工資係數
-另外，女性因為家庭因素，工時普遍較男性少，同時由於職場上的歧視，薪資普遍也比男性低，故性別為女性對lwage與wks皆存在著負相
-關，將造成估計偏誤
+結構式是「是否當薪資越高，投入勞動意願會越高」。勞工更願意工作，每週工時越高，因此勞動供給會越高。
+
+先討論需要放入教育水準的原因。
+
+教育水準越高的人，理論上起薪越高且升遷機會較多，意思是教育水準和薪資有關聯。同時，教育水準越高的人，可能自我實現的意願和能力較高，可能積極投入創業，幾乎是工作狂；也有可能效率工作，其餘都在享受人生。總之，教育水準與每週工時也有相關。「教育程度」會同時影響效應變數與被解釋變數，若不控制，工資的係數會有偏誤，甚至可能變成在比「教育程度對每週工時（投入勞動）的影響力」。
+
+再來是需要放入性別的原因。
+
+女性在職場上較容易存在「天花板」的狀況，因此性別會影響工資（雖然有點遺憾）。同時也被賦予較多照顧家庭的責任，因此性別也會影響每週工時（要照顧家庭就不太可能每週工作100hr以上），「性別」會同時影響效應變數與被解釋變數，若不控制，工資的係數會有偏誤，甚至可能變成在比「性別對每週工時（投入勞動）的影響力」。
 ```
 
 ### (6)
 同時OLS估計簡單迴歸和複迴歸下的勞動供給，並用stargarzer呈現估計結果（請設定type="html"）。
 
 ```{r,results='asis'}
+library(sandwich)
+library(lmtest)
+library(stargazer)
 
-lm(data=labordata,WKS~log(LWAGE))->model_1    
-##薪資(wage)對WKS(工時)簡單回歸
-lm(data=labordata,WKS~log(LWAGE)+UNION+FEM+ED)->model_2
-##薪資(wage)對WKS(工時)複回歸  
-coeftest(model_1, vcov. = vcovHC, type="HC1") -> model_1_coeftest
-#model1異質變異設定
-coeftest(model_2, vcov. = vcovHC, type="HC1") -> model_2_coeftest
-#model2異質變異設定
-stargazer(model_1, model_2, 
-          se=list(model_1_coeftest[,"Std. Error"], model_2_coeftest[,2]),
-          type="html",
-          align=TRUE)
+BaseModel1 <- WKS ~ LWAGE
+BaseModel2 <- WKS ~ LWAGE + ED + UNION + FEM
+BaseOls1 <- lm(BaseModel1, data = labordata)
+BaseOls2 <- lm(BaseModel2, data = labordata)
 
+coeftest(BaseOls1, vcov. = vcovHC, type = "HC1") -> Simple_Ols_coeftest
+coeftest(BaseOls2, vcov. = vcovHC, type = "HC1") -> Multi_Ols_coeftest
+
+stargazer(Simple_Ols_coeftest, Multi_Ols_coeftest, type = "html")
 ```
 
 
@@ -101,7 +112,9 @@ stargazer(model_1, model_2,
 複迴歸模型估計下，LWAGE的係數要如何詮譯？顯不顯著？
 
 ```
-當其他變素不變下，薪資增加1%時，工作時數會增加 0.538單位，但不顯著。
+在複迴歸模型中，係數是0.538，個別檢定是不顯著的。此估計並不可靠。
+
+LWAGE的詮釋是「每當工資變動（增加）1%，每週工時會增加多少小時」，在複回歸底下是0.538小時。
 ```
 
 ### (8)
@@ -126,63 +139,73 @@ stargazer(model_1, model_2,
 在勞動市場中，產業別不同其對勞動力的需求也不一樣。另外，不同地點的勞動需求狀況也不同。使用文字邏輯說明「產業別」、勞動者「居住地」可能是合理工具變數的理由。
 
 ```
-1.產業別和薪資有關。產業別=1代表製造業；製造業與非製造業的勞動供需不同。因此有薪資差異。
-產業別和誤差項無關，因為製造業與非製造業平均而言，都有特性不一的勞動人口
-  (例如:大學和國中學歷都可能從事製造業)。可滿足排除性條件。
+工具變數需要留意他的相關條件與排除條件。
+
+「產業別」與「薪資」具有相關性，因為產業的榮枯前景不同，自然會影響從業人員的薪水。同時，他也與「勞動供給非薪資效應之每週工時」無關，理由是勞動者不應該因為在製作業就自發性的樂於多做事或少做事。
+
+「居住地」與「薪資」具有相關性，因為待在大城市機會比較多，產業群聚也可能較佳，自然薪水是水漲船高。同時，他也與「勞動供給非薪資效應之每週工時」無關，理由是因為不太可能住在都市勞動者就自然會很愛工作。
+
 ```
 
 ### (10)
 使用工具變數法及產業別（ind）當工具變數，估計複迴歸模型下的$\beta_1$係數，並進行工具變數合理性的相關檢定。
 
-```{r}
-##工具變數複回歸模型1
-tsls_1iv <- ivreg(
-  WKS ~  log(LWAGE)+UNION+FEM+ED|UNION+FEM+ED+IND,
-  data=labordata
-  ) 
-
-coeftest(tsls_1iv, vcov. = vcovHC, type="HC1") -> tsls_1iv_coeftest
-##工具變數複回歸模型1異質變異
+```{r results='asis'}
+stargazer(Simple_Ols_coeftest, Multi_Ols_coeftest, type = "html")
 ```
 
-```{r}
-summary(tsls_1iv, vcov = sandwich, diagnostics = TRUE,
-        df=Inf)-> tsls_1iv_tests
+```{r 建立第一個IV模型}
+library(AER)
+tsls_1iv <- ivreg(
+  WKS ~ LWAGE + ED + UNION + FEM | ED + UNION + FEM + IND,
+  data=labordata
+  )
+tsls_1iv
+```
+
+```{r one IV合理性檢定}
+#從檢定結果的p-value可以看出:
+# Sargan檢定則因為變數不足而沒有進行（工具變數個數要大於效應變數個數才可以）
+# Weak Instrument檢定中是拒絕弱IV，表示此工具變數的關聯性是足夠的。
+# Hausman 檢定也不拒絕H0，表示用OLS或TSLS，是差不多的。 
+summary(tsls_1iv, vcov = sandwich, diagnostics = TRUE, df=Inf) -> tsls_1iv_tests
 tsls_1iv_tests
-##工具變數複回歸模型1檢定
-##Sargan  p-value=0.589903    無法檢定工具變數個數不足
-##Weak instruments 12.710>10   OK 
-##Wu-Hausman   p-value大  大樣本下OLS和工具變數法的效應係數應該差不多
 ```
 
 ### (11)
 使用工具變數法, 同時使用ind及smsa當工具變數，估計複迴歸模型下的$\beta_1$係數，並進行工具變數合理性的相關檢定。
 
-```{r}
-##工具變數複回歸模型2
-tsls_1iv2 <- ivreg(
-  WKS ~  log(LWAGE)+UNION+FEM+ED |UNION+FEM+ED+SMSA+IND,
+```{r 建立第二個IV模型}
+tsls_2iv <- ivreg(
+  WKS ~ LWAGE + ED + UNION + FEM | ED + UNION + FEM + IND + SMSA ,
   data=labordata
-  ) 
-
-coeftest(tsls_1iv2, vcov. = vcovHC, type="HC1") -> tsls_1iv2_coeftest
-##工具變數複回歸模型2異質變異
+  )
+tsls_2iv
 ```
 
-```{r}
-summary(tsls_1iv2, vcov = sandwich, diagnostics = TRUE,
-        df=Inf)-> tsls_1iv2_tests
-tsls_1iv2_tests
-##工具變數模型2檢定
-##Sargan 傾向接受H0  排除條件成立
-##Weak instruments   24.377>10  相關性強
-##W-Hausman   大樣本下OLS和工具變數法的效應係數應該差不多
-
+```{r two IV合理性檢定}
+# Sargan檢定是不拒絕H0，表示滿足排除性條件
+# Weak Instrument檢定中是拒絕弱IV，表示此工具變數的關聯性是足夠的。
+# Hausman 檢定也不拒絕H0，表示用OLS或TSLS，是差不多的。
+summary(tsls_2iv, vcov = sandwich, diagnostics = TRUE, df = Inf) -> tsls_2iv_tests
+tsls_2iv_tests
 ```
-
 
 ### (12)
 將簡單迴歸、複迴歸、一個工具變數、二個工具變數的四種估算結果（含應有的檢定），用stargazer產生「一張」報表同時呈現（請設定type="html"）。
+
+```{r results='asis'}
+stargazer(Simple_Ols_coeftest, Multi_Ols_coeftest, tsls_1iv, tsls_2iv, type = "html",
+          column.labels = c("Simple OLS", "Multi OLS", "one IV", "two IV"),
+          add.lines = list(c("TSLS tests pvalue","","","",""),
+                           c("Q1: Sargan","","", "NA", "0.363"),
+                           c("Q2: Weak instruments","","","0.000569","8.92e-11"),
+                           c("Q3: Wu-Hausman","","","0.598699","0.565")
+          ))
+          
+```
+
+
 
 # 文章閱讀
 以下問題請依《經濟學人》文章來回答：
@@ -193,13 +216,22 @@ tsls_1iv2_tests
 ### (13)
 文章問的因果效應問句是什麼？（盡量一言以敝之）
 
+這篇文章包含以下兩個面向討論
+（一）
 ```
 性別是否真的是造成薪資差異的變數。
+```
+（二）
+```
+「性別」是否會影響「勞動者在職場上的長期發展機會」
+
+What companies really need to find out is whether they are hiring equitably, paying equitably and are offering equitable opportunities to advance.
 ```
 
 ### (14) 
 找出文章中所列舉可造成OVB（omitted variable bias）的應控制變數，並說明它會造成OVB的「兩」面向原因（缺一不可）。
 
+對（一）：
 ```
 (1)	花多少時間照顧家人
 造成選擇性偏誤原因：花多少時間照顧家人和性別有關，因為多數情況下，女性更多地承擔
@@ -216,4 +248,15 @@ tsls_1iv2_tests
 文章提到機長薪資和空服員薪資有明顯落差，而後者以女性居多。職業別也和薪資有關，因為
 不同職業有不同的勞動供需。熱門產業和替代性低的產業往往薪資較高，低技術和替代性高的
 產業往往薪資較低。
+```
+
+對（二）
+```
+養育小孩個數（childbearing)
+
+報導中提到男性和女性在到了適合養育小孩的年齡階段，薪水會開始產生落差，到了50歲可能高達16%。又被稱為"motherhood penalty"。畢竟母親經過懷孕到分娩，對於小孩子的牽絆和情感，相對於父親，是很可能比較高的。
+
+「養育孩子個數」與「性別」會產生關聯，理由是基於演化而根深蒂固的基因，男性會傾向以提高子嗣的個數來提高繁衍後代的成功率，女性則是傾向把單一子嗣照顧好來提高繁衍後代的成功率。
+
+「養育孩子個數」與「勞動者在職場上的長期發展機會」會產生關聯，是因為若有了孩子，就比較不容易接受外派的工作，面對一些職場機會必須要捨棄。但是也可能有了孩子，定居在某個地區後，上司覺得他比較穩定不會跑走，願意投入資源栽培他，反而步步高升。兩者有關聯，但是強度與正負相關可能要case by case。
 ```
